@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSharpToolkit">
+      <HintPath>..\CSharpToolkit\bin\Debug\CSharpToolkit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,12 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="XmodemCommunicator - Events.cs" />
-    <Compile Include="XmodemCommunicator - RO Properties.cs" />
-    <Compile Include="XmodemCommunicator - Fields.cs" />
-    <Compile Include="XmodemCommunicator - RW Properties.cs" />
-    <Compile Include="XmodemCommunicator.cs" />
+    <Compile Include="AbortedEventArgs.cs" />
+    <Compile Include="CompletedEventArgs.cs" />
+    <Compile Include="PacketCountUpdatedEventArgs.cs" />
+    <Compile Include="PacketSizesEnum.cs" />
+    <Compile Include="PacketSentEventArgs.cs" />
+    <Compile Include="StatesEnum.cs" />
+    <Compile Include="StateUpdatedEventArgs.cs" />
+    <Compile Include="XModemCommunicator - Events.cs" />
+    <Compile Include="XModemCommunicator - SendPackets.cs" />
+    <Compile Include="XModemCommunicator - RO Properties.cs" />
+    <Compile Include="XModemCommunicator - Fields.cs" />
+    <Compile Include="XModemCommunicator - RW Properties.cs" />
+    <Compile Include="XModemCommunicator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XModemModeEnum.cs" />
+    <Compile Include="XModemProtocolException.cs" />
+    <Compile Include="XModemProtocolOptions.cs" />
+    <Compile Include="XModemProtocolSenderOptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
