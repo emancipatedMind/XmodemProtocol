@@ -8,50 +8,65 @@ using System.Threading.Tasks;
 namespace XModemProtocol {
     public partial class XModemCommunicator {
 
+        /// <summary>
+        /// Packets received or sent.
+        /// </summary>
         public List<List<byte>> Packets { get; private set; } = null;
+
+        /// <summary>
+        /// File name of contents in buffer. Only used when sending.
+        /// </summary>
         public string Filename { get; private set; } = null;
 
-        public States State {
+        /// <summary>
+        /// Internal state of the XModemCommunicator instance.
+        /// </summary>
+        public XModemStates State {
             get { return _state; }
             private set {
                 if (_state == value) return;
+                XModemStates oldState = _state;
                 _state = value;
-                StateUpdated?.Invoke(this, new StateUpdatedEventArgs(value));
-                if (_state == States.Idle || _state == States.SenderAwaitingInitialization)
+                if (_state == XModemStates.Idle || _state == XModemStates.SenderAwaitingInitialization)
                     _mutationsAllowed = true;
                 else
                     _mutationsAllowed = false;
+                StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState));
             }
         }
 
-        public PacketSizes PacketSize {
-            get { return _packetSize; }
+        /// <summary>
+        /// Packet size being used.
+        /// </summary>
+        public XModemPacketSizes PacketSize {
+            get {
+                return _packetSize;
+            }
             private set {
-                _packetSize = value;
-                BuildPackets();
+                if (_packetSize == value) return;
+
+                if (Mode == XModemMode.Checksum) {
+                    _packetSize = XModemPacketSizes.Standard;
+                    return;
+                } 
+                else {
+                    _packetSize = value;
+                }
             }
         }
 
-        public int PacketIndexToSend { get; private set; } 
-
-        public int PacketCount {
-            get { return _packetCount; }
-            private set {
-                if (_packetCount == value) return;
-                _packetCount = value;
-                PacketCountUpdated?.Invoke(this, new PacketCountUpdatedEventArgs(_packetCount));
-            }
-        }
-
+        /// <summary>
+        /// Mode of instance.
+        /// </summary>
         public XModemMode Mode {
             get { return _mode; }
             private set {
-                if (!_mutationsAllowed) return;
+                if (_mode == value) return;
+                XModemMode oldMode = _mode;
                 _mode = value;
                 if (_mode == XModemMode.Checksum)
-                    PacketSize = PacketSizes.Standard; 
-                else
-                    PacketSize = PacketSizes.OneK; 
+                    PacketSize = XModemPacketSizes.Standard; 
+                ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode));
             }
         }
 

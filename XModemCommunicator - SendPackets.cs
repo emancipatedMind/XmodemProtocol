@@ -17,6 +17,12 @@ namespace XModemProtocol {
             while (_sendOperationWaitHandle.WaitOne(0)) {
                 handled = true;
 
+                if (_cancellationWaitHandle.WaitOne(0)) {
+                    Abort(true, new AbortedEventArgs(XModemAbortReason.UserCancelled));
+                    _sendOperationWaitHandle.Reset();
+                    break;
+                }
+
                 try {
                     if (firstPass) {
                         while (Port.BytesToRead == 0) { if (!_sendOperationWaitHandle.WaitOne(0)) throw new XModemProtocolException(""); }
@@ -28,7 +34,7 @@ namespace XModemProtocol {
                     }
                 }
                 catch (Exception ex) when (ex is TimeoutException || ex is XModemProtocolException) {
-                    Abort(true, new AbortedEventArgs());
+                    Abort(true, new AbortedEventArgs(XModemAbortReason.Timeout));
                     break;
                 }
 
@@ -38,12 +44,10 @@ namespace XModemProtocol {
 
                 canDetected = _tempBuffer.Contains(CAN);
                 switch(State) {
-                    // Working here!
-                    case States.SenderAwaitingInitialization:
+                    case XModemStates.SenderAwaitingInitialization:
                         _initializationTimeOut.Stop();
                         if ( DetectCancellation(_tempBuffer)) {
-                            Abort(false, new AbortedEventArgs());
-                            _sendOperationWaitHandle.Reset();
+                            Abort(false, new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
                             break;
                         }
                         if (canDetected) {
@@ -56,38 +60,40 @@ namespace XModemProtocol {
                                 break;
                         }
                         else if (_tempBuffer.Last() == NAK) {
-                            if (Mode != XModemMode.Checksum)
+                            if (Mode != XModemMode.Checksum) {
                                 Mode = XModemMode.Checksum;
-                            ConsecutiveNAKLimitPassed += () => Abort(true, new AbortedEventArgs());
-                            State = States.SenderPacketSent;
+                                BuildPackets();
+                            }
+                            State = XModemStates.SenderPacketSent;
                             SendPacket();
                         }
                         else 
                             _initializationTimeOut.Start();
 
                         break;
-                    case States.SenderPacketSent:
+                    case XModemStates.SenderPacketSent:
                         if(tempBufferCount == 1) {
                             if (_tempBuffer[0] == ACK) {
-                                PacketIndexToSend++;
+                                _packetIndexToSend++;
                                 ResetConsecutiveNAKs();
                             }
                             else {
-                                // This method must throw Exception.
-                                IncrementConsecutiveNAKs();
+                                if (IncrementConsecutiveNAKs() == true) {
+                                    Abort(true, new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                    break;
+                                }
                             }
                             SendPacket();
                         }
                         else {
                             if (DetectCancellation(_tempBuffer)) {
-                                Abort(false, new AbortedEventArgs());
-                                _sendOperationWaitHandle.Reset();
+                                Abort(false, new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
                                 break;
                             }
                             if (canDetected) handled = false;
                         }
                         break;
-                    case States.SenderAwaitingFinalACK:
+                    case XModemStates.SenderAwaitingFinalACK:
                         if(tempBufferCount == 1) {
                             if (_tempBuffer[0] == ACK) {
                                 Completed?.Invoke(this, new CompletedEventArgs());
@@ -96,15 +102,16 @@ namespace XModemProtocol {
                                 break;
                             }
                             else {
-                                // This method must throw Exception.
-                                IncrementConsecutiveNAKs();
+                                if (IncrementConsecutiveNAKs() == true) {
+                                    Abort(true, new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                    break;
+                                }
                                 SendPacket();
                             }
                         }
                         else {
                             if (DetectCancellation(_tempBuffer)) {
-                                Abort(false, new AbortedEventArgs());
-                                _sendOperationWaitHandle.Reset();
+                                Abort(false, new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
                                 break;
                             }
                             if (canDetected) handled = false;

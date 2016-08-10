@@ -20,33 +20,41 @@ namespace XModemProtocol {
         /// </summary>
         public void InitializeSender(XModemProtocolSenderOptions options) {
             // First check whether the object state is idle.
-            if (State != States.Idle) throw new XModemProtocolException("Cannot initialize unless object state is idle.");
+            if (State != XModemStates.Idle) throw new XModemProtocolException("Cannot initialize unless object state is idle.");
 
             Reset();
 
             XModemProtocolSenderOptions localOptions = (XModemProtocolSenderOptions)options?.Clone() ?? new XModemProtocolSenderOptions();
 
+            if (localOptions.Buffer != null) {
+                _buffer = localOptions.Buffer.ToList();
+                options.Buffer = null;
+                options.Filename = null;
+            }
             // If user doesn't specify filename, check whether packets already exist
             // in system to see if user is just passing received information on or 
             // repeating last send.
-            if (localOptions.Filename == null ) {
-                if (_buffer == null) throw new XModemProtocolException("No data to send. Specify file to send.");
+            else if (localOptions.Filename != null ) {
+                // Setting Filename
+                Filename = localOptions.Filename;
+                options.Filename = null;
+                // Try to read file passed in.
+                try {
+                    _buffer = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
+                }
+                catch (Exception) { }
+
             }
 
-            // Setting Filename
-            Filename = localOptions.Filename;
+            if (_buffer == null) {
+                Abort(true, new AbortedEventArgs(XModemAbortReason.NoBytesSupplied));
+                return;
+            }
 
-            // Try to read file passed in.
-            try {
-                _buffer = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
-            }
-            catch (Exception ex) {
-                throw new XModemProtocolException("Please check file.", ex);
-            }
 
             Mode = localOptions.Mode;
+            BuildPackets();
 
-            // Try to attach handler to SerialPort.DataReceived event.
             // Flush both buffers.
             try {
                 if (!Port.IsOpen) Port.Open();
@@ -62,12 +70,12 @@ namespace XModemProtocol {
             _initializationTimeOut.Elapsed += (s, e) => {
                 _initializationTimeOut.Stop();
                 _sendOperationWaitHandle.Reset();
-                Abort(false, new AbortedEventArgs());
+                Abort(false, new AbortedEventArgs(XModemAbortReason.Timeout));
             };
 
             // _initializationTimeOut.Start();
 
-            State = States.SenderAwaitingInitialization;
+            State = XModemStates.SenderAwaitingInitialization;
 
             // Can use token to cancel operation.
             Task.Run(() => Send());
@@ -77,7 +85,7 @@ namespace XModemProtocol {
             lock(this) {
                 if (_buffer == null) return;
                 Packets = new List<List<byte>>();
-                byte header = PacketSize == PacketSizes.OneK ? STX : SOH;
+                byte header = PacketSize == XModemPacketSizes.OneK ? STX : SOH;
                 
                 for(int packetNumber = 1, position = 0, packetSize = (int)PacketSize; position < _buffer.Count; packetNumber++, position += packetSize) {
                     List<byte> packet = new List<byte> {
@@ -98,8 +106,7 @@ namespace XModemProtocol {
                     packet.AddRange(CheckSum(packetInfo));
                     Packets.Add(packet);
                 }
-                PacketCount = Packets.Count;
-                Packets.Add(new List<byte> {EOT});
+                PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
 
             }
         }
@@ -114,22 +121,21 @@ namespace XModemProtocol {
 
         private void Abort(bool sendCAN, AbortedEventArgs e) {
             if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANSentDuringAbort).ToArray());
-            Reset();
+            _sendOperationWaitHandle.Reset();
+            State = XModemStates.Idle;
             Aborted?.Invoke(this, e);
         }
 
         private void Reset() {
             _tempBuffer = new List<byte>();
             _initializationTimeOut?.Dispose();
-            ConsecutiveNAKLimitPassed = null;
-            State = States.Idle;
+            State = XModemStates.Idle;
             ResetConsecutiveNAKs();
-            _cancellationToken = System.Threading.CancellationToken.None;
-            PacketIndexToSend = 0;
+            _cancellationWaitHandle.Reset();
+            _packetIndexToSend = 0;
         }
 
         private bool DetectCancellation(IEnumerable<byte> recv) {
-
 
             // If NumCancellationBytesRequired is less than 1, just exit.
             if (CancellationBytesRequired < 1) return false;
@@ -161,28 +167,49 @@ namespace XModemProtocol {
             return false;
         }
 
-        private void IncrementConsecutiveNAKs() {
+        private bool IncrementConsecutiveNAKs() {
             _consecutiveNAKs++;
             if (_consecutiveNAKs > NAKBytesRequired) {
-                ConsecutiveNAKLimitPassed?.Invoke();
                 _consecutiveNAKs = 0;
+                return true;
             }
+            return false;
         }
 
         private void ResetConsecutiveNAKs() => _consecutiveNAKs = 0;
 
         private void SendPacket() {
-            int index = PacketIndexToSend;
             List<byte> packet;
-            int packetCount;
+            bool fireEvent = true;
+            int index = _packetIndexToSend;
             lock(this) {
-                packet = Packets[index];
-                packetCount = Packets.Count;
+                try {
+                    packet = Packets[index];
+                }
+                catch (ArgumentOutOfRangeException) {
+                    fireEvent = false;
+                    packet = new List<byte> { EOT };
+                    State = XModemStates.SenderAwaitingFinalACK;
+                }
             }
-            index++;
-            PacketSent?.Invoke(this, new PacketSentEventArgs(index, packet)); 
-            if (index == packetCount) State = States.SenderAwaitingFinalACK;
-            Port.Write(packet.ToArray());
+            if (fireEvent == true) PacketSent?.Invoke(this, new PacketSentEventArgs(++index, packet)); 
+            try {
+                Port.Write(packet.ToArray());
+            }
+            catch (Exception ex) {
+                throw new XModemProtocolException("Port not in usable state.", ex);
+            }
+
+        }
+
+        /// <summary>
+        /// Method used to cancel operation. If State is idle, method does nothing.
+        /// </summary>
+        /// <returns>If instance was in position to be cancelled, returns true. Otherwise, false.</returns>
+        public bool CancelOperation() {
+            if (State == XModemStates.Idle) return false;
+            _cancellationWaitHandle.Set();
+            return true;
         }
 
     }

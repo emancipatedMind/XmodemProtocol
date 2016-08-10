@@ -11,19 +11,23 @@ namespace XModemProtocol {
         List<byte> _buffer = null;
         List<byte> _tempBuffer = new List<byte>();
 
-        int _packetCount = 0;
+        int _packetIndexToSend = 0;
+
         int _consecutiveNAKs = 0;
 
-        PacketSizes _packetSize = PacketSizes.OneK;
-        XModemMode _mode = XModemMode.Checksum;
-        States _state = States.Idle;
+        #region Backing Fields
+        int _packetCount = 0;
+        XModemPacketSizes _packetSize = XModemPacketSizes.OneK;
+        XModemMode _mode = XModemMode.Auto;
+        XModemStates _state = XModemStates.Idle;
+        #endregion
 
         bool _mutationsAllowed = true;
 
         System.Timers.Timer _initializationTimeOut;
 
         ManualResetEvent _sendOperationWaitHandle = new ManualResetEvent(true);
+        ManualResetEvent _cancellationWaitHandle = new ManualResetEvent(false);
 
-        CancellationToken _cancellationToken = CancellationToken.None;
     }
 }

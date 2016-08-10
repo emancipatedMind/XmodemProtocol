@@ -7,8 +7,8 @@
     <ProjectGuid>{49523120-C2E7-4B79-A2D0-FC9F4D031A54}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XmodemProtocol</RootNamespace>
-    <AssemblyName>XmodemProtocol</AssemblyName>
+    <RootNamespace>XModemProtocol</RootNamespace>
+    <AssemblyName>XModemProtocol</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -44,11 +44,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbortedEventArgs.cs" />
+    <Compile Include="XModemAbortReasonEnum.cs" />
     <Compile Include="CompletedEventArgs.cs" />
-    <Compile Include="PacketCountUpdatedEventArgs.cs" />
-    <Compile Include="PacketSizesEnum.cs" />
+    <Compile Include="ModeUpdatedEventArgs.cs" />
+    <Compile Include="PacketsBuiltEventArgs.cs" />
+    <Compile Include="XModemPacketSizesEnum.cs" />
     <Compile Include="PacketSentEventArgs.cs" />
-    <Compile Include="StatesEnum.cs" />
+    <Compile Include="XModemStatesEnum.cs" />
     <Compile Include="StateUpdatedEventArgs.cs" />
     <Compile Include="XModemCommunicator - Events.cs" />
     <Compile Include="XModemCommunicator - SendPackets.cs" />

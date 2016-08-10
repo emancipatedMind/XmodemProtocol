@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace XModemProtocol {
     /// <summary>
-    /// The mode of the XModemCommunicator instance.
+    /// The enumeration that represents the packet sizes.
     /// </summary>
-    public enum XModemMode {
+    public enum XModemPacketSizes {
         /// <summary>
-        /// Have XModemCommunicator automatically select mode.
+        /// Packet size used by XModem-CHKSUM and XModem-CRC.
         /// </summary>
-        Auto,
+        Standard = 128,
         /// <summary>
-        /// Normal XModem mode.
+        /// Packet size used by XModem-1k.
         /// </summary>
-        Checksum,
+        OneK = 1024,
     }
 }
