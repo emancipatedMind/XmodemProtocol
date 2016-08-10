@@ -20,7 +20,8 @@ namespace XModemProtocol {
         /// </summary>
         public void InitializeSender(XModemProtocolSenderOptions options) {
             // First check whether the object state is idle.
-            if (State != XModemStates.Idle) throw new XModemProtocolException("Cannot initialize unless object state is idle.");
+            if (State != XModemStates.Idle) { return; }
+            bool rebuildPackets = false;
 
             Reset();
 
@@ -30,6 +31,7 @@ namespace XModemProtocol {
                 _buffer = localOptions.Buffer.ToList();
                 options.Buffer = null;
                 options.Filename = null;
+                rebuildPackets = true;
             }
             // If user doesn't specify filename, check whether packets already exist
             // in system to see if user is just passing received information on or 
@@ -43,7 +45,7 @@ namespace XModemProtocol {
                     _buffer = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
                 }
                 catch (Exception) { }
-
+                rebuildPackets = true;
             }
 
             if (_buffer == null) {
@@ -51,9 +53,12 @@ namespace XModemProtocol {
                 return;
             }
 
+            if (localOptions.Mode != Mode) {
+                Mode = localOptions.Mode;
+                rebuildPackets = true;
+            }
 
-            Mode = localOptions.Mode;
-            BuildPackets();
+            if (rebuildPackets == true) BuildPackets();
 
             // Flush both buffers.
             try {
@@ -70,10 +75,9 @@ namespace XModemProtocol {
             _initializationTimeOut.Elapsed += (s, e) => {
                 _initializationTimeOut.Stop();
                 _sendOperationWaitHandle.Reset();
-                Abort(false, new AbortedEventArgs(XModemAbortReason.Timeout));
             };
 
-            // _initializationTimeOut.Start();
+            _initializationTimeOut.Start();
 
             State = XModemStates.SenderAwaitingInitialization;
 

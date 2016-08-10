@@ -25,7 +25,7 @@ namespace XModemProtocol {
 
                 try {
                     if (firstPass) {
-                        while (Port.BytesToRead == 0) { if (!_sendOperationWaitHandle.WaitOne(0)) throw new XModemProtocolException(""); }
+                        while (Port.BytesToRead == 0) { if (!_sendOperationWaitHandle.WaitOne(0)) throw new TimeoutException(); }
                         _tempBuffer.AddRange(Encoding.ASCII.GetBytes(Port.ReadExisting()).ToList());
                         firstPass = false;
                     }
@@ -33,8 +33,9 @@ namespace XModemProtocol {
                         _tempBuffer.AddRange(new List<byte> { (byte)Port.ReadByte() });
                     }
                 }
-                catch (Exception ex) when (ex is TimeoutException || ex is XModemProtocolException) {
+                catch (TimeoutException) {
                     Abort(true, new AbortedEventArgs(XModemAbortReason.Timeout));
+                    _sendOperationWaitHandle.Reset();
                     break;
                 }
 
@@ -67,8 +68,10 @@ namespace XModemProtocol {
                             State = XModemStates.SenderPacketSent;
                             SendPacket();
                         }
-                        else 
+                        else {
                             _initializationTimeOut.Start();
+                            firstPass = true;
+                        }
 
                         break;
                     case XModemStates.SenderPacketSent:

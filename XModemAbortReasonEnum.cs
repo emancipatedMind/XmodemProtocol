@@ -29,5 +29,9 @@ namespace XModemProtocol {
         /// No bytes were found to be sent.
         /// </summary>
         NoBytesSupplied,
+        /// <summary>
+        /// Operation could not begin because State wasn't idle.
+        /// </summary>
+        StateNotIdle,
     }
 }
