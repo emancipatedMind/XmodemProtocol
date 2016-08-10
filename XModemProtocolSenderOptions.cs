@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmodemProtocol {
+namespace XModemProtocol {
     public class XModemProtocolSenderOptions : XModemProtocolOptions, ICloneable {
 
         /// <summary>

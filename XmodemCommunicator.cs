@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmodemProtocol {
+using CSharpToolkit;
+
+namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         public XModemCommunicator(System.IO.Ports.SerialPort port) {
@@ -23,8 +25,6 @@ namespace XmodemProtocol {
             Reset();
 
             XModemProtocolSenderOptions localOptions = (XModemProtocolSenderOptions)options?.Clone() ?? new XModemProtocolSenderOptions();
-
-            CancellationBytesRequired = localOptions.CancellationBytesRequired;
 
             // If user doesn't specify filename, check whether packets already exist
             // in system to see if user is just passing received information on or 
@@ -61,7 +61,7 @@ namespace XmodemProtocol {
             _initializationTimeOut = new System.Timers.Timer(10000);
             _initializationTimeOut.Elapsed += (s, e) => {
                 _initializationTimeOut.Stop();
-                _working = false;
+                _sendOperationWaitHandle.Reset();
                 Abort(false, new AbortedEventArgs());
             };
 
@@ -70,7 +70,7 @@ namespace XmodemProtocol {
             State = States.SenderAwaitingInitialization;
 
             // Can use token to cancel operation.
-            Task.Run(() => Send()).Wait();
+            Task.Run(() => Send());
         }
 
         private void BuildPackets() {
@@ -113,7 +113,7 @@ namespace XmodemProtocol {
         }
 
         private void Abort(bool sendCAN, AbortedEventArgs e) {
-            if (sendCAN) Port.Write(Enumerable.Repeat(CAN, NumCANForAbort).ToArray());
+            if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANSentDuringAbort).ToArray());
             Reset();
             Aborted?.Invoke(this, e);
         }
@@ -163,7 +163,7 @@ namespace XmodemProtocol {
 
         private void IncrementConsecutiveNAKs() {
             _consecutiveNAKs++;
-            if (_consecutiveNAKs > NAKLimit) {
+            if (_consecutiveNAKs > NAKBytesRequired) {
                 ConsecutiveNAKLimitPassed?.Invoke();
                 _consecutiveNAKs = 0;
             }

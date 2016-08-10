@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmodemProtocol {
+namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         public List<List<byte>> Packets { get; private set; } = null;
         public string Filename { get; private set; } = null;
-        public int CancellationBytesRequired { get; private set; } = 5;
 
         public States State {
             get { return _state; }
@@ -43,7 +42,6 @@ namespace XmodemProtocol {
                 PacketCountUpdated?.Invoke(this, new PacketCountUpdatedEventArgs(_packetCount));
             }
         }
-
 
         public XModemMode Mode {
             get { return _mode; }

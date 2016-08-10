@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmodemProtocol", "XmodemProtocol.csproj", "{49523120-C2E7-4B79-A2D0-FC9F4D031A54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocol", "XModemProtocol.csproj", "{49523120-C2E7-4B79-A2D0-FC9F4D031A54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TesterApp", "..\TesterApp\TesterApp.csproj", "{6DB668CF-DC99-467E-900C-69094C1BFAD4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocolTester", "..\XModemProtocolTester\XModemProtocolTester.csproj", "{084866D6-73A7-482D-A141-A4A6D04AC8E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{49523120-C2E7-4B79-A2D0-FC9F4D031A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49523120-C2E7-4B79-A2D0-FC9F4D031A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49523120-C2E7-4B79-A2D0-FC9F4D031A54}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DB668CF-DC99-467E-900C-69094C1BFAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DB668CF-DC99-467E-900C-69094C1BFAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DB668CF-DC99-467E-900C-69094C1BFAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DB668CF-DC99-467E-900C-69094C1BFAD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{084866D6-73A7-482D-A141-A4A6D04AC8E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{084866D6-73A7-482D-A141-A4A6D04AC8E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{084866D6-73A7-482D-A141-A4A6D04AC8E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{084866D6-73A7-482D-A141-A4A6D04AC8E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

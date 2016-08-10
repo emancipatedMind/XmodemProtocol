@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmodemProtocol {
+namespace XModemProtocol {
     public class XModemProtocolException : ApplicationException {
 
         public XModemProtocolException(string message) : base(message) { }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmodemProtocol {
+namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         #region XModem Bytes
@@ -77,9 +77,20 @@ namespace XmodemProtocol {
         /// </summary>
         public System.IO.Ports.SerialPort Port { get; set; }
 
-        public int NAKLimit { get; set; } = 5;
+        /// <summary>
+        /// Number of consecutive NAKs that will prompt an abort.
+        /// </summary>
+        public int NAKBytesRequired { get; set; } = 5;
 
-        public int NumCANForAbort { get; set; } = 5;
+        /// <summary>
+        /// Number of NAKs sent during an abort.
+        /// </summary>
+        public int CANSentDuringAbort { get; set; } = 5;
+
+        /// <summary>
+        /// Number of consecutive CANs that will prompt an abort.
+        /// </summary>
+        public int CancellationBytesRequired { get; set; } = 5;
 
     }
 }

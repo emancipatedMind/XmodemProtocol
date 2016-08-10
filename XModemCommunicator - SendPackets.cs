@@ -5,22 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmodemProtocol {
+namespace XModemProtocol {
     public partial class XModemCommunicator {
         private void Send() {
 
             bool canDetected;
             bool handled = true;
-            _working = true;
+            bool firstPass = true;
+            _sendOperationWaitHandle.Set();
 
-            for (bool firstPass = true; _working;) {
+            while (_sendOperationWaitHandle.WaitOne(0)) {
                 handled = true;
 
-                try
-                {
-                    if (firstPass)
-                    {
-                        while (Port.BytesToRead == 0) { if (!_working) throw new XModemProtocolException(""); }
+                try {
+                    if (firstPass) {
+                        while (Port.BytesToRead == 0) { if (!_sendOperationWaitHandle.WaitOne(0)) throw new XModemProtocolException(""); }
                         _tempBuffer.AddRange(Encoding.ASCII.GetBytes(Port.ReadExisting()).ToList());
                         firstPass = false;
                     }
@@ -28,8 +27,7 @@ namespace XmodemProtocol {
                         _tempBuffer.AddRange(new List<byte> { (byte)Port.ReadByte() });
                     }
                 }
-                catch (Exception ex) when (ex is TimeoutException || ex is XModemProtocolException) 
-                {
+                catch (Exception ex) when (ex is TimeoutException || ex is XModemProtocolException) {
                     Abort(true, new AbortedEventArgs());
                     break;
                 }
@@ -45,7 +43,7 @@ namespace XmodemProtocol {
                         _initializationTimeOut.Stop();
                         if ( DetectCancellation(_tempBuffer)) {
                             Abort(false, new AbortedEventArgs());
-                            _working = false;
+                            _sendOperationWaitHandle.Reset();
                             break;
                         }
                         if (canDetected) {
@@ -83,7 +81,7 @@ namespace XmodemProtocol {
                         else {
                             if (DetectCancellation(_tempBuffer)) {
                                 Abort(false, new AbortedEventArgs());
-                                _working = false;
+                                _sendOperationWaitHandle.Reset();
                                 break;
                             }
                             if (canDetected) handled = false;
@@ -94,7 +92,7 @@ namespace XmodemProtocol {
                             if (_tempBuffer[0] == ACK) {
                                 Completed?.Invoke(this, new CompletedEventArgs());
                                 Reset();
-                                _working = false;
+                                _sendOperationWaitHandle.Reset();
                                 break;
                             }
                             else {
@@ -106,7 +104,7 @@ namespace XmodemProtocol {
                         else {
                             if (DetectCancellation(_tempBuffer)) {
                                 Abort(false, new AbortedEventArgs());
-                                _working = false;
+                                _sendOperationWaitHandle.Reset();
                                 break;
                             }
                             if (canDetected) handled = false;
