@@ -98,7 +98,7 @@ namespace XModemProtocol {
                     packet.AddRange(CheckSum(packetInfo));
                     Packets.Add(packet);
                 }
-                PacketCount = (int)Math.Ceiling(_buffer.Count / ((double)PacketSize));
+                PacketCount = Packets.Count;
                 Packets.Add(new List<byte> {EOT});
 
             }
@@ -179,7 +179,8 @@ namespace XModemProtocol {
                 packet = Packets[index];
                 packetCount = Packets.Count;
             }
-            PacketSent?.Invoke(this, new PacketSentEventArgs(++index, packet)); 
+            index++;
+            PacketSent?.Invoke(this, new PacketSentEventArgs(index, packet)); 
             if (index == packetCount) State = States.SenderAwaitingFinalACK;
             Port.Write(packet.ToArray());
         }
