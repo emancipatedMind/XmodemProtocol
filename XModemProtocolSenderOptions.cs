@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace XModemProtocol {
     /// <summary>
@@ -28,12 +25,18 @@ namespace XModemProtocol {
         /// </summary>
         public IEnumerable<byte> Buffer { get; set; } = null;
 
+        /// <summary>
+        /// Timeout to be used for initialization. Zero and all non-positive integers means no timeout should occur.
+        /// </summary>
+        public int InitializationTimeout { get; set; } = 10000;
+
         public object Clone() {
             return new XModemProtocolSenderOptions {
-                Buffer =  Buffer == null ? null : new List<byte>(Buffer),
-                Prompt =  Prompt == null ? null : new List<byte>(Prompt),
+                Buffer = Buffer == null ? null : new List<byte>(Buffer),
+                Prompt = Prompt == null ? null : new List<byte>(Prompt),
                 Mode = Mode,
                 Filename = Filename,
+                InitializationTimeout = InitializationTimeout,
             };
         }
 

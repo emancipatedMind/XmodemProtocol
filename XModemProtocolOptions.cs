@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace XModemProtocol {
+﻿namespace XModemProtocol {
     /// <summary>
     /// Abstract class used to hold the options of both the Sender, and Receiver.
     /// </summary>

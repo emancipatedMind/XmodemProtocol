@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XModemProtocol {
+﻿namespace XModemProtocol {
     /// <summary>
     /// The enumeration that represents the reason the Aborted event fired.
     /// </summary>

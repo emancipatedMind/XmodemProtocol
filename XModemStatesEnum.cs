@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XModemProtocol {
+﻿namespace XModemProtocol {
     /// <summary>
     /// The enumeration that represents the internal state of the XModemCommunicator instance.
     /// </summary>
@@ -14,16 +8,20 @@ namespace XModemProtocol {
         /// </summary>
         Idle,
         /// <summary>
+        /// Notes that XModemCommunicator has begun initializing.
+        /// </summary>
+        Initializaing,
+        /// <summary>
         /// The instance is in the Sender role. Awaiting initialization from Receiver.
         /// </summary>
-        SenderAwaitingInitialization,
+        SenderAwaitingInitializationFromReceiver,
         /// <summary>
         /// The instance is in the Sender role. Actively sending packets.
         /// </summary>
-        SenderPacketSent,
+        SenderPacketsBeingSent,
         /// <summary>
         /// The instance is in the Sender role. EOT has been sent. Awaiting acknowledgment.
         /// </summary>
-        SenderAwaitingFinalACK,
+        SenderAwaitingFinalACKFromReceiver,
     }
 }

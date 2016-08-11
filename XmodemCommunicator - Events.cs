@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {
@@ -10,7 +6,13 @@ namespace XModemProtocol {
         /// <summary>
         /// This event fires whenever XModemCommunicator finishes building packets.
         /// </summary>
-        public event EventHandler<PacketsBuiltEventArgs> PacketsBuilt ;
+        public event EventHandler<PacketsBuiltEventArgs> PacketsBuilt;
+
+        /// <summary>
+        /// This event fires whenever XModemCommunicator is about to start a send or receive operation.
+        /// Must complete before operation begins.
+        /// </summary>
+        public event Action OperationPending;
 
         /// <summary>
         /// This event fires when a packet is sent.
@@ -29,6 +31,7 @@ namespace XModemProtocol {
 
         /// <summary>
         /// This event fires when the final ACK has been received or sent.
+        /// State is not returned to idle until after this event has completed.
         /// </summary>
         public event EventHandler<CompletedEventArgs> Completed;
 

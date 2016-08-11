@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {
@@ -27,7 +22,7 @@ namespace XModemProtocol {
                 if (_state == value) return;
                 XModemStates oldState = _state;
                 _state = value;
-                if (_state == XModemStates.Idle || _state == XModemStates.SenderAwaitingInitialization)
+                if (_state == XModemStates.Idle || _state == XModemStates.SenderAwaitingInitializationFromReceiver)
                     _mutationsAllowed = true;
                 else
                     _mutationsAllowed = false;

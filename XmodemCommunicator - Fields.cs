@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {
@@ -26,7 +22,7 @@ namespace XModemProtocol {
 
         System.Timers.Timer _initializationTimeOut;
 
-        ManualResetEvent _sendOperationWaitHandle = new ManualResetEvent(true);
+        ManualResetEvent _initializationWaitHandle = new ManualResetEvent(false);
         ManualResetEvent _cancellationWaitHandle = new ManualResetEvent(false);
 
     }
