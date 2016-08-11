@@ -20,8 +20,8 @@ namespace XModemProtocol {
 
         private void Abort(AbortedEventArgs e, bool sendCAN) {
             if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANSentDuringAbort).ToArray());
-            Reset();
             Aborted?.Invoke(this, e);
+            Reset();
         }
 
         private void Reset() {
@@ -49,10 +49,9 @@ namespace XModemProtocol {
         /// Method used to cancel operation. If State is idle, method does nothing.
         /// </summary>
         /// <returns>If instance was in position to be cancelled, returns true. Otherwise, false.</returns>
-        public bool CancelOperation() {
-            if (State == XModemStates.Idle) return false;
+        public void CancelOperation() {
+            if (State == XModemStates.Idle) return;
             _cancellationWaitHandle.Set();
-            return true;
         }
 
     }

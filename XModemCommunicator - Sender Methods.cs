@@ -15,10 +15,9 @@ namespace XModemProtocol {
         public void InitializeSender(XModemProtocolSenderOptions options) {
             // First check whether the object state is idle.
             if (State != XModemStates.Idle) { return; }
+            Reset();
             State = XModemStates.Initializaing;
             bool rebuildPackets = false;
-
-            Reset();
 
             XModemProtocolSenderOptions localOptions = (XModemProtocolSenderOptions)options?.Clone() ?? new XModemProtocolSenderOptions();
             options.Buffer = null;
@@ -66,8 +65,9 @@ namespace XModemProtocol {
             }
 
 
-            IAsyncResult iar = OperationPending?.BeginInvoke(null, null);
-            iar.AsyncWaitHandle.WaitOne();
+            if (OperationPending != null) {
+                OperationPending();
+            }
 
             Port.Flush();
             State = XModemStates.SenderAwaitingInitializationFromReceiver;
@@ -187,8 +187,7 @@ namespace XModemProtocol {
                 if (ex.AbortArgs != null) 
                     Abort(ex.AbortArgs);
                 else {
-                    IAsyncResult iar = Completed?.BeginInvoke(this, new CompletedEventArgs(), null, null);
-                    iar.AsyncWaitHandle.WaitOne();
+                    Completed?.Invoke(this, new CompletedEventArgs());
                     Reset();
                 }
             }
@@ -207,10 +206,10 @@ namespace XModemProtocol {
                         (byte) (0xFF - ((byte)packetNumber)) 
                     };
                     List<byte> packetInfo;
-                    try {
+                    if (position + packetSize <= _buffer.Count)  {
                         packetInfo = _buffer.GetRange(position, packetSize);
                     }
-                    catch (ArgumentException) {
+                    else {
                         int restOfBytes = _buffer.Count - position;
                         int numbOfSUB = packetSize - restOfBytes;
                         packetInfo = _buffer.GetRange(position, restOfBytes).Concat(Enumerable.Repeat(SUB, numbOfSUB)).ToList();
@@ -219,7 +218,11 @@ namespace XModemProtocol {
                     packet.AddRange(CheckSum(packetInfo));
                     Packets.Add(packet);
                 }
-                PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
+                // PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
+                if (PacketsBuilt != null) 
+                    Parallel.ForEach(PacketsBuilt.GetInvocationList(), d => {
+                        d.DynamicInvoke(new object[] {this, new PacketsBuiltEventArgs(Packets) });
+                    });
 
             }
         }
@@ -270,9 +273,17 @@ namespace XModemProtocol {
                     State = XModemStates.SenderAwaitingFinalACKFromReceiver;
                 }
             }
-            if (fireEvent == true) PacketSent?.Invoke(this, new PacketSentEventArgs(++index, packet)); 
+            ++index;
+            if (fireEvent == true) {
+                // PacketSent?.Invoke(this, new PacketSentEventArgs(index, packet)); 
+                if (PacketSent != null) 
+                    Parallel.ForEach(PacketSent.GetInvocationList(), d => {
+                        d.DynamicInvoke(new object[] {this, new PacketSentEventArgs(index, packet) });
+                    });
+            }
             Port.Write(packet.ToArray());
         }
+
 
     }
 }
