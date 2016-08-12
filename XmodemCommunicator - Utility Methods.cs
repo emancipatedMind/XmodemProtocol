@@ -13,17 +13,30 @@ namespace XModemProtocol {
                 return new List<byte>();
         }
 
+        /// <summary>
+        /// This overload of the Abort method assesses whether the
+        /// CAN should be sent or not using a general rule.
+        /// </summary>
+        /// <param name="e">An instance of the AbortedEventArgs class.</param>
         private void Abort(AbortedEventArgs e) {
             bool sendCAN = e.Reason != XModemAbortReason.CancelRequestReceived;
             Abort(e, sendCAN);
         }
 
+        /// <summary>
+        /// This overload of the Abort method can override the general rule of when to initiate a cancel or not.
+        /// </summary>
+        /// <param name="e">An instance of the AbortedEventArgs class.</param>
+        /// <param name="sendCAN">Whether to initiate cancel or not.</param>
         private void Abort(AbortedEventArgs e, bool sendCAN) {
             if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANSentDuringAbort).ToArray());
             Aborted?.Invoke(this, e);
             Reset();
         }
 
+        /// <summary>
+        /// Resets variables, and some cleanup in the instance in order to prepare for an operation.
+        /// </summary>
         private void Reset() {
             _tempBuffer = new List<byte>();
             _initializationTimeOut?.Dispose();
