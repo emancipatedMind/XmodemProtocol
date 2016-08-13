@@ -5,7 +5,7 @@ namespace XModemProtocol {
     /// <summary>
     /// The event data for the PacketSent event.
     /// </summary>
-    public class PacketSentEventArgs : EventArgs {
+    public class PacketToSendEventArgs : EventArgs {
         /// <summary>
         /// The packet number that was sent.
         /// </summary>
@@ -13,11 +13,11 @@ namespace XModemProtocol {
         /// <summary>
         /// The contents of the packet that was sent.
         /// </summary>
-        public List<byte> PacketSent { get; private set; }
+        public List<byte> PacketToSend { get; private set; }
 
-        public PacketSentEventArgs(int packetNumber, List<byte> packetSent) {
+        public PacketToSendEventArgs(int packetNumber, List<byte> packetToSend) {
             PacketNumber = packetNumber;
-            PacketSent = packetSent;
+            PacketToSend = packetToSend;
         }
 
     }

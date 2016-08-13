@@ -48,10 +48,12 @@
     <Compile Include="CompletedEventArgs.cs" />
     <Compile Include="ModeUpdatedEventArgs.cs" />
     <Compile Include="PacketsBuiltEventArgs.cs" />
+    <Compile Include="XModemCommunicator - Receiver Methods.cs" />
     <Compile Include="XModemCommunicator - Sender Methods.cs" />
     <Compile Include="XmodemCommunicator - Utility Methods.cs" />
     <Compile Include="XModemPacketSizesEnum.cs" />
-    <Compile Include="PacketSentEventArgs.cs" />
+    <Compile Include="PacketToSendEventArgs.cs" />
+    <Compile Include="XModemProtocolReceiverOptions.cs" />
     <Compile Include="XModemStatesEnum.cs" />
     <Compile Include="StateUpdatedEventArgs.cs" />
     <Compile Include="XModemCommunicator - Events.cs" />

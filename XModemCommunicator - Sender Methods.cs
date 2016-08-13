@@ -122,7 +122,7 @@ namespace XModemProtocol {
                                 break;
                             }
 
-                            if (_tempBuffer.Contains(C)) {
+                            if (_tempBuffer.Last() == C) {
                                 if (Mode == XModemMode.Checksum)
                                     break;
                             }
@@ -269,9 +269,8 @@ namespace XModemProtocol {
                     State = XModemStates.SenderAwaitingFinalACKFromReceiver;
                 }
             }
-            ++index;
             if (fireEvent == true) {
-                PacketSent?.Invoke(this, new PacketSentEventArgs(index, packet)); 
+                PacketToSend?.Invoke(this, new PacketToSendEventArgs(++index, packet)); 
             }
             Port.Write(packet.ToArray());
         }

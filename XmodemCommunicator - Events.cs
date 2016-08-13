@@ -15,9 +15,10 @@ namespace XModemProtocol {
         public event Action OperationPending;
 
         /// <summary>
-        /// This event fires when a packet is sent.
+        /// This event fires just before a packet is sent. A blocking method can prevent packet from being
+        /// sent.
         /// </summary>
-        public event EventHandler<PacketSentEventArgs> PacketSent;
+        public event EventHandler<PacketToSendEventArgs> PacketToSend;
 
         /// <summary>
         /// This event fires when the internal state is updated.
