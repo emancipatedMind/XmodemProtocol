@@ -27,11 +27,7 @@ namespace XModemProtocol {
                     _mutationsAllowed = true;
                 else
                     _mutationsAllowed = false;
-                // StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState));
-                if (StateUpdated != null) 
-                    Parallel.ForEach(StateUpdated.GetInvocationList(), d => {
-                        d.DynamicInvoke(new object[] {this, new StateUpdatedEventArgs(_state, oldState) });
-                    });
+                StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState));
             }
         }
 
@@ -66,11 +62,7 @@ namespace XModemProtocol {
                 _mode = value;
                 if (_mode == XModemMode.Checksum)
                     PacketSize = XModemPacketSizes.Standard; 
-                //ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode));
-                if (ModeUpdated != null) 
-                    Parallel.ForEach(ModeUpdated.GetInvocationList(), d => {
-                        d.DynamicInvoke(new object[] {this, new ModeUpdatedEventArgs(_mode, oldMode) });
-                    });
+                ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode));
             }
         }
 

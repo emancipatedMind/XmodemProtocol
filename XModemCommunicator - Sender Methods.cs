@@ -15,8 +15,8 @@ namespace XModemProtocol {
         public void InitializeSender(XModemProtocolSenderOptions options) {
             // First check whether the object state is idle.
             if (State != XModemStates.Idle) { return; }
-            Reset();
             State = XModemStates.Initializaing;
+            Reset();
             bool rebuildPackets = false;
 
             XModemProtocolSenderOptions localOptions = (XModemProtocolSenderOptions)options?.Clone() ?? new XModemProtocolSenderOptions();
@@ -34,15 +34,12 @@ namespace XModemProtocol {
                 // Setting Filename
                 Filename = localOptions.Filename;
                 // Try to read file passed in.
-                try {
-                    _buffer = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
-                }
-                catch (Exception) { }
+                _buffer = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
                 rebuildPackets = true;
             }
 
             if (_buffer == null) {
-                Abort(new AbortedEventArgs(XModemAbortReason.NoBytesSupplied));
+                Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty));
                 return;
             }
 
@@ -65,8 +62,12 @@ namespace XModemProtocol {
             }
 
 
-            if (OperationPending != null) {
-                OperationPending();
+            try {
+                OperationPending?.Invoke();
+            }
+            catch {
+                Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
+                throw;
             }
 
             Port.Flush();
@@ -187,8 +188,7 @@ namespace XModemProtocol {
                 if (ex.AbortArgs != null) 
                     Abort(ex.AbortArgs);
                 else {
-                    Completed?.Invoke(this, new CompletedEventArgs());
-                    Reset();
+                    CompleteOperation();
                 }
             }
         }
@@ -218,11 +218,7 @@ namespace XModemProtocol {
                     packet.AddRange(CheckSum(packetInfo));
                     Packets.Add(packet);
                 }
-                // PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
-                if (PacketsBuilt != null) 
-                    Parallel.ForEach(PacketsBuilt.GetInvocationList(), d => {
-                        d.DynamicInvoke(new object[] {this, new PacketsBuiltEventArgs(Packets) });
-                    });
+                PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
 
             }
         }
@@ -275,11 +271,7 @@ namespace XModemProtocol {
             }
             ++index;
             if (fireEvent == true) {
-                // PacketSent?.Invoke(this, new PacketSentEventArgs(index, packet)); 
-                if (PacketSent != null) 
-                    Parallel.ForEach(PacketSent.GetInvocationList(), d => {
-                        d.DynamicInvoke(new object[] {this, new PacketSentEventArgs(index, packet) });
-                    });
+                PacketSent?.Invoke(this, new PacketSentEventArgs(index, packet)); 
             }
             Port.Write(packet.ToArray());
         }

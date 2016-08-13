@@ -20,12 +20,16 @@
         /// </summary>
         UserCancelled,
         /// <summary>
-        /// No bytes were found to be sent.
+        /// Buffer containing bytes to be sent is empty.
         /// </summary>
-        NoBytesSupplied,
+        BufferEmpty,
         /// <summary>
         /// Operation could not begin because State wasn't idle.
         /// </summary>
         StateNotIdle,
+        /// <summary>
+        /// Initialization has failed.
+        /// </summary>
+        InitializationFailed,
     }
 }

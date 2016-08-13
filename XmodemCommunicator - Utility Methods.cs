@@ -1,9 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CSharpToolkit;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {
+
+        /// <summary>
+        /// Holds logic for when an operation has completed.
+        /// </summary>
+        private void CompleteOperation() {
+            Task.Run(() => { Reset();});
+            Completed?.Invoke(this, new CompletedEventArgs());
+            State = XModemStates.Idle;
+        }
 
         private List<byte> CheckSum(List<byte> packetInfo) {
             if (Mode == XModemMode.Checksum)
@@ -19,7 +29,8 @@ namespace XModemProtocol {
         /// </summary>
         /// <param name="e">An instance of the AbortedEventArgs class.</param>
         private void Abort(AbortedEventArgs e) {
-            bool sendCAN = e.Reason != XModemAbortReason.CancelRequestReceived;
+            bool sendCAN = e.Reason != XModemAbortReason.CancelRequestReceived ||
+                e.Reason != XModemAbortReason.InitializationFailed;
             Abort(e, sendCAN);
         }
 
@@ -30,8 +41,9 @@ namespace XModemProtocol {
         /// <param name="sendCAN">Whether to initiate cancel or not.</param>
         private void Abort(AbortedEventArgs e, bool sendCAN) {
             if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANSentDuringAbort).ToArray());
+            Task.Run(() => { Reset(); });
             Aborted?.Invoke(this, e);
-            Reset();
+            State = XModemStates.Idle;
         }
 
         /// <summary>
@@ -40,7 +52,6 @@ namespace XModemProtocol {
         private void Reset() {
             _tempBuffer = new List<byte>();
             _initializationTimeOut?.Dispose();
-            State = XModemStates.Idle;
             ResetConsecutiveNAKs();
             _cancellationWaitHandle.Reset();
             _initializationWaitHandle.Reset();
