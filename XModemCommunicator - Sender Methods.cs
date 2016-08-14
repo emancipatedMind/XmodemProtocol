@@ -15,7 +15,7 @@ namespace XModemProtocol {
         public void InitializeSender(XModemProtocolSenderOptions options) {
             // First check whether the object state is idle.
             if (State != XModemStates.Idle) { return; }
-            State = XModemStates.Initializaing;
+            State = XModemStates.Initializing;
             Reset();
             bool rebuildPackets = false;
 
@@ -61,7 +61,6 @@ namespace XModemProtocol {
                 _initializationTimeOut.Start();
             }
 
-
             try {
                 OperationPending?.Invoke();
             }
@@ -72,6 +71,9 @@ namespace XModemProtocol {
 
             Port.Flush();
             State = XModemStates.SenderAwaitingInitializationFromReceiver;
+
+
+
             Task.Run(() => Send());
         }
 
@@ -88,11 +90,11 @@ namespace XModemProtocol {
                     if (_cancellationWaitHandle.WaitOne(0)) {
                         throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
                     }
-                    if (_initializationWaitHandle.WaitOne(0)) {
-                        throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
-                    }
 
                     if (firstPass) {
+                        if (_initializationWaitHandle.WaitOne(0)) {
+                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                        }
                         if (Port.BytesToRead == 0) continue;
                         _tempBuffer.AddRange(Encoding.ASCII.GetBytes(Port.ReadExisting()).ToList());
                         firstPass = false;

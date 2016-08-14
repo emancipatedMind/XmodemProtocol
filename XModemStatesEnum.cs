@@ -10,7 +10,7 @@
         /// <summary>
         /// Notes that XModemCommunicator has begun initializing.
         /// </summary>
-        Initializaing,
+        Initializing,
         /// <summary>
         /// The instance is in the Sender role. Awaiting initialization from Receiver.
         /// </summary>
@@ -23,5 +23,9 @@
         /// The instance is in the Sender role. EOT has been sent. Awaiting acknowledgment.
         /// </summary>
         SenderAwaitingFinalACKFromReceiver,
+        /// <summary>
+        /// The instance is in the Receiver role. Sending the initialization byte.
+        /// </summary>
+        ReceiverSendingInitializationByte,
     }
 }
