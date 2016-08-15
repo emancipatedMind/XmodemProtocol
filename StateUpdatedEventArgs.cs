@@ -1,8 +1,9 @@
-﻿namespace XModemProtocol {
+﻿using System;
+namespace XModemProtocol {
     /// <summary>
     /// The event data for the StateUpdated event.
     /// </summary>
-    public class StateUpdatedEventArgs {
+    public class StateUpdatedEventArgs : EventArgs {
         /// <summary>
         /// The new state of the XModemCommunicator instance.
         /// </summary>

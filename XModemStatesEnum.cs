@@ -27,5 +27,9 @@
         /// The instance is in the Receiver role. Sending the initialization byte.
         /// </summary>
         ReceiverSendingInitializationByte,
+        /// <summary>
+        /// The instance is in the Receiver role. Receiver is receiving packets. 
+        /// </summary>
+        ReceiverReceivingPackets,
     }
 }

@@ -21,6 +21,12 @@ namespace XModemProtocol {
         public event EventHandler<PacketToSendEventArgs> PacketToSend;
 
         /// <summary>
+        /// This event fires after a successful packet has been received, and verified. This event must
+        /// complete before XModemCommunicator will ACK sender.
+        /// </summary>
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+
+        /// <summary>
         /// This event fires when the internal state is updated.
         /// </summary>
         public event EventHandler<StateUpdatedEventArgs> StateUpdated;

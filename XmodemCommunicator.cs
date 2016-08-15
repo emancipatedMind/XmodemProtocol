@@ -3,6 +3,7 @@
 
         public XModemCommunicator(System.IO.Ports.SerialPort port) {
             Port = port;
+            if (Port.IsOpen == false) Port.Open();
         }
 
     }

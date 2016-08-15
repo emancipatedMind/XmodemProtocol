@@ -1,8 +1,10 @@
-﻿namespace XModemProtocol {
+﻿using System;
+
+namespace XModemProtocol {
     /// <summary>
     /// The event data for the ModeUpdated event.
     /// </summary>
-    public class ModeUpdatedEventArgs {
+    public class ModeUpdatedEventArgs : EventArgs {
         /// <summary>
         /// The new mode of the XModemCommunicator instance.
         /// </summary>

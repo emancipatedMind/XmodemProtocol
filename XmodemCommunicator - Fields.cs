@@ -4,21 +4,22 @@ using System.Threading;
 namespace XModemProtocol {
     public partial class XModemCommunicator {
 
-        List<byte> _buffer = null;
         List<byte> _tempBuffer = new List<byte>();
 
         int _packetIndexToSend = 0;
 
+        int _packetIndexToReceive = 1;
+
+        int _countOfCsSent = 0;
+        int _numOfInitializationBytesSent = 0;
+
         int _consecutiveNAKs = 0;
 
         #region Backing Fields
-        int _packetCount = 0;
         XModemPacketSizes _packetSize = XModemPacketSizes.OneK;
-        XModemMode _mode = XModemMode.Auto;
+        XModemMode _mode = XModemMode.OneK;
         XModemStates _state = XModemStates.Idle;
         #endregion
-
-        bool _mutationsAllowed = true;
 
         System.Timers.Timer _initializationTimeOut;
 

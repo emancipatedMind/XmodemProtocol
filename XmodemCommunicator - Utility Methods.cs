@@ -56,6 +56,7 @@ namespace XModemProtocol {
             _cancellationWaitHandle.Reset();
             _initializationWaitHandle.Reset();
             _packetIndexToSend = 0;
+            _packetIndexToReceive = 1;
         }
 
         private bool IncrementConsecutiveNAKs() {

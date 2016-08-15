@@ -4,12 +4,16 @@
     /// </summary>
     public enum XModemMode {
         /// <summary>
-        /// Have XModemCommunicator automatically select mode.
-        /// </summary>
-        Auto,
-        /// <summary>
         /// Normal XModem mode.
         /// </summary>
         Checksum,
+        /// <summary>
+        /// Have XModemCommunicator automatically select mode.
+        /// </summary>
+        OneK,
+        /// <summary>
+        /// 128 packets w/ CRC.
+        /// </summary>
+        CRC,
     }
 }

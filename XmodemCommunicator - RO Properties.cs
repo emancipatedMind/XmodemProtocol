@@ -5,6 +5,11 @@ namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
+        /// Buffer used by XModemCommunicator to store raw data.
+        /// </summary>
+        public List<byte> Data { get; private set; } = null;
+
+        /// <summary>
         /// Packets received or sent.
         /// </summary>
         public List<List<byte>> Packets { get; private set; } = null;
@@ -30,6 +35,18 @@ namespace XModemProtocol {
         public int CancellationBytesRequired { get; private set; } = 5;
 
         /// <summary>
+        /// Maximum number of initialization bytes to send if using CRC
+        /// before falling back to normal XModem.
+        /// </summary>
+        public int MaxNumberOfInitializationBytesForCRC { get; private set; } = 3;
+
+        /// <summary>
+        /// Maximum number of tries. If in CRC or 1k mode, this will include number of
+        /// tries in MaxNumberOfInitializationBytesForCRC. Must be at least 5.
+        /// </summary>
+        public int MaxNumberOfInitializationBytesInTotal { get; private set; } = 10;
+
+        /// <summary>
         /// Internal state of the XModemCommunicator instance.
         /// </summary>
         public XModemStates State {
@@ -38,10 +55,6 @@ namespace XModemProtocol {
                 if (_state == value) return;
                 XModemStates oldState = _state;
                 _state = value;
-                if (_state == XModemStates.Idle || _state == XModemStates.SenderAwaitingInitializationFromReceiver)
-                    _mutationsAllowed = true;
-                else
-                    _mutationsAllowed = false;
                 StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState));
             }
         }
@@ -52,17 +65,6 @@ namespace XModemProtocol {
         public XModemPacketSizes PacketSize {
             get {
                 return _packetSize;
-            }
-            private set {
-                if (_packetSize == value) return;
-
-                if (Mode == XModemMode.Checksum) {
-                    _packetSize = XModemPacketSizes.Standard;
-                    return;
-                } 
-                else {
-                    _packetSize = value;
-                }
             }
         }
 
@@ -75,8 +77,10 @@ namespace XModemProtocol {
                 if (_mode == value) return;
                 XModemMode oldMode = _mode;
                 _mode = value;
-                if (_mode == XModemMode.Checksum)
-                    PacketSize = XModemPacketSizes.Standard; 
+                if (_mode == XModemMode.Checksum || _mode == XModemMode.CRC)
+                    _packetSize = XModemPacketSizes.Standard;
+                else
+                    _packetSize = XModemPacketSizes.OneK;
                 ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode));
             }
         }

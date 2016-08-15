@@ -24,7 +24,7 @@ namespace XModemProtocol {
             options.Filename = null;
 
             if (localOptions.Buffer != null) {
-                _buffer = localOptions.Buffer.ToList();
+                Data = localOptions.Buffer.ToList();
                 rebuildPackets = true;
             }
             // If user doesn't specify filename, check whether packets already exist
@@ -34,11 +34,11 @@ namespace XModemProtocol {
                 // Setting Filename
                 Filename = localOptions.Filename;
                 // Try to read file passed in.
-                _buffer = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
+                Data = Encoding.ASCII.GetBytes(File.ReadAllText(Filename)).ToList();
                 rebuildPackets = true;
             }
 
-            if (_buffer == null) {
+            if (Data == null) {
                 Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty));
                 return;
             }
@@ -49,8 +49,6 @@ namespace XModemProtocol {
             }
 
             if (rebuildPackets == true) BuildPackets();
-
-            if (!Port.IsOpen) Port.Open();
 
             if (localOptions.InitializationTimeout > 0) {
                 _initializationTimeOut = new System.Timers.Timer(localOptions.InitializationTimeout);
@@ -71,9 +69,6 @@ namespace XModemProtocol {
 
             Port.Flush();
             State = XModemStates.SenderAwaitingInitializationFromReceiver;
-
-
-
             Task.Run(() => Send());
         }
 
@@ -125,23 +120,27 @@ namespace XModemProtocol {
                             }
 
                             if (_tempBuffer.Last() == C) {
-                                if (Mode == XModemMode.Checksum)
+                                if (Mode == XModemMode.Checksum) {
+                                    _initializationTimeOut?.Start();
+                                    firstPass = true;
                                     break;
+                                }
                             }
                             else if (_tempBuffer.Last() == NAK) {
                                 if (Mode != XModemMode.Checksum) {
                                     Mode = XModemMode.Checksum;
                                     BuildPackets();
                                 }
-                                State = XModemStates.SenderPacketsBeingSent;
-                                SendPacket();
                             }
                             else {
                                 _initializationTimeOut?.Start();
                                 firstPass = true;
+                                break;
                             }
-
+                            State = XModemStates.SenderPacketsBeingSent;
+                            SendPacket();
                             break;
+
                         case XModemStates.SenderPacketsBeingSent:
                             if(tempBufferCount == 1) {
                                 if (_tempBuffer[0] == ACK) {
@@ -197,24 +196,24 @@ namespace XModemProtocol {
 
         private void BuildPackets() {
             lock(this) {
-                if (_buffer == null) return;
+                if (Data == null) return;
                 Packets = new List<List<byte>>();
                 byte header = PacketSize == XModemPacketSizes.OneK ? STX : SOH;
                 
-                for(int packetNumber = 1, position = 0, packetSize = (int)PacketSize; position < _buffer.Count; packetNumber++, position += packetSize) {
+                for(int packetNumber = 1, position = 0, packetSize = (int)PacketSize; position < Data.Count; packetNumber++, position += packetSize) {
                     List<byte> packet = new List<byte> {
                         header,
                         (byte) packetNumber,
                         (byte) (0xFF - ((byte)packetNumber)) 
                     };
                     List<byte> packetInfo;
-                    if (position + packetSize <= _buffer.Count)  {
-                        packetInfo = _buffer.GetRange(position, packetSize);
+                    if (position + packetSize <= Data.Count)  {
+                        packetInfo = Data.GetRange(position, packetSize);
                     }
                     else {
-                        int restOfBytes = _buffer.Count - position;
+                        int restOfBytes = Data.Count - position;
                         int numbOfSUB = packetSize - restOfBytes;
-                        packetInfo = _buffer.GetRange(position, restOfBytes).Concat(Enumerable.Repeat(SUB, numbOfSUB)).ToList();
+                        packetInfo = Data.GetRange(position, restOfBytes).Concat(Enumerable.Repeat(SUB, numbOfSUB)).ToList();
                     }
                     packet.AddRange(packetInfo);
                     packet.AddRange(CheckSum(packetInfo));
