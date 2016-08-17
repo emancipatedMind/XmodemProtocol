@@ -13,7 +13,7 @@ namespace XModemProtocol {
         /// <summary>
         /// Create an instance of the XModemProtocolSenderOptions.
         /// </summary>
-        public XModemProtocolSenderOptions() { }
+        public XModemProtocolSenderOptions() : this(new XModemProtocolOptions()) { }
 
         /// <summary>
         /// Create an instance of the XModemProtocolSenderOptions.

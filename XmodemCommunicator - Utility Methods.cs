@@ -69,8 +69,7 @@ namespace XModemProtocol {
         /// </summary>
         /// <param name="e">An instance of the AbortedEventArgs class.</param>
         private void Abort(AbortedEventArgs e) {
-            bool sendCAN = e.Reason != XModemAbortReason.CancelRequestReceived ||
-                e.Reason != XModemAbortReason.InitializationFailed;
+            bool sendCAN = !(e.Reason != XModemAbortReason.CancelRequestReceived && e.Reason != XModemAbortReason.InitializationFailed);
             Abort(e, sendCAN);
         }
 

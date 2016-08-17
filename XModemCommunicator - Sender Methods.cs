@@ -12,10 +12,11 @@ namespace XModemProtocol {
         /// Sender Method.
         /// Initialize session as sender.
         /// </summary>
+        /// <param name="options">The options to be used this session.</param>
         public void InitializeSender(XModemProtocolSenderOptions options) {
             // First check whether the object state is idle.
             // If so, change state to Initializing, and reset XModemCommunicator.
-            if (State != XModemStates.Idle) { return; }
+            if (State != XModemStates.Idle)  return;
             State = XModemStates.Initializing;
             Reset();
             bool rebuildPackets = false;

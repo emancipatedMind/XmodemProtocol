@@ -4,6 +4,7 @@ namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
+        /// Used exclusively by Sender.
         /// This event fires whenever XModemCommunicator finishes building packets.
         /// </summary>
         public event EventHandler<PacketsBuiltEventArgs> PacketsBuilt;
@@ -15,12 +16,14 @@ namespace XModemProtocol {
         public event Action OperationPending;
 
         /// <summary>
+        /// Used exclusively by Sender.
         /// This event fires just before a packet is sent. A blocking method can prevent packet from being
         /// sent.
         /// </summary>
         public event EventHandler<PacketToSendEventArgs> PacketToSend;
 
         /// <summary>
+        /// Used exclusively by Receiver.
         /// This event fires after a successful packet has been received, and verified. This event must
         /// complete before XModemCommunicator will ACK sender.
         /// </summary>

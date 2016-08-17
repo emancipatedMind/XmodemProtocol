@@ -85,7 +85,8 @@ namespace XModemProtocol {
         /// <summary>
         /// Create an instance of the XModemProtocolReceiverOptions.
         /// </summary>
-        public XModemProtocolReceiverOptions() { }
+        public XModemProtocolReceiverOptions() : this(new XModemProtocolOptions()) {
+        }
 
         /// <summary>
         /// Create an instance of the XModemProtocolReceiverOptions.
