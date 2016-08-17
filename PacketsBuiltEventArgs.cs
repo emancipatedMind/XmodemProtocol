@@ -11,7 +11,11 @@ namespace XModemProtocol {
         /// </summary>
         public List<List<byte>> Packets { get; private set; }
 
-        public PacketsBuiltEventArgs(List<List<byte>> packets) {
+        /// <summary>
+        /// Constructor that sets properties needed by PacketsBuilt event.
+        /// </summary>
+        /// <param name="packets">A list of the packets built.</param>
+        internal PacketsBuiltEventArgs(List<List<byte>> packets) {
             Packets = new List<List<byte>>(packets);
         }
     }

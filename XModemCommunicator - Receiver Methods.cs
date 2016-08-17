@@ -14,7 +14,16 @@ namespace XModemProtocol {
             Reset();
 
             XModemProtocolReceiverOptions localOptions = (XModemProtocolReceiverOptions)options?.Clone() ?? new XModemProtocolReceiverOptions();
-            Mode = localOptions.Mode;
+
+            if (localOptions.Mode == XModemMode.CRC)
+                Mode = XModemMode.OneK;
+            else
+                Mode = localOptions.Mode;
+
+            SetCommonOptions(localOptions);
+
+            ReceiverTimeoutDuringPacketReception = localOptions.ReceiverTimeoutForPacketReception;
+
             if (localOptions.MaxNumberOfInitializationBytesForCRC > localOptions.MaxNumberOfInitializationBytesInTotal)
                 MaxNumberOfInitializationBytesInTotal = MaxNumberOfInitializationBytesForCRC = localOptions.MaxNumberOfInitializationBytesForCRC;
             else {
@@ -47,12 +56,20 @@ namespace XModemProtocol {
             Task.Run(() => Receive());
         }
 
+
         private void Receive() {
             try {
-                byte initializationByte = Mode == XModemMode.Checksum ? NAK : C;
-                int checksumByteCount = Mode == XModemMode.Checksum ? 1 : 2;
 
-                int fullPacketSize = 3 + ((int) PacketSize)  + checksumByteCount;
+                _tempBuffer = new List<byte>();
+
+                byte initializationByte = Mode == XModemMode.Checksum ? NAK : C;
+
+                System.Threading.ManualResetEvent receiverTimeoutWaitHandle = new System.Threading.ManualResetEvent(false); 
+
+                System.Timers.Timer receiverWatchDog = new System.Timers.Timer(ReceiverTimeoutDuringPacketReception);
+                receiverWatchDog.Elapsed += (s, e) => {
+                    receiverTimeoutWaitHandle.Set();
+                };
 
                 while(true) {
                     bool handled = true;
@@ -63,18 +80,14 @@ namespace XModemProtocol {
                     switch(State) {
                         case XModemStates.ReceiverSendingInitializationByte:
                             if (Port.BytesToRead != 0) {
-                                Task.Delay(50).Wait();
-                                if (Port.BytesToRead >= fullPacketSize) {
-                                    State = XModemStates.ReceiverReceivingPackets;
-                                    _initializationTimeOut.Stop();
-                                }
+                                State = XModemStates.ReceiverReceivingPackets;
+                                _initializationTimeOut.Stop();
                             }
-                            if (_initializationWaitHandle.WaitOne(0)) {
+                            else if (_initializationWaitHandle.WaitOne(0)) {
                                 if (initializationByte == C) {
                                     if (++_countOfCsSent > MaxNumberOfInitializationBytesForCRC) {
                                         Mode = XModemMode.Checksum;
                                         initializationByte = NAK;
-                                        fullPacketSize = 132;
                                     }
                                 }
                                 if(++_numOfInitializationBytesSent > MaxNumberOfInitializationBytesInTotal) {
@@ -86,35 +99,66 @@ namespace XModemProtocol {
                             }
                             break;
                         case XModemStates.ReceiverReceivingPackets:
-                            if (Port.BytesToRead == 0) continue;
-                            int bytesToRead = Port.BytesToRead;
-                            byte[] byteArray = new byte[bytesToRead];
-                            Port.Read(byteArray, 0, bytesToRead);
-                            _tempBuffer.AddRange(byteArray.ToList());
-                            if (_tempBuffer.Count == 1 && _tempBuffer[0] == EOT) {
-                                SendACK();
-                                throw new XModemProtocolException(null);
-                            }
-                            List<byte> packet;
-                            if (_tempBuffer.Count < fullPacketSize) {
-                                handled = false;
-                                continue;
-                            }
-                            else if (_tempBuffer.Count > fullPacketSize) {
-                                packet = new List<byte>(_tempBuffer.GetRange(0, fullPacketSize));
-                                _tempBuffer.RemoveRange(0, fullPacketSize);
-                            }
-                            else {
-                                packet = _tempBuffer;
-                            }
+                            if (Port.BytesToRead != 0) {
+                                receiverWatchDog.Stop();
+                                _tempBuffer.AddRange(Port.ReadAllBytes());
+                                if (_tempBuffer[0] == EOT) {
+                                    SendACK();
+                                    throw new XModemProtocolException(null);
+                                }
+                                if (DetectCancellation(_tempBuffer)) {
+                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
+                                } 
+                                if (_tempBuffer.Count < 132) {
+                                    handled = false;
+                                    receiverWatchDog.Start();
+                                    continue;
+                                }
+                                int packetSize;
+                                List<byte> packet;
+                                if (Mode == XModemMode.Checksum)
+                                    packetSize = 132;
+                                else {
+                                    if (_tempBuffer[0] == SOH) {
+                                        packetSize = 133;
+                                    }
+                                    else if (_tempBuffer[0] == STX) {
+                                        packetSize = 1029;
+                                    }
+                                    else {
+                                        Port.Flush();
+                                        if(SendNAK() == true) 
+                                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                        continue;
+                                    }
+                                } 
 
-                            if(ValidatePacket(packet) == true) {
-                                SendACK();
+                                if (_tempBuffer.Count < packetSize) {
+                                    handled = false;
+                                    receiverWatchDog.Start();
+                                    continue;
+                                }
+                                if (_tempBuffer.Count > packetSize) handled = false;
+
+                                packet = new List<byte>(_tempBuffer.GetRange(0, packetSize));
+                                _tempBuffer.RemoveRange(0, packetSize);
+
+                                if(ValidatePacket(packet) == true) {
+                                    SendACK();
+                                }
+                                else {
+                                    if(SendNAK() == true) 
+                                        throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                }
                             }
                             else {
-                                if(SendNAK() == true) 
-                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                if (receiverTimeoutWaitHandle.WaitOne(0)) {
+                                    if(SendNAK() == true) 
+                                        throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                                    receiverTimeoutWaitHandle.Reset();
+                                }
                             }
+                            receiverWatchDog.Start();
                             break;
                     }
 
@@ -137,37 +181,87 @@ namespace XModemProtocol {
 
         private bool ValidatePacket(IEnumerable<byte> buffer) {
             List<byte> packet = buffer.ToList();
-            byte header = Mode == XModemMode.OneK ? STX : SOH;
-            if (header != packet[0]) return false;
-            if(packet[1] != ((byte)_packetIndexToReceive)) {
-                if(packet[1] != ((byte)_packetIndexToReceive - 1)) {
-                    return false;
+            bool packetVerifed = true;
+            try {
+                Exception ex;
+                packet = buffer.ToList();
+                int payLoadSize;
+                if (Mode != XModemMode.OneK) {
+                    if (packet[0] != SOH) {
+                        ex = new XModemProtocolException();
+                        ex.Data.Add("Verfied", false);
+                        throw ex;
+
+                    }
+                    payLoadSize = 128;
                 }
-                return true;
+                else {
+                    if (packet[0] == SOH)
+                        payLoadSize = 128;
+                    else if (packet[0] == STX)
+                        payLoadSize = 1024;
+                    else {
+                        ex = new XModemProtocolException();
+                        ex.Data.Add("Verfied", false);
+                        throw ex;
+                    }
+                }
+                if (packet[1] != ((byte)_packetIndexToReceive)) {
+                    if (packet[1] != ((byte)_packetIndexToReceive - 1)) {
+                        ex = new XModemProtocolException();
+                        ex.Data.Add("Verfied", false);
+                        throw ex;
+                    }
+                    ex = new Exception();
+                    ex.Data.Add("Verfied", true);
+                    throw ex;
+                }
+                byte inversePacketNumber = (byte)(0xFF - _packetIndexToReceive);
+                if (packet[2] != inversePacketNumber) {
+                    ex = new XModemProtocolException();
+                    ex.Data.Add("Verfied", false);
+                    throw ex;
+                }
+
+                List<byte> payLoad = packet.GetRange(3, payLoadSize);
+                if (Mode == XModemMode.Checksum) {
+                    byte simpleChecksum = (byte)(payLoad.Sum(n => n));
+                    if (simpleChecksum != packet[131]) {
+                        ex = new XModemProtocolException();
+                        ex.Data.Add("Verfied", false);
+                        throw ex;
+                    }
+                }
+                else {
+                    if (CheckSumValidator.ApproveMessage(packet.GetRange(3, packet.Count - 3)) == false) {
+                        ex = new XModemProtocolException();
+                        ex.Data.Add("Verfied", false);
+                        throw ex;
+                    }
+                }
+                Packets.Add(packet);
+                Data.AddRange(payLoad);
+                _packetIndexToReceive++;
             }
-            byte inversePacketNumber = (byte)(0xFF - _packetIndexToReceive);
-            if (packet[2] != inversePacketNumber) return false;
-            
-            List<byte> payLoad = packet.GetRange(3, (int)PacketSize);
-            if (Mode == XModemMode.Checksum) {
-                byte simpleChecksum = (byte)(payLoad.Sum(n => n));
-                if (simpleChecksum != packet[131]) return false;
-            }
-            else {
-                // This will need to verify checksum with CRC.
-            }
-            Packets.Add(packet);
-            Data.AddRange(payLoad);
-            PacketReceived?.Invoke(this, new PacketReceivedEventArgs(_packetIndexToReceive, packet));
-            _packetIndexToReceive++;
-            return true;
+            catch(XModemProtocolException ex) {
+                packetVerifed = (bool) ex.Data["Verified"];
+            } 
+
+            PacketReceived?.Invoke(this, new PacketReceivedEventArgs(_packetIndexToReceive, packet, packetVerifed));
+            return packetVerifed;
         }
 
+        /// <summary>
+        /// Send ACK.
+        /// </summary>
         private void SendACK() {
             Port.Write(ACK);
             ResetConsecutiveNAKs();
         }
 
+        /// <summary>
+        /// Send NAK, and increment consecutive NAK.
+        /// </summary>
         private bool SendNAK() {
             Port.Write(NAK);
             return IncrementConsecutiveNAKs();

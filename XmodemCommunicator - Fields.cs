@@ -4,7 +4,9 @@ using System.Threading;
 namespace XModemProtocol {
     public partial class XModemCommunicator {
 
-        List<byte> _tempBuffer = new List<byte>();
+        // Just fields to be used by the instance.
+
+        List<byte> _tempBuffer = null;
 
         int _packetIndexToSend = 0;
 
@@ -14,6 +16,7 @@ namespace XModemProtocol {
         int _numOfInitializationBytesSent = 0;
 
         int _consecutiveNAKs = 0;
+        int _consecutiveLoopsWithCANs = 0;
 
         #region Backing Fields
         XModemPacketSizes _packetSize = XModemPacketSizes.OneK;

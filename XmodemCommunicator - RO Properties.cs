@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 namespace XModemProtocol {
     public partial class XModemCommunicator {
 
+        #region Shared Properties.
         /// <summary>
         /// Buffer used by XModemCommunicator to store raw data.
         /// </summary>
@@ -15,36 +16,16 @@ namespace XModemProtocol {
         public List<List<byte>> Packets { get; private set; } = null;
 
         /// <summary>
-        /// File name of contents in buffer. Only used when sending.
+        /// Default : 5.
+        /// Number of CANs sent during an abort.
         /// </summary>
-        public string Filename { get; private set; } = null;
+        public int CANsSentDuringAbort { get; private set; }
 
         /// <summary>
-        /// Number of consecutive NAKs that will prompt an abort.
-        /// </summary>
-        public int NAKBytesRequired { get; private set; } = 5;
-
-        /// <summary>
-        /// Number of NAKs sent during an abort.
-        /// </summary>
-        public int CANSentDuringAbort { get; private set; } = 5;
-
-        /// <summary>
+        /// Default : 5.
         /// Number of consecutive CANs that will prompt an abort.
         /// </summary>
-        public int CancellationBytesRequired { get; private set; } = 5;
-
-        /// <summary>
-        /// Maximum number of initialization bytes to send if using CRC
-        /// before falling back to normal XModem.
-        /// </summary>
-        public int MaxNumberOfInitializationBytesForCRC { get; private set; } = 3;
-
-        /// <summary>
-        /// Maximum number of tries. If in CRC or 1k mode, this will include number of
-        /// tries in MaxNumberOfInitializationBytesForCRC. Must be at least 5.
-        /// </summary>
-        public int MaxNumberOfInitializationBytesInTotal { get; private set; } = 10;
+        public int CancellationBytesRequired { get; private set; }
 
         /// <summary>
         /// Internal state of the XModemCommunicator instance.
@@ -84,6 +65,7 @@ namespace XModemProtocol {
                 ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode));
             }
         }
+        #endregion
         
         #region XModem Bytes
         /// <summary>
@@ -91,64 +73,104 @@ namespace XModemProtocol {
         /// Sender begins each 128-byte packet with this header.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte SOH { get; private set; } = 0x01;
+        public byte SOH { get; private set; }
 
         /// <summary>
         /// Default: 0x02.
         /// Sender begins each 1024-byte packet with this header.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte STX { get; private set; } = 0x02;
+        public byte STX { get; private set; }
 
         /// <summary>
         /// Default: 0x06.
         /// Receiver sends this to indicate packet was received successfully with no errors.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte ACK { get; private set; } = 0x06;
+        public byte ACK { get; private set; }
 
         /// <summary>
         /// Default: 0x15.
         /// Receiver sends this to initiate XModem-Checksum file transfer -- OR -- indicate packet errors.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte NAK { get; private set; } = 0x15;
+        public byte NAK { get; private set; }
 
         /// <summary>
         /// Default: 0x43.
         /// Receiver sends this to initiate XModem-CRC or XModem-1K file transfer.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte C { get; private set; } = 0x43;
+        public byte C { get; private set; }
 
         /// <summary>
         /// Default: 0x04.
         /// Sender sends this to mark the end of file. Receiver must acknowledge receipt of this byte with <ACK>, otherwise Sender resends <EOT> .
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte EOT { get; private set; } = 0x04;
+        public byte EOT { get; private set; }
 
         /// <summary>
         /// Default: 0x1A.
         /// This is used as a padding byte in the original specification.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte SUB { get; private set; } = 0x1A;
+        public byte SUB { get; private set; }
 
         /// <summary>
         /// Default: 0x18.
         /// [Commonly used but unofficial] Sender or Receiver sends this byte to abort file transfer.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte CAN { get; private set; } = 0x18;
+        public byte CAN { get; private set; }
 
         /// <summary>
         /// Default: 0x1A.
         /// [Commonly used but unofficial] MS-DOS version of <EOT>.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte EOF { get; private set; } = 0x1A;
+        public byte EOF { get; private set; }
         #endregion
 
+        #region Sender Only.
+        /// <summary>
+        /// Used exclusively by Sender.
+        /// File name of contents in buffer. Only used when sending.
+        /// </summary>
+        public string Filename { get; private set; } = null;
+        #endregion
+
+        #region Receiver Only.
+        /// <summary>
+        /// Default : 5.
+        /// Used exclusively by Receiver.
+        /// Number of consecutive NAKs that will prompt an abort.
+        /// </summary>
+        public int NAKBytesRequired { get; private set; }
+
+        /// <summary>
+        /// Default : 3.
+        /// Used exclusively by Receiver.
+        /// Maximum number of initialization bytes to send if using CRC
+        /// before falling back to normal XModem.
+        /// </summary>
+        public int MaxNumberOfInitializationBytesForCRC { get; private set; }
+
+        /// <summary>
+        /// Default : 10.
+        /// Used exclusively by Receiver.
+        /// Maximum number of tries. If in CRC or 1k mode, this will include number of
+        /// tries in MaxNumberOfInitializationBytesForCRC. Must be at least 5.
+        /// </summary>
+        public int MaxNumberOfInitializationBytesInTotal { get; private set; }
+
+        /// <summary>
+        /// Default : 10000ms.
+        /// Used exclusively by Receiver.
+        /// After sending a packet, this is the amount of time receiver will wait for a packet before a NAK is sent to prompt sender.
+        /// Must be between 1000 and 20000ms.
+        /// </summary>
+        public int ReceiverTimeoutDuringPacketReception { get; private set; }
+        #endregion
     }
 }

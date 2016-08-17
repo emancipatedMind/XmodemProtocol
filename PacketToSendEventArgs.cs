@@ -15,7 +15,12 @@ namespace XModemProtocol {
         /// </summary>
         public List<byte> PacketToSend { get; private set; }
 
-        public PacketToSendEventArgs(int packetNumber, List<byte> packetToSend) {
+        /// <summary>
+        /// Constructor used to set properties needed by PacketToSend event.
+        /// </summary>
+        /// <param name="packetNumber">The packet number to be sent.</param>
+        /// <param name="packetToSend">The packet to be sent.</param>
+        internal PacketToSendEventArgs(int packetNumber, List<byte> packetToSend) {
             PacketNumber = packetNumber;
             PacketToSend = packetToSend;
         }

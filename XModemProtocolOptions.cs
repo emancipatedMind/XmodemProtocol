@@ -1,6 +1,6 @@
 ﻿namespace XModemProtocol {
     /// <summary>
-    /// Class used to hold the options of both the Sender, and Receiver.
+    /// Class used to hold options used by both the Sender, and Receiver.
     /// </summary>
     public class XModemProtocolOptions {
 
@@ -17,7 +17,7 @@
         public int NAKBytesRequired { get; set; } = 5;
 
         /// <summary>
-        /// Number of NAKs sent during an abort.
+        /// Number of CANs sent during an abort.
         /// This is a shared option.
         /// </summary>
         public int CANSentDuringAbort { get; set; } = 5;

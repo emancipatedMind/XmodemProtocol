@@ -13,7 +13,12 @@ namespace XModemProtocol {
         /// </summary>
         public XModemStates OldState { get; private set; }
 
-        public StateUpdatedEventArgs(XModemStates state, XModemStates oldState) {
+        /// <summary>
+        /// Constructor used to set properties needed by StateUpdated event.
+        /// </summary>
+        /// <param name="state">The current state of the instance.</param>
+        /// <param name="oldState">The old state of the instance.</param>
+        internal StateUpdatedEventArgs(XModemStates state, XModemStates oldState) {
             State = state;
             OldState = oldState;
         }

@@ -10,7 +10,11 @@ namespace XModemProtocol {
         /// </summary>
         public XModemAbortReason Reason { get; private set; }
 
-        public AbortedEventArgs(XModemAbortReason reason) {
+        /// <summary>
+        /// Constructor used to set properties needed by Aborted event.
+        /// </summary>
+        /// <param name="reason">Reason why abort event is being fired.</param>
+        internal AbortedEventArgs(XModemAbortReason reason) {
             Reason = reason;
         }
     }

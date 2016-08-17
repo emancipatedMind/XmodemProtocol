@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbortedEventArgs.cs" />
+    <Compile Include="CRC16LTE.cs" />
     <Compile Include="PacketReceivedEventArgs.cs" />
     <Compile Include="XModemAbortReasonEnum.cs" />
     <Compile Include="CompletedEventArgs.cs" />

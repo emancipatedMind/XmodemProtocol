@@ -10,8 +10,15 @@ namespace XModemProtocol {
     /// </summary>
     public class XModemProtocolSenderOptions : XModemProtocolOptions, ICloneable {
 
+        /// <summary>
+        /// Create an instance of the XModemProtocolSenderOptions.
+        /// </summary>
         public XModemProtocolSenderOptions() { }
 
+        /// <summary>
+        /// Create an instance of the XModemProtocolSenderOptions.
+        /// </summary>
+        /// <param name="baseOptions"></param>
         public XModemProtocolSenderOptions(XModemProtocolOptions baseOptions) {
                 Mode = baseOptions.Mode;
                 NAKBytesRequired = baseOptions.NAKBytesRequired;
@@ -48,6 +55,10 @@ namespace XModemProtocol {
         /// </summary>
         public int InitializationTimeout { get; set; } = 10000;
 
+        /// <summary>
+        /// A method to perform deep copy of instance.
+        /// </summary>
+        /// <returns>A deep copy of XModemProtocolSenderOptions.</returns>
         public object Clone() {
             return new XModemProtocolSenderOptions {
                 Buffer = Buffer == null ? null : new List<byte>(Buffer),

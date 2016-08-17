@@ -15,12 +15,52 @@ namespace XModemProtocol {
             State = XModemStates.Idle;
         }
 
+        /// <summary>
+        /// Increment consecutive loops with insufficient amount of CANs.
+        /// </summary>
+        /// <returns>Whether _consecutiveloopsWithCANs is more than 20.</returns>
+        private bool IncrementConsecutiveLoopsWithInsufficientCAN() {
+            if (++_consecutiveLoopsWithCANs > 20) {
+                _consecutiveLoopsWithCANs = 0;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Reset consecutive loops with insufficient amount of CANs.
+        /// </summary>
+        private void ResetConsecutiveLoopsWithInsufficientCAN() => _consecutiveLoopsWithCANs = 0;
+
+        /// <summary>
+        /// Perform checksum with supplied list.
+        /// </summary>
+        /// <param name="packetInfo">Packets to be checked.</param>
+        /// <returns>Two count list of checksum</returns>
         private List<byte> CheckSum(List<byte> packetInfo) {
             if (Mode == XModemMode.Checksum)
                 return new List<byte> { (byte)packetInfo.Sum(b => b) };
             else
-                // This needs to produce CRC checksum.
-                return new List<byte>();
+                return CheckSumValidator.ComputeChecksum(packetInfo);
+        }
+
+        /// <summary>
+        /// Set common options for instance.
+        /// </summary>
+        /// <param name="options">Options.</param>
+        private void SetCommonOptions(XModemProtocolOptions options) {
+            SOH = options.SOH;
+            STX = options.STX;
+            ACK = options.ACK;
+            NAK = options.NAK;
+            C = options.C;
+            CAN = options.CAN;
+            EOT = options.EOT;
+            SUB = options.SUB;
+            EOF = options.EOF;
+            CancellationBytesRequired = options.CancellationBytesRequired;
+            NAKBytesRequired = options.NAKBytesRequired;
+            CANsSentDuringAbort = options.CANSentDuringAbort;
         }
 
         /// <summary>
@@ -40,7 +80,7 @@ namespace XModemProtocol {
         /// <param name="e">An instance of the AbortedEventArgs class.</param>
         /// <param name="sendCAN">Whether to initiate cancel or not.</param>
         private void Abort(AbortedEventArgs e, bool sendCAN) {
-            if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANSentDuringAbort).ToArray());
+            if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANsSentDuringAbort).ToArray());
             Task.Run(() => { Reset(); });
             Aborted?.Invoke(this, e);
             State = XModemStates.Idle;
@@ -50,15 +90,23 @@ namespace XModemProtocol {
         /// Resets variables, and some cleanup in the instance in order to prepare for an operation.
         /// </summary>
         private void Reset() {
-            _tempBuffer = new List<byte>();
+            _tempBuffer = null;
             _initializationTimeOut?.Dispose();
-            ResetConsecutiveNAKs();
+            _initializationTimeOut = null;
+            _consecutiveNAKs = 0;
             _cancellationWaitHandle.Reset();
             _initializationWaitHandle.Reset();
             _packetIndexToSend = 0;
             _packetIndexToReceive = 1;
+            _consecutiveLoopsWithCANs = 0;
+            _countOfCsSent = 0;
+            _numOfInitializationBytesSent = 0;
         }
 
+        /// <summary>
+        /// Increment consecutive NAKs.
+        /// </summary>
+        /// <returns>Whether consecutive NAKs are over limit.</returns>
         private bool IncrementConsecutiveNAKs() {
             _consecutiveNAKs++;
             if (_consecutiveNAKs > NAKBytesRequired) {
@@ -67,8 +115,11 @@ namespace XModemProtocol {
             }
             return false;
         }
-
+        /// <summary>
+        /// Reset consecutive NAKs.
+        /// </summary>
         private void ResetConsecutiveNAKs() => _consecutiveNAKs = 0;
+
 
         /// <summary>
         /// Method used to cancel operation. If State is idle, method does nothing.

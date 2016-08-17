@@ -18,9 +18,21 @@ namespace XModemProtocol {
         /// </summary>
         public List<byte> PacketReceived { get; private set; }
 
-        public PacketReceivedEventArgs(int packetNumber, List<byte> packetReceived) {
+        /// <summary>
+        /// Did the checksum verify the packet was received properly.
+        /// </summary>
+        public bool PacketVerified { get; private set; }
+
+        /// <summary>
+        /// Constructor used to set properties needed by PacketReceived event.
+        /// </summary>
+        /// <param name="packetNumber">Packet number received.</param>
+        /// <param name="packetReceived">Actual packet received.</param>
+        /// <param name="packetVerified">Whether packet was verified.</param>
+        internal PacketReceivedEventArgs(int packetNumber, List<byte> packetReceived, bool packetVerified) {
             PacketNumber = packetNumber;
             PacketReceived = packetReceived;
+            PacketVerified = packetVerified;
         }
 
     }

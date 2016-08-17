@@ -14,7 +14,12 @@ namespace XModemProtocol {
         /// </summary>
         public XModemMode OldMode { get; private set; }
 
-        public ModeUpdatedEventArgs(XModemMode mode, XModemMode oldMode) {
+        /// <summary>
+        /// Constructor used to set properties needed by ModeUpdated event.
+        /// </summary>
+        /// <param name="mode">Current mode.</param>
+        /// <param name="oldMode">Old mode.</param>
+        internal ModeUpdatedEventArgs(XModemMode mode, XModemMode oldMode) {
             Mode = mode;
             OldMode = oldMode;
         }
