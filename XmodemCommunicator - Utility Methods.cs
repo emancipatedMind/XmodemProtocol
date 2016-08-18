@@ -79,7 +79,6 @@ namespace XModemProtocol {
         /// <param name="e">An instance of the AbortedEventArgs class.</param>
         /// <param name="sendCAN">Whether to initiate cancel or not.</param>
         private void Abort(AbortedEventArgs e, bool sendCAN) {
-            System.Diagnostics.Debug.WriteLine(sendCAN);
             if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANsSentDuringAbort).ToArray());
             Task.Run(() => { Reset(); });
             Aborted?.Invoke(this, e);
