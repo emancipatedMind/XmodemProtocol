@@ -7,6 +7,9 @@ namespace XModemProtocol {
     /// </summary>
     public class CRC16LTE {
 
+        int _polynomial = 0;
+        List<int> _lookupTable;
+
         /// <summary>
         /// new List<byte> {0, 0}
         /// </summary>
@@ -15,15 +18,10 @@ namespace XModemProtocol {
         /// new List<byte> {0xFF, 0xFF}
         /// </summary>
         public static List<byte> Ones { get; } = new List<byte> { 0xFF, 0xFF };
-
-        int _polynomial = 0;
-        List<int> _lookupTable;
-
         /// <summary>
-        /// Used as initial value to calculation.
+        /// Used as initial value to calculation. Indices 1, and 0 are used.
         /// </summary>
         public IEnumerable<byte> InitialCRCValue { get; set; } = Zeros;
-
         /// <summary>
         /// Polynomial used in calculation.
         /// </summary>
@@ -46,7 +44,7 @@ namespace XModemProtocol {
                             temp <<= 1;
                         a <<= 1;
                     }
-                    _lookupTable.Add( 0xFFFF & temp);
+                    _lookupTable.Add(0xFFFF & temp);
                 }
             }
         }
@@ -63,7 +61,6 @@ namespace XModemProtocol {
         /// A method used to calculate checksum.
         /// </summary>
         /// <param name="input">Message for which checksum will be computed.</param>
-        /// <param name="initialCRCValue">A two byte enumerable to be used as initial value.</param>
         /// <returns>A two byte enumerable containing checksum.</returns>
         public List<byte> ComputeChecksum(IEnumerable<byte> input) {
             return input.Aggregate(
@@ -77,7 +74,6 @@ namespace XModemProtocol {
         /// A method used to check whether the checksum is correct.
         /// </summary>
         /// <param name="input">Message in bytes with the checksum as the last two bytes.</param>
-        /// <param name="initialCRCValue">A two byte enumerable to be used as initial value.</param>
         /// <returns>A boolean saying whether the checksum is correct(true) or not(false).</returns>
         public bool ApproveMessage(IEnumerable<byte> input) {
             List<byte> checksum = ComputeChecksum(input);
