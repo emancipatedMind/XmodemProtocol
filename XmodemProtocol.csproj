@@ -55,7 +55,6 @@
     <Compile Include="XmodemCommunicator - Utility Methods.cs" />
     <Compile Include="XModemPacketSizesEnum.cs" />
     <Compile Include="PacketToSendEventArgs.cs" />
-    <Compile Include="XModemProtocolReceiverOptions.cs" />
     <Compile Include="XModemStatesEnum.cs" />
     <Compile Include="StateUpdatedEventArgs.cs" />
     <Compile Include="XModemCommunicator - Events.cs" />
@@ -67,7 +66,6 @@
     <Compile Include="XModemModeEnum.cs" />
     <Compile Include="XModemProtocolException.cs" />
     <Compile Include="XModemProtocolOptions.cs" />
-    <Compile Include="XModemProtocolSenderOptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

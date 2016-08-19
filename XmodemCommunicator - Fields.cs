@@ -8,9 +8,7 @@ namespace XModemProtocol {
 
         List<byte> _tempBuffer = null;
 
-        int _packetIndexToSend = 0;
-
-        int _packetIndexToReceive = 1;
+        int _packetIndex = 0;
 
         int _countOfCsSent = 0;
         int _numOfInitializationBytesSent = 0;
@@ -19,7 +17,6 @@ namespace XModemProtocol {
         int _consecutiveLoopsWithCANs = 0;
 
         #region Backing Fields
-        XModemPacketSizes _packetSize = XModemPacketSizes.OneK;
         XModemMode _mode = XModemMode.OneK;
         XModemStates _state = XModemStates.Idle;
         #endregion

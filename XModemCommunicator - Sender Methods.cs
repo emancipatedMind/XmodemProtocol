@@ -13,7 +13,7 @@ namespace XModemProtocol {
         /// Initialize session as sender.
         /// </summary>
         /// <param name="options">The options to be used this session.</param>
-        public void InitializeSender(XModemProtocolSenderOptions options) {
+        public void InitializeSender(XModemProtocolOptions options) {
             // First check whether the object state is idle.
             // If so, change state to Initializing, and reset XModemCommunicator.
             if (State != XModemStates.Idle)  return;
@@ -22,29 +22,29 @@ namespace XModemProtocol {
             bool rebuildPackets = false;
 
             // Get a clone of the options passed in. This is a deep copy so that it cannot be changed by outside world.
-            XModemProtocolSenderOptions localOptions = (XModemProtocolSenderOptions)options?.Clone() ?? new XModemProtocolSenderOptions();
+            XModemProtocolOptions localOptions = (XModemProtocolOptions)options?.Clone();
 
             // Remove data in Buffer, and Filename. They cannot be used more than once.
-            options.Buffer = null;
-            options.Filename = null;
+            options.SenderBuffer = null;
+            options.SenderFilename = null;
 
             // Set the common options.
             SetCommonOptions(localOptions);
 
             // Buffer is the first place to look for data. If it has data, get this data, and set flag indicating that 
             // packets need to be built.
-            if (localOptions.Buffer != null) {
-                Data = localOptions.Buffer.ToList();
-                Filename = null;
+            if (localOptions.SenderBuffer != null) {
+                Data = localOptions.SenderBuffer.ToList();
+                SenderFilename = null;
                 rebuildPackets = true;
             }
 
             // If user instead specifies filename, try to import the bytes from this file.
             // Any exceptions thrown will bubble to top.
-            else if (localOptions.Filename != null ) {
+            else if (localOptions.SenderFilename != null ) {
                 // Set Filename, try to read file passed in, and set flag indicating tht packets need to be built.
-                Filename = localOptions.Filename;
-                Data = File.ReadAllBytes(Filename).ToList();
+                SenderFilename = localOptions.SenderFilename;
+                Data = File.ReadAllBytes(SenderFilename).ToList();
                 rebuildPackets = true;
             }
 
@@ -67,8 +67,8 @@ namespace XModemProtocol {
             if (rebuildPackets == true) BuildPackets();
 
             // If user has indicated they would like to have a timeout, set that up.
-            if (localOptions.InitializationTimeout > 0) {
-                _initializationTimeOut = new System.Timers.Timer(localOptions.InitializationTimeout);
+            if (localOptions.SenderInitializationTimeout > 0) {
+                _initializationTimeOut = new System.Timers.Timer(localOptions.SenderInitializationTimeout);
                 _initializationTimeOut.Elapsed += (s, e) => {
                     _initializationTimeOut.Stop();
                     _initializationWaitHandle.Set();
@@ -199,7 +199,7 @@ namespace XModemProtocol {
                                 if (State == XModemStates.SenderAwaitingFinalACKFromReceiver) {
                                     throw new XModemProtocolException();
                                 } 
-                                _packetIndexToSend++;
+                                _packetIndex++;
                                 SendPacket();
                             }
 
@@ -341,7 +341,7 @@ namespace XModemProtocol {
         private void SendPacket() {
             List<byte> packet;
             bool fireEvent = true;
-            int index = _packetIndexToSend;
+            int index = _packetIndex;
 
             // Check to see if index is within range of Packets.
             // If so, get the packet at that index.

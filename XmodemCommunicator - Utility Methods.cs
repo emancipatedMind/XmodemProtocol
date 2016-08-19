@@ -57,9 +57,8 @@ namespace XModemProtocol {
             CAN = options.CAN;
             EOT = options.EOT;
             SUB = options.SUB;
-            EOF = options.EOF;
             CancellationBytesRequired = options.CancellationBytesRequired;
-            NAKBytesRequired = options.NAKBytesRequired;
+            ReceiverConsecutiveNAKBytesRequiredForCancellation = options.ReceiverConsecutiveNAKsRequiredForCancellation;
             CANsSentDuringAbort = options.CANSentDuringAbort;
         }
 
@@ -95,30 +94,11 @@ namespace XModemProtocol {
             _consecutiveNAKs = 0;
             _cancellationWaitHandle.Reset();
             _initializationWaitHandle.Reset();
-            _packetIndexToSend = 0;
-            _packetIndexToReceive = 1;
+            _packetIndex = 0;
             _consecutiveLoopsWithCANs = 0;
             _countOfCsSent = 0;
             _numOfInitializationBytesSent = 0;
         }
-
-        /// <summary>
-        /// Increment consecutive NAKs.
-        /// </summary>
-        /// <returns>Whether consecutive NAKs are over limit.</returns>
-        private bool IncrementConsecutiveNAKs() {
-            _consecutiveNAKs++;
-            if (_consecutiveNAKs > NAKBytesRequired) {
-                _consecutiveNAKs = 0;
-                return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// Reset consecutive NAKs.
-        /// </summary>
-        private void ResetConsecutiveNAKs() => _consecutiveNAKs = 0;
-
 
         /// <summary>
         /// Method used to cancel operation. If State is idle, method does nothing.
