@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSharpToolkit">
-      <HintPath>..\CSharpToolkit\bin\Debug\CSharpToolkit.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +43,7 @@
     <Compile Include="AbortedEventArgs.cs" />
     <Compile Include="CRC16LTE.cs" />
     <Compile Include="PacketReceivedEventArgs.cs" />
+    <Compile Include="PortExtensions.cs" />
     <Compile Include="RoleChangedEventArgs .cs" />
     <Compile Include="XModemAbortReasonEnum.cs" />
     <Compile Include="CompletedEventArgs.cs" />
