@@ -93,6 +93,7 @@ namespace XModemProtocol {
         /// <returns>If instance was in position to be cancelled, returns true. Otherwise, false.</returns>
         public void CancelOperation() {
             if (State == XModemStates.Idle || State == XModemStates.PendingCompletion) return;
+            else if (State == XModemStates.Initializing) while(State == XModemStates.Initializing) { } 
             State = XModemStates.Cancelled;
         }
 
