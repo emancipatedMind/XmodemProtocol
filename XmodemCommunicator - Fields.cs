@@ -19,12 +19,11 @@ namespace XModemProtocol {
         #region Backing Fields
         XModemMode _mode = XModemMode.OneK;
         XModemStates _state = XModemStates.Idle;
+        XModemRole _role = XModemRole.None;
         #endregion
 
         System.Timers.Timer _initializationTimeOut;
 
         ManualResetEvent _initializationWaitHandle = new ManualResetEvent(false);
-        ManualResetEvent _cancellationWaitHandle = new ManualResetEvent(false);
-
     }
 }

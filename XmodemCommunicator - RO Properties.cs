@@ -28,24 +28,35 @@ namespace XModemProtocol {
         public int CancellationBytesRequired { get; private set; }
 
         /// <summary>
-        /// Internal state of the XModemCommunicator instance.
+        /// Denotes what role is currently being played or was last played by instance.
         /// </summary>
-        public XModemStates State {
-            get { return _state; }
+        public XModemRole Role {
+            get { return _role; }
             private set {
-                if (_state == value) return;
-                XModemStates oldState = _state;
-                _state = value;
-                StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState));
+                if (_role == value) return;
+                XModemRole oldRole = _role;
+                _role = value;
+                Task.Run(() => RoleChanged?.Invoke(this, new RoleChangedEventArgs(_role, oldRole)));
             }
         }
 
         /// <summary>
-        /// Packet size being used.
+        /// Internal state of the XModemCommunicator instance.
         /// </summary>
-        public XModemPacketSizes PacketSize {
-            get {
-                return Mode == XModemMode.OneK ? XModemPacketSizes.OneK : XModemPacketSizes.Standard;
+        public XModemStates State {
+            get  {
+                lock (this) {
+                    return _state;
+                }
+            }
+            private set {
+                if (_state == value) return;
+                XModemStates oldState;
+                lock (this) {
+                    oldState = _state;
+                    _state = value;
+                }
+                Task.Run(() => StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState)));
             }
         }
 
@@ -59,7 +70,7 @@ namespace XModemProtocol {
                 if (_mode == value) return;
                 XModemMode oldMode = _mode;
                 _mode = value;
-                ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode));
+                Task.Run(() => ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode)));
             }
         }
         #endregion

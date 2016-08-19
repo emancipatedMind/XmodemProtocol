@@ -24,8 +24,8 @@ namespace XModemProtocol {
             // If it is, change it to Initializing, and reset instance.
             if (State != XModemStates.Idle) return;
             State = XModemStates.Initializing;
+            Role = XModemRole.Receiver;
             Reset();
-            _packetIndex = 1;
 
             // SenderFilename is set to null. This property is only used by sender.
             SenderFilename = null;
@@ -112,11 +112,6 @@ namespace XModemProtocol {
                 // Operation loop. Only way out is an exception.
                 while(true) {
 
-                    // This waitHandle relays whether user has requested a cancellation.
-                    if (_cancellationWaitHandle.WaitOne(0)) {
-                        throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
-                    }
-
                     switch(State) {
                         case XModemStates.ReceiverSendingInitializationByte:
                             // Has sender sent any bytes to be parsed? If so, change state, disable
@@ -185,6 +180,7 @@ namespace XModemProtocol {
                             // If header byte is EOT, then transmission is over. Send ACK, and exit operation loop.
                             if (_tempBuffer[0] == EOT) {
                                 SendACK();
+                                State = XModemStates.PendingCompletion;
                                 throw new XModemProtocolException(null);
                             }
 
@@ -245,6 +241,9 @@ namespace XModemProtocol {
                             // Restart watchDogTimer, and go to top of loop.
                             receiverWatchDog.Start();
                             continue;
+                        // If operation cancelled, break out of infinite loop with an exception.
+                        case XModemStates.Cancelled:
+                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
                     }
 
                 }

@@ -8,7 +8,7 @@
         /// </summary>
         Checksum,
         /// <summary>
-        /// Have XModemCommunicator automatically select mode.
+        /// 1024 packets w/ CRC
         /// </summary>
         OneK,
         /// <summary>

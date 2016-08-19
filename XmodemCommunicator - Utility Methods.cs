@@ -10,7 +10,6 @@ namespace XModemProtocol {
         /// Holds logic for when an operation has completed.
         /// </summary>
         private void CompleteOperation() {
-            Task.Run(() => { Reset();});
             Completed?.Invoke(this, new CompletedEventArgs());
             State = XModemStates.Idle;
         }
@@ -79,7 +78,6 @@ namespace XModemProtocol {
         /// <param name="sendCAN">Whether to initiate cancel or not.</param>
         private void Abort(AbortedEventArgs e, bool sendCAN) {
             if (sendCAN) Port.Write(Enumerable.Repeat(CAN, CANsSentDuringAbort).ToArray());
-            Task.Run(() => { Reset(); });
             Aborted?.Invoke(this, e);
             State = XModemStates.Idle;
         }
@@ -92,21 +90,20 @@ namespace XModemProtocol {
             _initializationTimeOut?.Dispose();
             _initializationTimeOut = null;
             _consecutiveNAKs = 0;
-            _cancellationWaitHandle.Reset();
             _initializationWaitHandle.Reset();
-            _packetIndex = 0;
+            _packetIndex = Role == XModemRole.Receiver ? 1 : 0;
             _consecutiveLoopsWithCANs = 0;
             _countOfCsSent = 0;
             _numOfInitializationBytesSent = 0;
         }
 
         /// <summary>
-        /// Method used to cancel operation. If State is idle, method does nothing.
+        /// Method used to cancel operation. If State is idle, or PendingCompletion, method does nothing.
         /// </summary>
         /// <returns>If instance was in position to be cancelled, returns true. Otherwise, false.</returns>
         public void CancelOperation() {
-            if (State == XModemStates.Idle) return;
-            _cancellationWaitHandle.Set();
+            if (State == XModemStates.Idle || State == XModemStates.PendingCompletion) return;
+            State = XModemStates.Cancelled;
         }
 
     }

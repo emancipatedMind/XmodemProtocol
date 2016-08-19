@@ -12,6 +12,10 @@
         /// </summary>
         Initializing,
         /// <summary>
+        /// Notes that XModemCommunicator's current operation has been cancelled. Performing cleanup.
+        /// </summary>
+        Cancelled,
+        /// <summary>
         /// The instance is in the Sender role. Awaiting initialization from Receiver.
         /// </summary>
         SenderAwaitingInitializationFromReceiver,
@@ -20,16 +24,17 @@
         /// </summary>
         SenderPacketsBeingSent,
         /// <summary>
-        /// The instance is in the Sender role. EOT has been sent. Awaiting acknowledgment.
-        /// </summary>
-        SenderAwaitingFinalACKFromReceiver,
-        /// <summary>
         /// The instance is in the Receiver role. Sending the initialization byte.
         /// </summary>
         ReceiverSendingInitializationByte,
         /// <summary>
-        /// The instance is in the Receiver role. Receiver is receiving packets. 
+        /// The instance is in the Receiver role. Actively receiving packets. 
         /// </summary>
         ReceiverReceivingPackets,
+        /// <summary>
+        /// Notes that XModemCommunicator has finished its operation. If in the Sender role, it's either awaiting the final ACK or awaiting completion of the Completed event.
+        /// If in the Receiver role, it has received the final ACK and is awaiting completion of the Completed event.
+        /// </summary>
+        PendingCompletion,
     }
 }

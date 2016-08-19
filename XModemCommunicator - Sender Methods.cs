@@ -18,6 +18,7 @@ namespace XModemProtocol {
             // If so, change state to Initializing, and reset XModemCommunicator.
             if (State != XModemStates.Idle)  return;
             State = XModemStates.Initializing;
+            Role = XModemRole.Sender;
             Reset();
             bool rebuildPackets = false;
 
@@ -103,11 +104,6 @@ namespace XModemProtocol {
             try {
                 while (true) {
 
-                    // If operation cancelled, break out of infinite loop with an exception.
-                    if (_cancellationWaitHandle.WaitOne(0)) {
-                        throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
-                    }
-
                     switch (State) {
                         case XModemStates.SenderAwaitingInitializationFromReceiver:
 
@@ -176,7 +172,7 @@ namespace XModemProtocol {
                             SendPacket();
                             break;
 
-                        case XModemStates.SenderAwaitingFinalACKFromReceiver:
+                        case XModemStates.PendingCompletion:
                         case XModemStates.SenderPacketsBeingSent:
                             if (Port.BytesToRead != 0) {
                                 // If bytes exist at port, read all bytes at port.
@@ -196,7 +192,7 @@ namespace XModemProtocol {
                             // If awaiting final ACK, break free with exception.
                             // If not, increment _packetToSend, and send next packet.
                             if(_tempBuffer.Last() == ACK) {
-                                if (State == XModemStates.SenderAwaitingFinalACKFromReceiver) {
+                                if (State == XModemStates.PendingCompletion) {
                                     throw new XModemProtocolException();
                                 } 
                                 _packetIndex++;
@@ -221,6 +217,9 @@ namespace XModemProtocol {
                             }
 
                             break;
+                        // If operation cancelled, break out of infinite loop with an exception.
+                        case XModemStates.Cancelled:
+                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
                     }
 
                     _tempBuffer = new List<byte>();
@@ -291,8 +290,7 @@ namespace XModemProtocol {
                 Packets.Add(packet);
             }
             // Fire method indicating packets have finished being built.
-            PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
-
+            Task.Run(() => PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets)));
         }
 
         /// <summary>
@@ -354,7 +352,7 @@ namespace XModemProtocol {
             else {
                 fireEvent = false;
                 packet = new List<byte> { EOT };
-                State = XModemStates.SenderAwaitingFinalACKFromReceiver;
+                State = XModemStates.PendingCompletion;
             }
             // If fireEvent flag is set, well... fire event.
             if (fireEvent == true) {

@@ -96,13 +96,17 @@ namespace XModemProtocol {
         #region Sender Options
         /// <summary>
         /// Used exclusively by Sender.
-        /// File to be loaded for use. Once file is loaded, this is cleared.
+        /// File to be loaded for use.
+        /// SenderBuffer takes precedence over this.
+        /// A pass through InitializeSender will null this whether it was used or not.
         /// </summary>
         public string SenderFilename { get; set; } = null;
 
        /// <summary>
         /// Used exclusively by Sender.
-        /// Bytes to be used in Send operation. Once bytes are loaded, this is cleared.
+        /// Bytes to be used in Send operation.
+        /// This takes precedence over SenderFilename.
+        /// This is set to null after a pass through InitializeSender.
         /// </summary>
         public IEnumerable<byte> SenderBuffer { get; set; } = null;
 
@@ -205,11 +209,13 @@ namespace XModemProtocol {
         /// <returns>A deep copy of XModemProtocolReceiverOptions.</returns>
         public object Clone() {
             return new XModemProtocolOptions {
+                // Shared Options
                 Mode = Mode,
                 ReceiverConsecutiveNAKsRequiredForCancellation = ReceiverConsecutiveNAKsRequiredForCancellation,
                 CANSentDuringAbort = CANSentDuringAbort,
                 CancellationBytesRequired = CancellationBytesRequired,
 
+                // XMODEM Bytes.
                 SOH = SOH,
                 STX = STX,
                 ACK = ACK,
@@ -219,10 +225,12 @@ namespace XModemProtocol {
                 SUB = SUB,
                 CAN = CAN,
 
+                // Sender Options
                 SenderFilename = (string)SenderFilename.Clone(), 
                 SenderBuffer = SenderBuffer == null ? null : new List<byte>(SenderBuffer), 
                 SenderInitializationTimeout = SenderInitializationTimeout,
 
+                // Receiver Options
                 ReceiverInitializationTimeout = ReceiverInitializationTimeout,
                 ReceiverTimeoutForPacketReception = ReceiverTimeoutForPacketReception,
                 ReceiverMaxNumberOfInitializationBytesForCRC = ReceiverMaxNumberOfInitializationBytesForCRC,
