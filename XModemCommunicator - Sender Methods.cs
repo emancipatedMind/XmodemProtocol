@@ -127,7 +127,9 @@ namespace XModemProtocol {
                             // If a cancellation is detected, throw XModemProtocolException ending operation.
                             if (DetectCancellation(_tempBuffer)) {
                                 State = XModemStates.Cancelled;
-                                continue;
+                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
+                                exc.Data.Add("SendCancel", false);
+                                throw exc;
                             }
 
                             // If a C is detected, check if user is forcing the checksum mode.
