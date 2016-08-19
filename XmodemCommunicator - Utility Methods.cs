@@ -62,16 +62,6 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// This overload of the Abort method assesses whether the
-        /// CAN should be sent or not using a general rule.
-        /// </summary>
-        /// <param name="e">An instance of the AbortedEventArgs class.</param>
-        private void Abort(AbortedEventArgs e) {
-            bool sendCAN = e.Reason != XModemAbortReason.CancelRequestReceived && e.Reason != XModemAbortReason.InitializationFailed;
-            Abort(e, sendCAN);
-        }
-
-        /// <summary>
         /// This overload of the Abort method can override the general rule of when to initiate a cancel or not.
         /// </summary>
         /// <param name="e">An instance of the AbortedEventArgs class.</param>

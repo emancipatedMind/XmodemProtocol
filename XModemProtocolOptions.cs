@@ -226,7 +226,7 @@ namespace XModemProtocol {
                 CAN = CAN,
 
                 // Sender Options
-                SenderFilename = (string)SenderFilename.Clone(), 
+                SenderFilename = (string)SenderFilename?.Clone(), 
                 SenderBuffer = SenderBuffer == null ? null : new List<byte>(SenderBuffer), 
                 SenderInitializationTimeout = SenderInitializationTimeout,
 

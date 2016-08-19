@@ -80,7 +80,7 @@ namespace XModemProtocol {
                 OperationPending?.Invoke();
             }
             catch {
-                Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
+                Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed), false);
                 throw;
             }
 
@@ -109,6 +109,9 @@ namespace XModemProtocol {
             };
 
             try {
+
+                XModemProtocolException exc;
+
                 // Operation loop. Only way out is an exception.
                 while(true) {
 
@@ -137,7 +140,9 @@ namespace XModemProtocol {
 
                                 // We also must check if we have exceeded the number of initialization bytes in general.
                                 if(++_numOfInitializationBytesSent > ReceiverMaxNumberOfInitializationBytesInTotal) {
-                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
+                                    exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
+                                    exc.Data.Add("SendCancel", false);
+                                    throw exc;
                                 }
 
                                 // Send initialization byte, and reset waitHandle, and restart _initializationTimeOut.
@@ -161,8 +166,11 @@ namespace XModemProtocol {
                             // No bytes to examine, so see if watchDog has elapsed. If so, NAK sender, reset waitHandle, 
                             // and start from top.
                             else if (receiverWatchDogWaitHandle.WaitOne(0)) {
-                                if (SendNAK() == true)
-                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                                if (SendNAK() == true) {
+                                    exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                                    exc.Data.Add("SendCancel", true);
+                                    throw exc;
+                                }
                                 receiverWatchDogWaitHandle.Reset();
                                 continue;
                             }
@@ -186,7 +194,10 @@ namespace XModemProtocol {
 
                             // See if Sender has sent cancellation.
                             if (DetectCancellation(_tempBuffer)) {
-                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
+                                State = XModemStates.Cancelled;
+                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
+                                exc.Data.Add("SendCancel", false);
+                                throw exc;
                             } 
 
                             // If bytes available are less than the smallest packet accepted, continue from top restarting watchDogTimer.
@@ -211,8 +222,11 @@ namespace XModemProtocol {
                             // and restart watchDogTimer.
                             else {
                                 Port.Flush();
-                                if(SendNAK() == true) 
-                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                if(SendNAK() == true) {
+                                    exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                    exc.Data.Add("SendCancel", true);
+                                    throw exc;
+                                }
                                 receiverWatchDog.Start();
                                 _tempBuffer = new List<byte>();
                                 continue;
@@ -235,7 +249,9 @@ namespace XModemProtocol {
                             }
                             // If packet validation fails, NAK sender.
                             else if(SendNAK() == true) {
-                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
+                                exc.Data.Add("SendCancel", true);
+                                throw exc;
                             }
 
                             // Restart watchDogTimer, and go to top of loop.
@@ -243,7 +259,9 @@ namespace XModemProtocol {
                             continue;
                         // If operation cancelled, break out of infinite loop with an exception.
                         case XModemStates.Cancelled:
-                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
+                            exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled));
+                            exc.Data.Add("SendCancel", true);
+                            throw exc;
                     }
 
                 }
@@ -252,12 +270,13 @@ namespace XModemProtocol {
             // Only Exception caught here is XModemProtocolException. All others will bubble to top.
             catch(XModemProtocolException ex) {
                 // If AbortArgs was provided with value, means that this is an abort.
-                if (ex.AbortArgs != null) 
-                    Abort(ex.AbortArgs);
+                if (ex.AbortArgs != null)
+                    Abort(ex.AbortArgs, (bool)ex.Data["SendCancel"]);
                 // If not, operation completed successfully.
                 else {
                     // Remove SUB bytes from data.
-                    for (int i = Data.Count - 1; i > -1; i--) {
+                    for (int i = Data.Count - 1; i > -1; i--)
+                    {
                         if (Data[i] == SUB)
                             Data.RemoveAt(i);
                         else break;
@@ -284,11 +303,11 @@ namespace XModemProtocol {
                 if (packet[1] != ((byte)_packetIndex)) {
                     if (packet[1] != ((byte)_packetIndex - 1)) {
                         ex = new XModemProtocolException();
-                        ex.Data.Add("Verfied", false);
+                        ex.Data.Add("Verified", false);
                         throw ex;
                     }
                     ex = new XModemProtocolException();
-                    ex.Data.Add("Verfied", true);
+                    ex.Data.Add("Verified", true);
                     throw ex;
                 }
 
@@ -296,7 +315,7 @@ namespace XModemProtocol {
                 byte inversePacketNumber = (byte)(0xFF - _packetIndex);
                 if (packet[2] != inversePacketNumber) {
                     ex = new XModemProtocolException();
-                    ex.Data.Add("Verfied", false);
+                    ex.Data.Add("Verified", false);
                     throw ex;
                 }
 
@@ -309,14 +328,14 @@ namespace XModemProtocol {
                     byte simpleChecksum = (CheckSum(payLoad))[0];
                     if (simpleChecksum != packet[131]) {
                         ex = new XModemProtocolException();
-                        ex.Data.Add("Verfied", false);
+                        ex.Data.Add("Verified", false);
                         throw ex;
                     }
                 }
                 else {
-                    if (CheckSum(packet.GetRange(3, packet.Count - 3)).SequenceEqual(CRC16LTE.Zeros)) {
+                    if (!CheckSum(packet.GetRange(3, packet.Count - 3)).SequenceEqual(CRC16LTE.Zeros)) {
                         ex = new XModemProtocolException();
-                        ex.Data.Add("Verfied", false);
+                        ex.Data.Add("Verified", false);
                         throw ex;
                     }
                 }

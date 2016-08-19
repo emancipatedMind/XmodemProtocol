@@ -4,13 +4,9 @@
     /// </summary>
     public enum XModemAbortReason {
         /// <summary>
-        /// Timeout has during initialization or transfer.
+        /// Timeout has occured during initialization or transfer.
         /// </summary>
         Timeout,
-        /// <summary>
-        /// Cancellation request was received.
-        /// </summary>
-        CancelRequestReceived,
         /// <summary>
         /// The amount of consecutive NAKs received has been exceeded.
         /// </summary>
@@ -18,17 +14,17 @@
         /// <summary>
         /// Operation was cancelled by user.
         /// </summary>
-        UserCancelled,
+        Cancelled,
+        /// <summary>
+        /// A cancellation request was detected on the line.
+        /// </summary>
+        CancellationRequestReceived,
         /// <summary>
         /// Buffer containing bytes to be sent is empty.
         /// </summary>
         BufferEmpty,
         /// <summary>
-        /// Operation could not begin because State wasn't idle.
-        /// </summary>
-        StateNotIdle,
-        /// <summary>
-        /// Initialization has failed.
+        /// Initialization has failed due to Exception in OperationPending eventhandler, or Receiver never got response.
         /// </summary>
         InitializationFailed,
     }

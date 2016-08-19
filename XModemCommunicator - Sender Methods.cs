@@ -54,7 +54,7 @@ namespace XModemProtocol {
             // iteration of Send.
             // If it is null, abort.
             if (Data == null) {
-                Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty));
+                Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty), false);
                 return;
             }
 
@@ -82,7 +82,7 @@ namespace XModemProtocol {
                 OperationPending?.Invoke();
             }
             catch {
-                Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
+                Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed), false);
                 throw;
             }
 
@@ -99,6 +99,7 @@ namespace XModemProtocol {
         private void Send() {
 
             _tempBuffer = new List<byte>();
+            XModemProtocolException exc;
 
             // Infinite loop wrapped in try block. The only way out of infinite loop is with Exception.
             try {
@@ -116,14 +117,17 @@ namespace XModemProtocol {
                             else if (_tempBuffer.Count != 0) { }
                             // If we have no bytes to read, check to see if initializationTimeOut expired.
                             else if (_initializationWaitHandle.WaitOne(0)) {
-                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                                exc.Data.Add("SendCancel", false);
+                                throw exc;
                             }
                             // If none of these conditions exist, start from top of loop.
                             else continue;
 
                             // If a cancellation is detected, throw XModemProtocolException ending operation.
                             if (DetectCancellation(_tempBuffer)) {
-                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
+                                State = XModemStates.Cancelled;
+                                continue;
                             }
 
                             // If a C is detected, check if user is forcing the checksum mode.
@@ -185,7 +189,9 @@ namespace XModemProtocol {
 
                             // If cancellation detected, exit infinite loop using exception.
                             if (DetectCancellation(_tempBuffer)) {
-                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelRequestReceived));
+                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
+                                exc.Data.Add("SendCancel", false);
+                                throw exc;
                             }
 
                             // If last byte is ACK, perform next action.
@@ -219,7 +225,9 @@ namespace XModemProtocol {
                             break;
                         // If operation cancelled, break out of infinite loop with an exception.
                         case XModemStates.Cancelled:
-                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.UserCancelled));
+                            exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled));
+                            exc.Data.Add("SendCancel", true);
+                            throw exc;
                     }
 
                     _tempBuffer = new List<byte>();
@@ -230,8 +238,8 @@ namespace XModemProtocol {
             // Only Exception caught here is XModemProtocolException. All others will bubble to top.
             catch (XModemProtocolException ex) {
                 // If AbortArgs was provided with value, means that this is an abort.
-                if (ex.AbortArgs != null) 
-                    Abort(ex.AbortArgs);
+                if (ex.AbortArgs != null)
+                    Abort(ex.AbortArgs, (bool)ex.Data["SendCancel"]);
                 // If not, operation completed successfully.
                 else {
                     CompleteOperation();
