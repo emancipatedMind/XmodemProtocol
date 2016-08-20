@@ -3,7 +3,7 @@ namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
-        /// Creates instance of the XModemCommunicator class.
+        /// Initializes a new instance of the XModemProtocol.XModemCommunicator class.
         /// </summary>
         /// <param name="port">Port used to facilitate transfer.</param>
         public XModemCommunicator(System.IO.Ports.SerialPort port) {

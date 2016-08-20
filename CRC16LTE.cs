@@ -50,7 +50,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// A class implementation of ZMODEM, CRC-16/ACORN, CRC-16/LTE.
+        /// Initializes a new instance of the XModemProtocol.CRC16LTE class.
         /// </summary>
         /// <param name="polynomial">Polynomial to be used. 16 bits.</param>
         public CRC16LTE(int polynomial = 0x1021) {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace XModemProtocol {
     /// <summary>
-    /// The event data for the PacketSent event.
+    /// Provides data for the XModemProtocol.XModemCommunicator.PacketToSend event.
     /// </summary>
     public class PacketToSendEventArgs : EventArgs {
         /// <summary>
@@ -14,9 +14,8 @@ namespace XModemProtocol {
         /// The contents of the packet that was sent.
         /// </summary>
         public List<byte> PacketToSend { get; private set; }
-
         /// <summary>
-        /// Constructor used to set properties needed by PacketToSend event.
+        /// Initializes a new instance of the XModemProtocol.PacketToSendEventArgs class.
         /// </summary>
         /// <param name="packetNumber">The packet number to be sent.</param>
         /// <param name="packetToSend">The packet to be sent.</param>
@@ -24,6 +23,5 @@ namespace XModemProtocol {
             PacketNumber = packetNumber;
             PacketToSend = packetToSend;
         }
-
     }
 }

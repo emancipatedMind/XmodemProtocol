@@ -2,11 +2,11 @@
 
 namespace XModemProtocol {
     /// <summary>
-    /// The event data for the Completed event.
+    /// Provides data for the XModemProtocol.XModemCommunicator.Completed event.
     /// </summary>
     public class CompletedEventArgs : EventArgs {
         /// <summary>
-        /// Constructor used to set properties needed by Completed event.
+        /// Initializes a new instance of the XModemProtocol.CompletedEventArgs class.
         /// </summary>
         internal CompletedEventArgs() { }
     }

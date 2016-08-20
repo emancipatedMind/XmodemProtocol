@@ -2,7 +2,7 @@
 
 namespace XModemProtocol {
     /// <summary>
-    /// The event data for the Aborted event.
+    /// Provides data for the XModemProtocol.XModemCommunicator.Aborted event.
     /// </summary>
     public class AbortedEventArgs : EventArgs {
         /// <summary>
@@ -11,7 +11,7 @@ namespace XModemProtocol {
         public XModemAbortReason Reason { get; private set; }
 
         /// <summary>
-        /// Constructor used to set properties needed by Aborted event.
+        /// Initializes a new instance of the XModemProtocol.AbortedEventArgs class.
         /// </summary>
         /// <param name="reason">Reason why abort event is being fired.</param>
         internal AbortedEventArgs(XModemAbortReason reason) {
