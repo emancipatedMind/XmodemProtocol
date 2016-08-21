@@ -16,7 +16,13 @@ namespace XModemProtocol {
         int _consecutiveNAKs = 0;
         int _consecutiveLoopsWithCANs = 0;
 
+        bool _rebuildPackets = true;
+
         #region Backing Fields
+        int _receiverInitializationTimeout = 3000;
+        int _receiverTimeoutForPacketReception = 10000;
+        int _receiverMaxNumberOfInitializationBytesForCRC = 3;
+        int _receiverMaxNumberOfInitializationBytesInTotal = 10;
         XModemMode _mode = XModemMode.OneK;
         XModemStates _state = XModemStates.Idle;
         XModemRole _role = XModemRole.None;

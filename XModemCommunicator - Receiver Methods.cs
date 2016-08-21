@@ -10,13 +10,6 @@ namespace XModemProtocol {
         /// Receiver Method.
         /// Initialize session as receiver.
         /// </summary>
-        public void InitializeReceiver() {
-            InitializeReceiver(new XModemProtocolOptions()); 
-        }
-        /// <summary>
-        /// Receiver Method.
-        /// Initialize session as receiver.
-        /// </summary>
         /// <param name="options">The options to be used this session.</param>
         public void InitializeReceiver(XModemProtocolOptions options) {
             // If state is not idle, then return. 
@@ -26,43 +19,44 @@ namespace XModemProtocol {
             Role = XModemRole.Receiver;
             Reset();
 
-            // SenderFilename is set to null. This property is only used by sender.
-            SenderFilename = null;
+            if (options != null) {
+                // Get a clone of the optiosn passed in. This is a deep copy that so that it cannot be changed by outside world.
+                XModemProtocolOptions localOptions =  (XModemProtocolOptions)options.Clone();
 
-            // Get a clone of the optiosn passed in. This is a deep copy that so that it cannot be changed by outside world.
-            XModemProtocolOptions localOptions =  (XModemProtocolOptions)options.Clone();
-
-            // If user has asked for CRC, upgrade to OneK as it is completely compatible with CRC.
-            if (localOptions.Mode == XModemMode.CRC)
-                Mode = XModemMode.OneK;
-            // Other than that, heed user wishes.
-            else
+                // Set mode.
                 Mode = localOptions.Mode;
 
-            // Set the common options.
-            SetCommonOptions(localOptions);
+                // Set the common options.
+                SetCommonOptions(localOptions);
 
-            // Get the timeout between Packet Reception.
-            ReceiverTimeoutDuringPacketReception = localOptions.ReceiverTimeoutForPacketReception;
+                // Get the timeout between Packet Reception.
+                ReceiverTimeoutDuringPacketReception = localOptions.ReceiverTimeoutDuringPacketReception;
 
-            // Check to make that MaxNumberOfInitializationBytesForCRC is less than MaxNumberOfInitializationBytesInTotal.
-            // If it is, assign MaxNumberOfInitializationBytesForCRC to both of the variables, and update these variables in object 
-            // passed in.
-            // If this is not the case, assign as per user settings.
-            if (localOptions.ReceiverMaxNumberOfInitializationBytesForCRC > localOptions.ReceiverMaxNumberOfInitializationBytesInTotal) { 
-                ReceiverMaxNumberOfInitializationBytesInTotal = ReceiverMaxNumberOfInitializationBytesForCRC = localOptions.ReceiverMaxNumberOfInitializationBytesForCRC;
-                options.ReceiverMaxNumberOfInitializationBytesInTotal = ReceiverMaxNumberOfInitializationBytesForCRC;
+                // Check to make that MaxNumberOfInitializationBytesForCRC is less than MaxNumberOfInitializationBytesInTotal.
+                // If it is, assign MaxNumberOfInitializationBytesForCRC to both of the variables, and update these variables in object 
+                // passed in.
+                // If this is not the case, assign as per user settings.
+                if (localOptions.ReceiverMaxNumberOfInitializationBytesForCRC > localOptions.ReceiverMaxNumberOfInitializationBytesInTotal) { 
+                    ReceiverMaxNumberOfInitializationBytesInTotal = ReceiverMaxNumberOfInitializationBytesForCRC = localOptions.ReceiverMaxNumberOfInitializationBytesForCRC;
+                    options.ReceiverMaxNumberOfInitializationBytesInTotal = ReceiverMaxNumberOfInitializationBytesForCRC;
+                }
+                else {
+                    ReceiverMaxNumberOfInitializationBytesForCRC = localOptions.ReceiverMaxNumberOfInitializationBytesForCRC;
+                    ReceiverMaxNumberOfInitializationBytesInTotal = localOptions.ReceiverMaxNumberOfInitializationBytesInTotal;
+                }
+
+                ReceiverInitializationTimeout = localOptions.ReceiverInitializationTimeout;
             }
             else {
-                ReceiverMaxNumberOfInitializationBytesForCRC = localOptions.ReceiverMaxNumberOfInitializationBytesForCRC;
-                ReceiverMaxNumberOfInitializationBytesInTotal = localOptions.ReceiverMaxNumberOfInitializationBytesInTotal;
+                // This must be re-assigned to itself in case an upgrade from CRC to OneK is needed.
+                Mode = Mode;
             }
 
             // This object is used to control how often the initialization byte is sent to receiver.
             // Whenever initializationWaitHandle is set, the receiver will send an initialization byte, 
             // will start this timer, and reset initializationWaitHandle. Once this timer elapses, it will set
             // _initializationWaitHandle, and process will repeat.
-            _initializationTimeOut = new System.Timers.Timer(localOptions.ReceiverInitializationTimeout);
+            _initializationTimeOut = new System.Timers.Timer(ReceiverInitializationTimeout);
             _initializationTimeOut.Elapsed += (s, e) => {
                 _initializationTimeOut.Stop();
                 _initializationWaitHandle.Set();

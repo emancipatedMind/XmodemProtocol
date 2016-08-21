@@ -11,7 +11,7 @@ namespace XModemProtocol {
         /// Sender Method.
         /// Initialize session as sender.
         /// </summary>
-        /// <param name="options">The options to be used this session.</param>
+        /// <param name="options">The options to be used this session. Pass in null to use past options.</param>
         public void InitializeSender(XModemProtocolOptions options) {
             // First check whether the object state is idle.
             // If so, change state to Initializing, and reset XModemCommunicator.
@@ -19,13 +19,14 @@ namespace XModemProtocol {
             State = XModemStates.Initializing;
             Role = XModemRole.Sender;
             Reset();
-            bool rebuildPackets = false;
 
-            // Get a clone of the options passed in. This is a deep copy so that it cannot be changed by outside world.
-            XModemProtocolOptions localOptions = (XModemProtocolOptions)options?.Clone();
-
-            // Set the common options.
-            SetCommonOptions(localOptions);
+            if (options != null) {
+                // Get set options passed in.
+                XModemProtocolOptions localOptions = (XModemProtocolOptions)options?.Clone();
+                SetCommonOptions(localOptions);
+                Mode = localOptions.Mode;
+                SenderInitializationTimeout = localOptions.SenderInitializationTimeout;
+            }
 
             // Check if Data is null. It is null if previous operation has not filled it.
             // A previous operation could be from past Send, past Receive, or from this current 
@@ -36,18 +37,12 @@ namespace XModemProtocol {
                 return;
             }
 
-            // If Mode has been changed, then update this, and rebuild the packets.
-            if (localOptions.Mode != Mode) {
-                Mode = localOptions.Mode;
-                rebuildPackets = true;
-            }
-
             // If checks have indicated that packets need to be built, perform.
-            if (rebuildPackets == true) BuildPackets();
+            if (_rebuildPackets == true) BuildPackets();
 
             // If user has indicated they would like to have a timeout, set that up.
-            if (localOptions.SenderInitializationTimeout > 0) {
-                _initializationTimeOut = new System.Timers.Timer(localOptions.SenderInitializationTimeout);
+            if (SenderInitializationTimeout > 0) {
+                _initializationTimeOut = new System.Timers.Timer(SenderInitializationTimeout);
                 _initializationTimeOut.Elapsed += (s, e) => {
                     _initializationTimeOut.Stop();
                     _initializationWaitHandle.Set();
@@ -233,7 +228,8 @@ namespace XModemProtocol {
         /// <param name="data">The data to be imported.</param>
         /// <returns>The number of packets built.</returns>
         public int ImportData(IEnumerable<byte> data) {
-            Data = data.ToList();
+            if (data == null) return 0;
+            Data = new List<byte>(data);
             BuildPackets();
             return Packets.Count;
         }
@@ -290,6 +286,7 @@ namespace XModemProtocol {
             }
             // Fire method indicating packets have finished being built.
             Task.Run(() => PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets)));
+            _rebuildPackets = false;
         }
 
         /// <summary>

@@ -131,23 +131,23 @@ namespace XModemProtocol {
         }
 
 
-        int _receiverTimeoutForPacketReception = 10000;
+        int _receiverTimeoutDuringPacketReception = 10000;
         /// <summary>
         /// Default : 10000ms.
         /// Used exclusively by Receiver.
         /// After sending a packet, this is the amount of time receiver will wait for a packet before NAKing sender in case response was lost.
         /// Must be between 1000 and 20000ms.
         /// </summary>
-        public int ReceiverTimeoutForPacketReception {
+        public int ReceiverTimeoutDuringPacketReception {
             get {
-                return _receiverTimeoutForPacketReception;
+                return _receiverTimeoutDuringPacketReception;
             }
             set {
-                if (_receiverTimeoutForPacketReception < 5000)
-                    _receiverTimeoutForPacketReception = 5000;
-                else if (_receiverTimeoutForPacketReception > 20000)
-                    _receiverTimeoutForPacketReception = 20000;
-                else _receiverTimeoutForPacketReception = value;
+                if (_receiverTimeoutDuringPacketReception < 5000)
+                    _receiverTimeoutDuringPacketReception = 5000;
+                else if (_receiverTimeoutDuringPacketReception > 20000)
+                    _receiverTimeoutDuringPacketReception = 20000;
+                else _receiverTimeoutDuringPacketReception = value;
             }
         }
 
@@ -214,7 +214,7 @@ namespace XModemProtocol {
 
                 // Receiver Options
                 ReceiverInitializationTimeout = ReceiverInitializationTimeout,
-                ReceiverTimeoutForPacketReception = ReceiverTimeoutForPacketReception,
+                ReceiverTimeoutDuringPacketReception = ReceiverTimeoutDuringPacketReception,
                 ReceiverMaxNumberOfInitializationBytesForCRC = ReceiverMaxNumberOfInitializationBytesForCRC,
                 ReceiverMaxNumberOfInitializationBytesInTotal = ReceiverMaxNumberOfInitializationBytesInTotal,
             };
