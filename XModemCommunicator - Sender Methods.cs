@@ -24,29 +24,8 @@ namespace XModemProtocol {
             // Get a clone of the options passed in. This is a deep copy so that it cannot be changed by outside world.
             XModemProtocolOptions localOptions = (XModemProtocolOptions)options?.Clone();
 
-            // Remove data in Buffer, and Filename. They cannot be used more than once.
-            options.SenderBuffer = null;
-            options.SenderFilename = null;
-
             // Set the common options.
             SetCommonOptions(localOptions);
-
-            // Buffer is the first place to look for data. If it has data, get this data, and set flag indicating that 
-            // packets need to be built.
-            if (localOptions.SenderBuffer != null) {
-                Data = localOptions.SenderBuffer.ToList();
-                SenderFilename = null;
-                rebuildPackets = true;
-            }
-
-            // If user instead specifies filename, try to import the bytes from this file.
-            // Any exceptions thrown will bubble to top.
-            else if (localOptions.SenderFilename != null ) {
-                // Set Filename, try to read file passed in, and set flag indicating tht packets need to be built.
-                SenderFilename = localOptions.SenderFilename;
-                Data = File.ReadAllBytes(SenderFilename).ToList();
-                rebuildPackets = true;
-            }
 
             // Check if Data is null. It is null if previous operation has not filled it.
             // A previous operation could be from past Send, past Receive, or from this current 
@@ -246,6 +225,17 @@ namespace XModemProtocol {
                     CompleteOperation();
                 }
             }
+        }
+
+        /// <summary>
+        /// Method used to import data into XModemCommunicator for sending.
+        /// </summary>
+        /// <param name="data">The data to be imported.</param>
+        /// <returns>The number of packets built.</returns>
+        public int ImportData(IEnumerable<byte> data) {
+            Data = data.ToList();
+            BuildPackets();
+            return Packets.Count;
         }
 
         /// <summary>
