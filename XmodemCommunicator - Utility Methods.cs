@@ -6,6 +6,14 @@ namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
+        /// Save contents of Data property to file.
+        /// </summary>
+        /// <param name="filename">Complete filename where to save data.</param>
+        public void SaveContents(string filename) {
+            System.IO.File.WriteAllBytes(filename, Data.ToArray()); 
+        }
+
+        /// <summary>
         /// Holds logic for when an operation has completed.
         /// </summary>
         private void CompleteOperation() {

@@ -264,7 +264,7 @@ namespace XModemProtocol {
                 // If mode is OneK, a different header must be used if sending 1k packets.
                 if (Mode == XModemMode.OneK) {
                     // If data left to send is less than limit set, use 128 packet size.
-                    if (Data.Count - ( position + packetSize) <= 384 ) {
+                    if (Data.Count - ( position + packetSize) <= 128 ) {
                         packetSize = 128;
                         header = SOH;
                     }

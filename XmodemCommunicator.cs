@@ -1,5 +1,4 @@
-﻿using System.IO;
-namespace XModemProtocol {
+﻿namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
@@ -10,14 +9,6 @@ namespace XModemProtocol {
             Port = port;
             if (Port.IsOpen == false) Port.Open();
             
-        }
-
-        /// <summary>
-        /// Save contents of Data property to file.
-        /// </summary>
-        /// <param name="filename">Complete filename where to save data.</param>
-        public void SaveContents(string filename) {
-            File.WriteAllBytes(filename, Data.ToArray()); 
         }
 
     }
