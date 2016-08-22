@@ -27,5 +27,9 @@
         /// Initialization has failed due to Exception in OperationPending eventhandler, or Receiver never got response.
         /// </summary>
         InitializationFailed,
+        /// <summary>
+        /// Send or receive operation has failed due to some error.
+        /// </summary>
+        OperationFailed,
     }
 }

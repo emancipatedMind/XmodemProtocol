@@ -18,7 +18,7 @@ namespace XModemProtocol {
                 if (_role == value) return;
                 XModemRole oldRole = _role;
                 _role = value;
-                Task.Run(() => RoleChanged?.Invoke(this, new RoleChangedEventArgs(_role, oldRole)));
+                Task.Run(() => RoleUpdated?.Invoke(this, new RoleChangedEventArgs(_role, oldRole)));
             }
         }
 

@@ -210,7 +210,7 @@ namespace XModemProtocol {
                 }
             }
 
-            // Only Exception caught here is XModemProtocolException. All others will bubble to top.
+            // Only Exception caught here is XModemProtocolException.
             catch (XModemProtocolException ex) {
                 // If AbortArgs was provided with value, means that this is an abort.
                 if (ex.AbortArgs != null)
@@ -219,6 +219,11 @@ namespace XModemProtocol {
                 else {
                     CompleteOperation();
                 }
+            }
+            //  All others will bubble to top after abort.
+            catch (Exception) {
+                Abort(new AbortedEventArgs(XModemAbortReason.OperationFailed), false);
+                throw;
             }
         }
 
