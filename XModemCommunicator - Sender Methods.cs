@@ -32,7 +32,7 @@ namespace XModemProtocol {
             // A previous operation could be from past Send, past Receive, or from this current 
             // iteration of Send.
             // If it is null, abort.
-            if (Data == null) {
+            if (_data == null) {
                 Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty), false);
                 return;
             }
@@ -206,7 +206,7 @@ namespace XModemProtocol {
                     }
 
                     _tempBuffer = new List<byte>();
-                    ResetConsecutiveLoopsWithInsufficientCAN();
+                    _consecutiveLoopsWithCANs = 0;
                 }
             }
 
@@ -223,34 +223,22 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Method used to import data into XModemCommunicator for sending.
-        /// </summary>
-        /// <param name="data">The data to be imported.</param>
-        /// <returns>The number of packets built.</returns>
-        public int ImportData(IEnumerable<byte> data) {
-            if (data == null) return 0;
-            Data = new List<byte>(data);
-            BuildPackets();
-            return Packets.Count;
-        }
-
-        /// <summary>
         /// A method to build packets.
         /// </summary>
         private void BuildPackets() {
 
             // If no data, can't build packets. Return.
-            if (Data == null) return;
+            if (_data == null) return;
             Packets = new List<List<byte>>();
             
             // Loop to build packets.
-            for(int packetNumber = 1, position = 0, packetSize = 128; position < Data.Count; packetNumber++, position += packetSize) {
+            for(int packetNumber = 1, position = 0, packetSize = 128; position < _data.Count; packetNumber++, position += packetSize) {
                 // Get header byte.
                 byte header = SOH;
                 // If mode is OneK, a different header must be used if sending 1k packets.
                 if (Mode == XModemMode.OneK) {
                     // If data left to send is less than limit set, use 128 packet size.
-                    if (Data.Count - ( position + packetSize) <= 128 ) {
+                    if (_data.Count - ( position + packetSize) <= 128 ) {
                         packetSize = 128;
                         header = SOH;
                     }
@@ -270,14 +258,14 @@ namespace XModemProtocol {
 
                 List<byte> packetInfo;
                 // If Data left is more than packetSize, just grab the next packetSize number of bytes.
-                if (position + packetSize <= Data.Count)  {
-                    packetInfo = Data.GetRange(position, packetSize);
+                if (position + packetSize <= _data.Count)  {
+                    packetInfo = _data.GetRange(position, packetSize);
                 }
                 // If not, fill in rest of packet with SUB bytes.
                 else {
-                    int restOfBytes = Data.Count - position;
+                    int restOfBytes = _data.Count - position;
                     int numbOfSUB = packetSize - restOfBytes;
-                    packetInfo = Data.GetRange(position, restOfBytes).Concat(Enumerable.Repeat(SUB, numbOfSUB)).ToList();
+                    packetInfo = _data.GetRange(position, restOfBytes).Concat(Enumerable.Repeat(SUB, numbOfSUB)).ToList();
                 }
                 // Build rest of packet, and add to Packets List.
                 packet.AddRange(packetInfo);

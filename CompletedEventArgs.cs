@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace XModemProtocol {
     /// <summary>
@@ -6,8 +7,14 @@ namespace XModemProtocol {
     /// </summary>
     public class CompletedEventArgs : EventArgs {
         /// <summary>
+        /// Data that was sent or received by XModemCommunicator.
+        /// </summary>
+        public List<byte> Data { get; private set; } = null;
+        /// <summary>
         /// Initializes a new instance of the XModemProtocol.CompletedEventArgs class.
         /// </summary>
-        internal CompletedEventArgs() { }
+        internal CompletedEventArgs(List<byte> data) {
+            Data = new List<byte>(data);
+        }
     }
 }

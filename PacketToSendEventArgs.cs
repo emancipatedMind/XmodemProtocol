@@ -21,7 +21,7 @@ namespace XModemProtocol {
         /// <param name="packetToSend">The packet to be sent.</param>
         internal PacketToSendEventArgs(int packetNumber, List<byte> packetToSend) {
             PacketNumber = packetNumber;
-            PacketToSend = packetToSend;
+            PacketToSend = new List<byte>(packetToSend);
         }
     }
 }

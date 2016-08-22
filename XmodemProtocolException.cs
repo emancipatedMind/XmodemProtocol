@@ -5,12 +5,10 @@ namespace XModemProtocol {
     /// The Exception used inside the XModemCommunicator class.
     /// </summary>
     public class XModemProtocolException : ApplicationException {
-
         /// <summary>
         /// The arguments used by the Aborted event.
         /// </summary>
         public AbortedEventArgs AbortArgs { get; private set; } = null;
-
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -22,6 +20,5 @@ namespace XModemProtocol {
         public XModemProtocolException(AbortedEventArgs abortArgs) : base() {
             AbortArgs = abortArgs;
         }
-
     }
 }

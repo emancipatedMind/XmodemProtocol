@@ -19,6 +19,7 @@ namespace XModemProtocol {
         bool _rebuildPackets = true;
 
         #region Backing Fields
+        List<byte> _data = null;
         int _receiverInitializationTimeout = 3000;
         int _receiverTimeoutForPacketReception = 10000;
         int _receiverMaxNumberOfInitializationBytesForCRC = 3;

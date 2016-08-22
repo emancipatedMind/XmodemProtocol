@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 namespace XModemProtocol {
     public partial class XModemCommunicator {
 
@@ -11,6 +13,29 @@ namespace XModemProtocol {
         /// Object used for CRC.
         /// </summary>
         public CRC16LTE CheckSumValidator { get; set; } = new CRC16LTE();
+
+        #region Shared Properties.
+        /// <summary>
+        /// Buffer used by XModemCommunicator to store raw data.
+        /// </summary>
+        public IEnumerable<byte> Data {
+            get {
+                if (_data == null) return null;
+                return new List<byte>(_data);
+            }
+            set {
+                if (State != XModemStates.Idle) return;
+                if (value == null) {
+                    _data = null;
+                }
+                else {
+                    if (_data == null || !_data.SequenceEqual(value)) {
+                        _data = new List<byte>(value);
+                        _rebuildPackets = true;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Mode of instance.
@@ -27,6 +52,7 @@ namespace XModemProtocol {
                 Task.Run(() => ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode)));
             }
         }
+        #endregion
 
         #region Shared options
         /// <summary>

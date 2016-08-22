@@ -4,12 +4,6 @@ using System.Threading.Tasks;
 namespace XModemProtocol {
     public partial class XModemCommunicator {
 
-        #region Shared Properties.
-        /// <summary>
-        /// Buffer used by XModemCommunicator to store raw data.
-        /// </summary>
-        public List<byte> Data { get; private set; } = null;
-
         /// <summary>
         /// Packets received or sent.
         /// </summary>
@@ -48,6 +42,5 @@ namespace XModemProtocol {
             }
         }
 
-        #endregion
     }
 }

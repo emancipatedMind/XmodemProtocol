@@ -6,18 +6,10 @@ namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
-        /// Save contents of Data property to file.
-        /// </summary>
-        /// <param name="filename">Complete filename where to save data.</param>
-        public void SaveContents(string filename) {
-            System.IO.File.WriteAllBytes(filename, Data.ToArray()); 
-        }
-
-        /// <summary>
         /// Holds logic for when an operation has completed.
         /// </summary>
         private void CompleteOperation() {
-            Completed?.Invoke(this, new CompletedEventArgs());
+            Completed?.Invoke(this, new CompletedEventArgs(_data));
             State = XModemStates.Idle;
         }
 
@@ -32,11 +24,6 @@ namespace XModemProtocol {
             }
             return true;
         }
-
-        /// <summary>
-        /// Reset consecutive loops with insufficient amount of CANs.
-        /// </summary>
-        private void ResetConsecutiveLoopsWithInsufficientCAN() => _consecutiveLoopsWithCANs = 0;
 
         /// <summary>
         /// Perform checksum with supplied list.
@@ -96,6 +83,7 @@ namespace XModemProtocol {
 
         /// <summary>
         /// Method used to cancel operation. If State is idle, or PendingCompletion, method does nothing.
+        /// If XModemCommunicator is initializaing, it must finish initializing before cancel happens.
         /// </summary>
         /// <returns>If instance was in position to be cancelled, returns true. Otherwise, false.</returns>
         public void CancelOperation() {

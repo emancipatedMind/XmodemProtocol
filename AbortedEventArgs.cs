@@ -9,7 +9,6 @@ namespace XModemProtocol {
         /// Reason for abort.
         /// </summary>
         public XModemAbortReason Reason { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the XModemProtocol.AbortedEventArgs class.
         /// </summary>

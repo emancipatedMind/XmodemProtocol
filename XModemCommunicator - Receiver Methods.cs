@@ -64,7 +64,7 @@ namespace XModemProtocol {
             _initializationWaitHandle.Set();
 
             // Reset these variables
-            Data = new List<byte>();
+            _data = new List<byte>();
             Packets = new List<List<byte>>();
 
             // Invoke OperationPending event. If exception is thrown, the operation is aborted, and the 
@@ -268,10 +268,10 @@ namespace XModemProtocol {
                 // If not, operation completed successfully.
                 else {
                     // Remove SUB bytes from data.
-                    for (int i = Data.Count - 1; i > -1; i--)
+                    for (int i = _data.Count - 1; i > -1; i--)
                     {
-                        if (Data[i] == SUB)
-                            Data.RemoveAt(i);
+                        if (_data[i] == SUB)
+                            _data.RemoveAt(i);
                         else break;
                     }
                     CompleteOperation();
@@ -334,7 +334,7 @@ namespace XModemProtocol {
                 }
                 // Validation has passed at this point. Add payload to Data, and packet to List of Packets.
                 Packets.Add(packet);
-                Data.AddRange(payLoad);
+                _data.AddRange(payLoad);
             }
             catch(XModemProtocolException ex) {
                 packetVerifed = (bool) ex.Data["Verified"];

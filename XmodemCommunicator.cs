@@ -1,6 +1,5 @@
 ﻿namespace XModemProtocol {
     public partial class XModemCommunicator {
-
         /// <summary>
         /// Initializes a new instance of the XModemProtocol.XModemCommunicator class.
         /// </summary>
@@ -10,6 +9,5 @@
             if (Port.IsOpen == false) Port.Open();
             
         }
-
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XModemProtocol {
+﻿namespace XModemProtocol {
     /// <summary>
     /// Denotes what role the XModemCommunicator instance is currently playing, or last played.
     /// </summary>
