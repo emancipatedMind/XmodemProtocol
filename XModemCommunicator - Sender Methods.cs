@@ -72,7 +72,6 @@ namespace XModemProtocol {
         private void Send() {
 
             _tempBuffer = new List<byte>();
-            XModemProtocolException exc;
 
             // Infinite loop wrapped in try block. The only way out of infinite loop is with Exception.
             try {
@@ -90,9 +89,7 @@ namespace XModemProtocol {
                             else if (_tempBuffer.Count != 0) { }
                             // If we have no bytes to read, check to see if initializationTimeOut expired.
                             else if (_initializationWaitHandle.WaitOne(0)) {
-                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
-                                exc.Data.Add("SendCancel", false);
-                                throw exc;
+                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
                             }
                             // If none of these conditions exist, start from top of loop.
                             else continue;
@@ -100,9 +97,7 @@ namespace XModemProtocol {
                             // If a cancellation is detected, throw XModemProtocolException ending operation.
                             if (DetectCancellation(_tempBuffer)) {
                                 State = XModemStates.Cancelled;
-                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
-                                exc.Data.Add("SendCancel", false);
-                                throw exc;
+                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
                             }
 
                             // If a C is detected, check if user is forcing the checksum mode.
@@ -164,9 +159,7 @@ namespace XModemProtocol {
 
                             // If cancellation detected, exit infinite loop using exception.
                             if (DetectCancellation(_tempBuffer)) {
-                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
-                                exc.Data.Add("SendCancel", false);
-                                throw exc;
+                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
                             }
 
                             // If last byte is ACK, perform next action.
@@ -200,9 +193,7 @@ namespace XModemProtocol {
                             break;
                         // If operation cancelled, break out of infinite loop with an exception.
                         case XModemStates.Cancelled:
-                            exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled));
-                            exc.Data.Add("SendCancel", true);
-                            throw exc;
+                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled), true);
                     }
 
                     _tempBuffer = new List<byte>();
@@ -214,7 +205,7 @@ namespace XModemProtocol {
             catch (XModemProtocolException ex) {
                 // If AbortArgs was provided with value, means that this is an abort.
                 if (ex.AbortArgs != null)
-                    Abort(ex.AbortArgs, (bool)ex.Data["SendCancel"]);
+                    Abort(ex.AbortArgs, ex.SendCancel);
                 // If not, operation completed successfully.
                 else {
                     CompleteOperation();

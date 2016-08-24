@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace XModemProtocol {
@@ -102,9 +101,6 @@ namespace XModemProtocol {
             };
 
             try {
-
-                XModemProtocolException exc;
-
                 // Operation loop. Only way out is an exception.
                 while(true) {
 
@@ -133,9 +129,7 @@ namespace XModemProtocol {
 
                                 // We also must check if we have exceeded the number of initialization bytes in general.
                                 if(++_numOfInitializationBytesSent > ReceiverMaxNumberOfInitializationBytesInTotal) {
-                                    exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
-                                    exc.Data.Add("SendCancel", false);
-                                    throw exc;
+                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
                                 }
 
                                 // Send initialization byte, and reset waitHandle, and restart _initializationTimeOut.
@@ -160,9 +154,7 @@ namespace XModemProtocol {
                             // and start from top.
                             else if (receiverWatchDogWaitHandle.WaitOne(0)) {
                                 if (SendNAK() == true) {
-                                    exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
-                                    exc.Data.Add("SendCancel", true);
-                                    throw exc;
+                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout), true);
                                 }
                                 receiverWatchDogWaitHandle.Reset();
                                 continue;
@@ -171,7 +163,7 @@ namespace XModemProtocol {
                             // Nothing to do, continue from top.
                             else continue;
                             
-                            // Bytes to parse, stop watchDogTimer, and reset waitHandle.
+                            // Stop watchDogTimer, and reset waitHandle.
                             receiverWatchDog.Stop();
                             receiverWatchDogWaitHandle.Reset();
 
@@ -188,9 +180,7 @@ namespace XModemProtocol {
                             // See if Sender has sent cancellation.
                             if (DetectCancellation(_tempBuffer)) {
                                 State = XModemStates.Cancelled;
-                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
-                                exc.Data.Add("SendCancel", false);
-                                throw exc;
+                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
                             } 
 
                             // If bytes available are less than the smallest packet accepted, continue from top restarting watchDogTimer.
@@ -216,9 +206,7 @@ namespace XModemProtocol {
                             else {
                                 Port.Flush();
                                 if(SendNAK() == true) {
-                                    exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
-                                    exc.Data.Add("SendCancel", true);
-                                    throw exc;
+                                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded), true);
                                 }
                                 receiverWatchDog.Start();
                                 _tempBuffer = new List<byte>();
@@ -242,9 +230,7 @@ namespace XModemProtocol {
                             }
                             // If packet validation fails, NAK sender.
                             else if(SendNAK() == true) {
-                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
-                                exc.Data.Add("SendCancel", true);
-                                throw exc;
+                                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded), true);
                             }
 
                             // Restart watchDogTimer, and go to top of loop.
@@ -252,9 +238,7 @@ namespace XModemProtocol {
                             continue;
                         // If operation cancelled, break out of infinite loop with an exception.
                         case XModemStates.Cancelled:
-                            exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled));
-                            exc.Data.Add("SendCancel", true);
-                            throw exc;
+                            throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled), true);
                     }
 
                 }
@@ -264,7 +248,7 @@ namespace XModemProtocol {
             catch(XModemProtocolException ex) {
                 // If AbortArgs was provided with value, means that this is an abort.
                 if (ex.AbortArgs != null)
-                    Abort(ex.AbortArgs, (bool)ex.Data["SendCancel"]);
+                    Abort(ex.AbortArgs, ex.SendCancel);
                 // If not, operation completed successfully.
                 else {
                     // Remove SUB bytes from data.
@@ -291,30 +275,22 @@ namespace XModemProtocol {
             // Figure out how much of packet is the information we are looking for.
             payLoadSize -= Mode == XModemMode.Checksum ? 4 : 5;
             try {
-                XModemProtocolException ex;
-
                 // Check to see if packet number is next in sequence.
                 // If it isn't, see if it is the previous packet.
                 // If so, pass validation.
-                // If it isn't packet expected, or a resend of last packet
+                // If it isn't packet expected, or a resend of last packet,
                 // fail validation. 
                 if (packet[1] != ((byte)_packetIndex)) {
                     if (packet[1] != ((byte)_packetIndex - 1)) {
-                        ex = new XModemProtocolException();
-                        ex.Data.Add("Verified", false);
-                        throw ex;
+                        throw new XModemProtocolException();
                     }
-                    ex = new XModemProtocolException();
-                    ex.Data.Add("Verified", true);
-                    throw ex;
+                    throw new XModemProtocolException(packetVerified:true);
                 }
 
                 // Check to make sure inverse byte matches as well.
                 byte inversePacketNumber = (byte)(0xFF - _packetIndex);
                 if (packet[2] != inversePacketNumber) {
-                    ex = new XModemProtocolException();
-                    ex.Data.Add("Verified", false);
-                    throw ex;
+                    throw new XModemProtocolException();
                 }
 
                 // Extract payload.
@@ -325,16 +301,12 @@ namespace XModemProtocol {
                 if (Mode == XModemMode.Checksum) {
                     byte simpleChecksum = (CheckSum(payLoad))[0];
                     if (simpleChecksum != packet[131]) {
-                        ex = new XModemProtocolException();
-                        ex.Data.Add("Verified", false);
-                        throw ex;
+                        throw new XModemProtocolException();
                     }
                 }
                 else {
                     if (!CheckSum(packet.GetRange(3, packet.Count - 3)).SequenceEqual(CRC16LTE.Zeros)) {
-                        ex = new XModemProtocolException();
-                        ex.Data.Add("Verified", false);
-                        throw ex;
+                        throw new XModemProtocolException();
                     }
                 }
                 // Validation has passed at this point. Add payload to Data, and packet to List of Packets.
@@ -342,7 +314,7 @@ namespace XModemProtocol {
                 _data.AddRange(payLoad);
             }
             catch(XModemProtocolException ex) {
-                packetVerifed = (bool) ex.Data["Verified"];
+                packetVerifed = ex.PacketVerified;
             } 
 
             // Fire event signaling packet has been received. This fires whether packet was validated or not.

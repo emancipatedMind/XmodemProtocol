@@ -51,7 +51,7 @@
     <Compile Include="PacketsBuiltEventArgs.cs" />
     <Compile Include="XModemCommunicator - Receiver Methods.cs" />
     <Compile Include="XModemCommunicator - Sender Methods.cs" />
-    <Compile Include="XmodemCommunicator - Utility Methods.cs" />
+    <Compile Include="XModemCommunicator - Utility Methods.cs" />
     <Compile Include="PacketToSendEventArgs.cs" />
     <Compile Include="XModemRoleEnum.cs" />
     <Compile Include="XModemStatesEnum.cs" />

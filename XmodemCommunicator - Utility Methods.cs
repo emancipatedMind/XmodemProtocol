@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {
@@ -91,6 +90,5 @@ namespace XModemProtocol {
             else if (State == XModemStates.Initializing) while(State == XModemStates.Initializing) { } 
             State = XModemStates.Cancelled;
         }
-
     }
 }
