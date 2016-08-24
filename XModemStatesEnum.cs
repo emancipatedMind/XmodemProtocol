@@ -12,7 +12,8 @@
         /// </summary>
         Initializing,
         /// <summary>
-        /// Notes that XModemCommunicator's current operation has been cancelled. Performing cleanup.
+        /// Notes that XModemCommunicator's current operation has been cancelled, and cleanup,
+        /// if any, is to be performed.
         /// </summary>
         Cancelled,
         /// <summary>

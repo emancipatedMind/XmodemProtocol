@@ -33,8 +33,7 @@ namespace XModemProtocol {
                 _polynomial = 0xFFFF & value;
                 // If setting polynomial, table must be calculated.
                 _lookupTable = new List<int>(256);
-                int temp, a;
-                for (int i = 0; i < _lookupTable.Capacity; ++i) {
+                for (int i = 0, temp, a; i < _lookupTable.Capacity; ++i) {
                     temp = 0;
                     a = i << 8;
                     for (int j = 0; j < 8; ++j) {
@@ -71,7 +70,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// A method used to check whether the checksum is correct.
+        /// A method used to check whether collection computes to 0 indicating checksum is correct.
         /// </summary>
         /// <param name="input">Message in bytes with the checksum as the last two bytes.</param>
         /// <returns>A boolean saying whether the checksum is correct(true) or not(false).</returns>
@@ -79,7 +78,5 @@ namespace XModemProtocol {
             List<byte> checksum = ComputeChecksum(input);
             return checksum.SequenceEqual(Zeros); 
         }
-
     }
-
 }

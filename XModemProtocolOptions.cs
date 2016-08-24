@@ -6,6 +6,11 @@ namespace XModemProtocol {
     /// </summary>
     public class XModemProtocolOptions : ICloneable {
 
+        /// <summary>
+        /// Initializes a new instance of the XModemProtocol.XModemProtocolOptions class.
+        /// </summary>
+        public XModemProtocolOptions() { }
+
         #region Shared Options
         /// <summary>
         /// Shared option.

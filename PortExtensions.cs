@@ -41,11 +41,15 @@ namespace XModemProtocol {
         /// <param name="p">The port to use.</param>
         /// <returns>A list containing bytes read.</returns>
         public static List<byte> ReadAllBytes(this SerialPort p) {
-            int bytesToRead = p.BytesToRead;
-            byte[] byteArray = new byte[bytesToRead];
-            p.Read(byteArray, 0, bytesToRead);
-            return byteArray.ToList();
+            List<byte> byteList = new List<byte>();
+            byte[] byteArray;
+            do {
+                int bytesToRead = p.BytesToRead;
+                byteArray = new byte[bytesToRead];
+                p.Read(byteArray, 0, bytesToRead);
+                byteList.AddRange(byteArray);
+            } while (p.BytesToRead > 0);
+            return byteList;
         }
-
     }
 }

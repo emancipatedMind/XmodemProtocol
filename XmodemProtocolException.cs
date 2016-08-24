@@ -10,14 +10,14 @@ namespace XModemProtocol {
         /// </summary>
         public AbortedEventArgs AbortArgs { get; private set; } = null;
         /// <summary>
-        /// Default constructor.
+        /// Initializes a new instance of the XModemProtocol.XModeomProtocolException class.
         /// </summary>
-        public XModemProtocolException() : base() { }
+        internal XModemProtocolException() : base() { }
         /// <summary>
-        /// Constructor used to set the arguments used by the Aborted event.
+        /// Initializes a new instance of the XModemProtocol.XModeomProtocolException class.
         /// </summary>
-        /// <param name="abortArgs"></param>
-        public XModemProtocolException(AbortedEventArgs abortArgs) : base() {
+        /// <param name="abortArgs">Used to fill AbortArgs property</param>
+        internal XModemProtocolException(AbortedEventArgs abortArgs) : base() {
             AbortArgs = abortArgs;
         }
     }

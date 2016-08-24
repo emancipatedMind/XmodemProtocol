@@ -28,9 +28,9 @@ namespace XModemProtocol {
                 SenderInitializationTimeout = localOptions.SenderInitializationTimeout;
             }
 
-            // Check if Data is null. It is null if previous operation has not filled it.
-            // A previous operation could be from past Send, past Receive, or from this current 
-            // iteration of Send.
+            // Check if _data is null. It is null if previous operation has not filled it.
+            // A previous operation could either be a past Receive, or passed in through the
+            // Data property.
             // If it is null, abort.
             if (_data == null) {
                 Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty), false);
@@ -90,7 +90,7 @@ namespace XModemProtocol {
                             else if (_tempBuffer.Count != 0) { }
                             // If we have no bytes to read, check to see if initializationTimeOut expired.
                             else if (_initializationWaitHandle.WaitOne(0)) {
-                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Timeout));
+                                exc = new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.InitializationFailed));
                                 exc.Data.Add("SendCancel", false);
                                 throw exc;
                             }
@@ -228,12 +228,16 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// A method to build packets.
+        /// A method to explicitly build packets. This is used when the
+        /// count of the packets is needed. Upon completion of the method, whether called implicitly,
+        /// or explicitly, the PacketsBuilt event is called.
+        /// ArgumentNullException is thrown if no data has been passed into instance.
         /// </summary>
-        private void BuildPackets() {
+        /// <returns>The count of the packets.</returns>
+        public int BuildPackets() {
 
             // If no data, can't build packets. Return.
-            if (_data == null) return;
+            if (_data == null) throw new ArgumentNullException("Data is null.");
             Packets = new List<List<byte>>();
             
             // Loop to build packets.
@@ -280,6 +284,7 @@ namespace XModemProtocol {
             // Fire method indicating packets have finished being built.
             Task.Run(() => PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets)));
             _rebuildPackets = false;
+            return Packets.Count;
         }
 
         /// <summary>

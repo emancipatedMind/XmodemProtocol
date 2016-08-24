@@ -44,7 +44,7 @@
     <Compile Include="CRC16LTE.cs" />
     <Compile Include="PacketReceivedEventArgs.cs" />
     <Compile Include="PortExtensions.cs" />
-    <Compile Include="RoleChangedEventArgs .cs" />
+    <Compile Include="RoleUpdatedEventArgs .cs" />
     <Compile Include="XModemAbortReasonEnum.cs" />
     <Compile Include="CompletedEventArgs.cs" />
     <Compile Include="ModeUpdatedEventArgs.cs" />

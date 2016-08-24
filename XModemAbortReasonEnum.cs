@@ -4,7 +4,7 @@
     /// </summary>
     public enum XModemAbortReason {
         /// <summary>
-        /// Timeout has occured during initialization or transfer.
+        /// Timeout has occured during transfer.
         /// </summary>
         Timeout,
         /// <summary>
@@ -24,7 +24,8 @@
         /// </summary>
         BufferEmpty,
         /// <summary>
-        /// Initialization has failed due to Exception in OperationPending eventhandler, or Receiver never got response.
+        /// Initialization has failed due to Exception in OperationPending eventhandler, Receiver never got response, or Sender never received initialization byte.
+        /// Sender may be instructed to never use this abort by setting SenderInitializationTimeout to 0.
         /// </summary>
         InitializationFailed,
         /// <summary>

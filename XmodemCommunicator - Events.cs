@@ -47,7 +47,7 @@ namespace XModemProtocol {
         /// <summary>
         /// This event fires asynchronously whenever XModemCommunicator changes its role.
         /// </summary>
-        public event EventHandler<RoleChangedEventArgs> RoleUpdated;
+        public event EventHandler<RoleUpdatedEventArgs> RoleUpdated;
 
         /// <summary>
         /// This event fires when the operation has been aborted.

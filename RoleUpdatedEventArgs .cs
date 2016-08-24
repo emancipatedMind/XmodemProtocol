@@ -3,7 +3,7 @@ namespace XModemProtocol {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.RoleChanged event.
     /// </summary>
-    public class RoleChangedEventArgs : EventArgs {
+    public class RoleUpdatedEventArgs : EventArgs {
         /// <summary>
         /// The new role of the XModemCommunicator instance.
         /// </summary>
@@ -13,11 +13,11 @@ namespace XModemProtocol {
         /// </summary>
         public XModemRole OldRole { get; private set; }
         /// <summary>
-        /// Initializes a new instance of the XModemProtocol.RoleChangedEventArgs class.
+        /// Initializes a new instance of the XModemProtocol.RoleUpdatedEventArgs class.
         /// </summary>
         /// <param name="role">The current role of the instance.</param>
         /// <param name="oldRole">The old role of the instance.</param>
-        internal RoleChangedEventArgs(XModemRole role, XModemRole oldRole) {
+        internal RoleUpdatedEventArgs(XModemRole role, XModemRole oldRole) {
             Role = role;
             OldRole = oldRole;
         }
