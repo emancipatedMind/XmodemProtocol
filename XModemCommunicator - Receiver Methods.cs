@@ -247,13 +247,13 @@ namespace XModemProtocol {
             // Only Exception caught here is XModemProtocolException.
             catch(XModemProtocolException ex) {
                 // If AbortArgs was provided with value, means that this is an abort.
-                if (ex.AbortArgs != null)
+                if (ex.AbortArgs != null) {
                     Abort(ex.AbortArgs, ex.SendCancel);
+                }
                 // If not, operation completed successfully.
                 else {
                     // Remove SUB bytes from data.
-                    for (int i = _data.Count - 1; i > -1; i--)
-                    {
+                    for (int i = _data.Count - 1; i > -1; i--) {
                         if (_data[i] == SUB)
                             _data.RemoveAt(i);
                         else break;
@@ -299,8 +299,7 @@ namespace XModemProtocol {
                 // Here is where we validate the contents using either
                 // CRC or checksum depending on the mode.
                 if (Mode == XModemMode.Checksum) {
-                    byte simpleChecksum = (CheckSum(payLoad))[0];
-                    if (simpleChecksum != packet[131]) {
+                    if ((CheckSum(payLoad))[0] != packet[131]) {
                         throw new XModemProtocolException();
                     }
                 }
