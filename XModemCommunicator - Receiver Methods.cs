@@ -10,7 +10,7 @@ namespace XModemProtocol {
         /// Initialize session as receiver.
         /// </summary>
         /// <param name="options">The options to be used this session.</param>
-        public void InitializeReceiver(XModemProtocolOptions options) {
+        public void Receive(XModemProtocolOptions options) {
             // If state is not idle, then return. 
             // If it is, change it to Initializing, and reset instance.
             if (State != XModemStates.Idle) return;
@@ -79,7 +79,7 @@ namespace XModemProtocol {
             // Flush port, change state, and perform operation.
             Port.Flush();
             State = XModemStates.ReceiverSendingInitializationByte;
-            Task.Run(() => Receive());
+            Receive();
         }
 
 

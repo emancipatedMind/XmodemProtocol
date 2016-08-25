@@ -12,7 +12,7 @@ namespace XModemProtocol {
         /// Initialize session as sender.
         /// </summary>
         /// <param name="options">The options to be used this session. Pass in null to use past options.</param>
-        public void InitializeSender(XModemProtocolOptions options) {
+        public void Send(XModemProtocolOptions options) {
             // First check whether the object state is idle.
             // If so, change state to Initializing, and reset XModemCommunicator.
             if (State != XModemStates.Idle)  return;
@@ -62,8 +62,7 @@ namespace XModemProtocol {
             // Flush port, change state, start initializationTimeOut if not null, and perform send.
             Port.Flush();
             State = XModemStates.SenderAwaitingInitializationFromReceiver;
-            _initializationTimeOut?.Start();
-            Task.Run(() => Send());
+            Send();
         }
 
         /// <summary>
@@ -72,6 +71,8 @@ namespace XModemProtocol {
         private void Send() {
 
             _tempBuffer = new List<byte>();
+
+            _initializationTimeOut?.Start();
 
             // Infinite loop wrapped in try block. The only way out of infinite loop is with Exception.
             try {
