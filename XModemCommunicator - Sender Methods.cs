@@ -10,9 +10,9 @@ namespace XModemProtocol {
         /// Initialize session as sender.
         /// </summary>
         /// <param name="options">The options to be used this session. Pass in null to use past options.</param>
-        public void Send(XModemProtocolOptions options) {
+        public void Send(XModemProtocolOptions options = null) {
             // First check whether the object state is idle.
-            // If so, change state to Initializing, and reset XModemCommunicator.
+            // If so, change state to Initializing, change Role, and reset XModemCommunicator.
             if (State != XModemStates.Idle)  return;
             State = XModemStates.Initializing;
             Role = XModemRole.Sender;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {
@@ -10,9 +9,9 @@ namespace XModemProtocol {
         /// Initialize session as receiver.
         /// </summary>
         /// <param name="options">The options to be used this session.</param>
-        public void Receive(XModemProtocolOptions options) {
+        public void Receive(XModemProtocolOptions options = null) {
             // If state is not idle, then return. 
-            // If it is, change it to Initializing, and reset instance.
+            // If it is, change it to Initializing, change Role, and reset instance.
             if (State != XModemStates.Idle) return;
             State = XModemStates.Initializing;
             Role = XModemRole.Receiver;
