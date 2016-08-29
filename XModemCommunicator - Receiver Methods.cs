@@ -79,11 +79,14 @@ namespace XModemProtocol {
             // Flush port, change state, and perform operation.
             Port.Flush();
             State = XModemStates.ReceiverSendingInitializationByte;
-            Receive();
+            ReceiveOperation();
         }
 
 
-        private void Receive() {
+        /// <summary>
+        /// Method that performs receive operation.
+        /// </summary>
+        private void ReceiveOperation() {
 
             _tempBuffer = new List<byte>();
 
@@ -268,6 +271,12 @@ namespace XModemProtocol {
             }
         }
 
+        /// <summary>
+        /// Method used to validate whether packet is a valid packet or not.
+        /// </summary>
+        /// <param name="buffer">Packet passed in.</param>
+        /// <param name="payLoadSize">Size of payload. Normally 128 or 1024.</param>
+        /// <returns>Returns bool indicating whether packet was validated or not.</returns>
         private bool ValidatePacket(IEnumerable<byte> buffer, int payLoadSize) {
             List<byte> packet = buffer.ToList();
             bool packetVerifed = true;

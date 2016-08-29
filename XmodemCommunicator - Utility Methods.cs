@@ -5,6 +5,46 @@ namespace XModemProtocol {
     public partial class XModemCommunicator {
 
         /// <summary>
+        /// A method to detect whether Cancellation has been received.
+        /// </summary>
+        /// <param name="recv">List holding bytes received</param>
+        /// <returns>Was cancellation detected?</returns>
+        private bool DetectCancellation(IEnumerable<byte> recv) {
+
+            // If NumCancellationBytesRequired is less than 1, just exit.
+            if (CancellationBytesRequired < 1) return false;
+
+            // LINQ to get indices of CAN bytes.
+            // 1). If byte is CAN, record index, if not, make index -1.
+            // 2). Remove all elements equal to -1,
+            // 3). Place elements in ascending order.
+            // 4). Convert to List<byte>. Only need to perform LINQ once.
+            var indicesOfCAN = (recv.Select((r, i) => { if (r == CAN) return i; else return -1; }).Where(i => i > -1).OrderBy(i => i)).ToList();
+
+            // If the number of CANs found are not at least equal to the number required, no point in checking further.
+            if (indicesOfCAN.Count < CancellationBytesRequired) return false;
+
+            // Check to see if any consecutive amount of CANs found are above set limit.
+            // If so, return true indicating such.
+            for (int i = 0, counter = 0, indx = indicesOfCAN[0]; i < indicesOfCAN.Count; i++) {
+                int next = indicesOfCAN[i];
+                if (indx == next) {
+                    ++indx;
+                    ++counter;
+                }
+                else {
+                    indx = next + 1;
+                    counter = 1;
+                }
+
+                if (counter >= CancellationBytesRequired) return true;    
+            }
+
+            // No eligible CAN sequence found.
+            return false;
+        }
+
+        /// <summary>
         /// Holds logic for when an operation has completed.
         /// </summary>
         private void CompleteOperation() {
@@ -29,11 +69,11 @@ namespace XModemProtocol {
         /// </summary>
         /// <param name="packetInfo">Packets to be checked.</param>
         /// <returns>Two count list of checksum</returns>
-        private List<byte> CheckSum(List<byte> packetInfo) {
+        private byte[] CheckSum(IEnumerable<byte> packetInfo) {
             if (Mode == XModemMode.Checksum)
-                return new List<byte> { (byte)packetInfo.Sum(b => b) };
+                return new byte[] { (byte)packetInfo.Sum(b => b) };
             else
-                return CheckSumValidator.ComputeChecksum(packetInfo).ToList();
+                return CheckSumValidator.ComputeChecksum(packetInfo);
         }
 
         /// <summary>

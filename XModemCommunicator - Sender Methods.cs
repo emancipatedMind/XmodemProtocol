@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace XModemProtocol {
@@ -62,16 +60,15 @@ namespace XModemProtocol {
             // Flush port, change state, start initializationTimeOut if not null, and perform send.
             Port.Flush();
             State = XModemStates.SenderAwaitingInitializationFromReceiver;
-            Send();
+            SendOperation();
         }
 
         /// <summary>
         /// Method that performs send operation.
         /// </summary>
-        private void Send() {
+        private void SendOperation() {
 
             _tempBuffer = new List<byte>();
-
             _initializationTimeOut?.Start();
 
             // Infinite loop wrapped in try block. The only way out of infinite loop is with Exception.
@@ -277,46 +274,6 @@ namespace XModemProtocol {
             Task.Run(() => PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets)));
             _rebuildPackets = false;
             return Packets.Count;
-        }
-
-        /// <summary>
-        /// A method to detect whether Cancellation has been received.
-        /// </summary>
-        /// <param name="recv">List holding bytes received</param>
-        /// <returns>Was cancellation detected?</returns>
-        private bool DetectCancellation(IEnumerable<byte> recv) {
-
-            // If NumCancellationBytesRequired is less than 1, just exit.
-            if (CancellationBytesRequired < 1) return false;
-
-            // LINQ to get indices of CAN bytes.
-            // 1). If byte is CAN, record index, if not, make index -1.
-            // 2). Remove all elements equal to -1,
-            // 3). Place elements in ascending order.
-            // 4). Convert to List<byte>. Only need to perform LINQ once.
-            var indicesOfCAN = (recv.Select((r, i) => { if (r == CAN) return i; else return -1; }).Where(i => i > -1).OrderBy(i => i)).ToList();
-
-            // If the number of CANs found are not at least equal to the number required, no point in checking further.
-            if (indicesOfCAN.Count < CancellationBytesRequired) return false;
-
-            // Check to see if any consecutive amount of CANs found are above set limit.
-            // If so, return true indicating such.
-            for (int i = 0, counter = 0, indx = indicesOfCAN[0]; i < indicesOfCAN.Count; i++) {
-                int next = indicesOfCAN[i];
-                if (indx == next) {
-                    ++indx;
-                    ++counter;
-                }
-                else {
-                    indx = next + 1;
-                    counter = 1;
-                }
-
-                if (counter >= CancellationBytesRequired) return true;    
-            }
-
-            // No eligible CAN sequence found.
-            return false;
         }
 
         /// <summary>
