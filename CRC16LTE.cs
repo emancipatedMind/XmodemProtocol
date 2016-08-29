@@ -8,18 +8,18 @@ namespace XModemProtocol {
     public class CRC16LTE {
 
         int _polynomial = 0;
-        List<int> _lookupTable;
+        int[] _lookupTable = new int[256];
 
         /// <summary>
-        /// new List<byte> {0, 0}
+        /// new byte[] {0, 0}
         /// </summary>
-        public static List<byte> Zeros { get; } = new List<byte> { 0, 0 };
+        public static byte[] Zeros { get; } = new byte[] { 0, 0 };
         /// <summary>
-        /// new List<byte> {0xFF, 0xFF}
+        /// new byte[] {0xFF, 0xFF}
         /// </summary>
-        public static List<byte> Ones { get; } = new List<byte> { 0xFF, 0xFF };
+        public static byte[] Ones { get; } = new byte[] { 0xFF, 0xFF };
         /// <summary>
-        /// Used as initial value to calculation. Indices 1, and 0 are used.
+        /// Used as initial value to calculation. Indices 1 (MSB), and 0 (LSB) are used.
         /// </summary>
         public IEnumerable<byte> InitialCRCValue { get; set; } = Zeros;
         /// <summary>
@@ -32,8 +32,7 @@ namespace XModemProtocol {
                 if (_polynomial == value) return;
                 _polynomial = 0xFFFF & value;
                 // If setting polynomial, table must be calculated.
-                _lookupTable = new List<int>(256);
-                for (int i = 0, temp, a; i < _lookupTable.Capacity; ++i) {
+                for (int i = 0, temp, a; i < _lookupTable.Length; ++i) {
                     temp = 0;
                     a = i << 8;
                     for (int j = 0; j < 8; ++j) {
@@ -43,7 +42,7 @@ namespace XModemProtocol {
                             temp <<= 1;
                         a <<= 1;
                     }
-                    _lookupTable.Add(0xFFFF & temp);
+                    _lookupTable[i] = 0xFFFF & temp;
                 }
             }
         }
@@ -61,11 +60,11 @@ namespace XModemProtocol {
         /// </summary>
         /// <param name="input">Message for which checksum will be computed.</param>
         /// <returns>A two byte enumerable containing checksum.</returns>
-        public List<byte> ComputeChecksum(IEnumerable<byte> input) {
+        public byte[] ComputeChecksum(IEnumerable<byte> input) {
             return input.Aggregate(
                 ((InitialCRCValue.ElementAtOrDefault(1) << 8) | InitialCRCValue.ElementAtOrDefault(0)),
                 (crc, next) => 0xFFFF & ((crc << 8) ^ _lookupTable[((crc >> 8) ^ (0xff & next))]),
-                crc => new List<byte> { (byte)(crc / 256), (byte)(crc % 256) }
+                crc => new byte[] { (byte)(crc / 256), (byte)(crc % 256) }
             );
         }
 
@@ -75,7 +74,7 @@ namespace XModemProtocol {
         /// <param name="input">Message in bytes with the checksum as the last two bytes.</param>
         /// <returns>A boolean saying whether the checksum is correct(true) or not(false).</returns>
         public bool ApproveMessage(IEnumerable<byte> input) {
-            List<byte> checksum = ComputeChecksum(input);
+            byte[] checksum = ComputeChecksum(input);
             return checksum.SequenceEqual(Zeros); 
         }
     }

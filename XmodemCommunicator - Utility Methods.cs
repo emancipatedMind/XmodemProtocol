@@ -33,7 +33,7 @@ namespace XModemProtocol {
             if (Mode == XModemMode.Checksum)
                 return new List<byte> { (byte)packetInfo.Sum(b => b) };
             else
-                return CheckSumValidator.ComputeChecksum(packetInfo);
+                return CheckSumValidator.ComputeChecksum(packetInfo).ToList();
         }
 
         /// <summary>
