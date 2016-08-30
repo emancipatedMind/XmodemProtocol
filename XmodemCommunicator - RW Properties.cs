@@ -28,11 +28,9 @@ namespace XModemProtocol {
                 if (value == null) {
                     _data = null;
                 }
-                else {
-                    if (_data == null || !_data.SequenceEqual(value)) {
-                        _data = new List<byte>(value);
-                        _rebuildPackets = true;
-                    }
+                else if (_data == null || !_data.SequenceEqual(value)) {
+                    _data = new List<byte>(value);
+                    _rebuildPackets = true;
                 }
             }
         }

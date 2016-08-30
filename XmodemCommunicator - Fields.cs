@@ -16,7 +16,7 @@ namespace XModemProtocol {
         int _consecutiveNAKs = 0;
         int _consecutiveLoopsWithCANs = 0;
 
-        bool _rebuildPackets = true;
+        bool _rebuildPackets = false;
 
         #region Backing Fields
         List<byte> _data = null;
