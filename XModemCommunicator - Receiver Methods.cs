@@ -83,7 +83,7 @@ namespace XModemProtocol {
 
 
         /// <summary>
-        /// Method that performs receive operation.
+        /// Receiver Method. Method that performs receive operation.
         /// </summary>
         private void ReceiveOperation() {
 
@@ -271,7 +271,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Method used to validate whether packet is a valid packet or not.
+        /// Receiver Method. Method used to validate whether packet is a valid packet or not.
         /// </summary>
         /// <param name="buffer">Packet passed in.</param>
         /// <param name="payLoadSize">Size of payload. Normally 128 or 1024.</param>
@@ -333,7 +333,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Send ACK.
+        /// Receiver Method. Send ACK.
         /// </summary>
         private void SendACK() {
             Port.Write(ACK);
@@ -341,8 +341,9 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Increment Consecutive NAKS sent. If below limit, send NAK.
+        /// Receiver Method. Increment Consecutive NAKS sent. If below limit, send NAK.
         /// </summary>
+        /// <returns>Returns true if ReceiverConsecutiveNAKBytesRequiredForCancellation has been exceeded.</returns>
         private bool SendNAK() {
             if (++_consecutiveNAKs > ReceiverConsecutiveNAKBytesRequiredForCancellation) return true;
             Port.Write(NAK);

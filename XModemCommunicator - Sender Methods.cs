@@ -64,7 +64,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Method that performs send operation.
+        /// Sender Method. Method that performs send operation.
         /// </summary>
         private void SendOperation() {
 
@@ -108,7 +108,7 @@ namespace XModemProtocol {
                                 }
                             }
 
-                            // If receiver sends NAK, and mode is not being forced to checksum,
+                            // If receiver sends NAK, and mode is not already checksum,
                             // change mode to checksum, and rebuild packets before
                             // exiting if statement.
                             else if (_tempBuffer.Last() == NAK) {
@@ -121,7 +121,7 @@ namespace XModemProtocol {
                             // If a cancellation byte is detected, but wasn't enough for cancellation, 
                             // check to see if this condition has lasted for an extended number of loops,
                             // and if so, break from switch statement clearing _tempBuffer.
-                            // If not, start initializationTimeOut, and restart from top.
+                            // If not, start _initializationTimeOut, and restart from top.
                             else if (_tempBuffer.Contains(CAN)) {
                                 if (IncrementConsecutiveLoopsWithInsufficientCAN()) {
                                     _initializationTimeOut?.Start();
@@ -217,16 +217,16 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// A method to explicitly build packets. This is used when the
+        /// Sender Method. Method to build packets. This can be explicitly called when the
         /// count of the packets is needed. Upon completion of the method, whether called implicitly,
-        /// or explicitly, the PacketsBuilt event is called.
-        /// ArgumentNullException is thrown if no data has been passed into instance.
+        /// or explicitly, the PacketsBuilt event is invoked.
+        /// If XModemCommunicator has no data, returns 0 as count of packet.
         /// </summary>
         /// <returns>The count of the packets.</returns>
         public int BuildPackets() {
 
             // If no data, can't build packets. Return.
-            if (_data == null) throw new ArgumentNullException("Data is null.");
+            if (_data == null) return 0;
             Packets = new List<List<byte>>();
             
             // Loop to build packets.
@@ -277,7 +277,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Send a packet.
+        /// Sender Method. Send a packet.
         /// </summary>
         private void SendPacket() {
             List<byte> packet;
@@ -305,6 +305,5 @@ namespace XModemProtocol {
             // Write out packet.
             Port.Write(packet);
         }
-
     }
 }

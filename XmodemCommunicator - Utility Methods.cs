@@ -8,7 +8,7 @@ namespace XModemProtocol {
         /// A method to detect whether Cancellation has been received.
         /// </summary>
         /// <param name="recv">List holding bytes received</param>
-        /// <returns>Was cancellation detected?</returns>
+        /// <returns>If cancellation is detected, return true. If not, return false.</returns>
         private bool DetectCancellation(IEnumerable<byte> recv) {
 
             // If NumCancellationBytesRequired is less than 1, just exit.
@@ -26,14 +26,14 @@ namespace XModemProtocol {
 
             // Check to see if any consecutive amount of CANs found are above set limit.
             // If so, return true indicating such.
-            for (int i = 0, counter = 0, indx = indicesOfCAN[0]; i < indicesOfCAN.Count; i++) {
+            for (int i = 0, counter = 0, index = indicesOfCAN[0]; i < indicesOfCAN.Count; i++) {
                 int next = indicesOfCAN[i];
-                if (indx == next) {
-                    ++indx;
+                if (index == next) {
+                    ++index;
                     ++counter;
                 }
                 else {
-                    indx = next + 1;
+                    index = next + 1;
                     counter = 1;
                 }
 
@@ -55,8 +55,9 @@ namespace XModemProtocol {
         /// <summary>
         /// Increment consecutive loops with insufficient amount of CANs.
         /// </summary>
-        /// <returns>Whether _consecutiveloopsWithCANs is more than 20.</returns>
+        /// <returns>If _consecutiveloopsWithCANs is beyond limit, return false.</returns>
         private bool IncrementConsecutiveLoopsWithInsufficientCAN() {
+            // 20 was abitrarily chosen limit.
             if (++_consecutiveLoopsWithCANs > 20) {
                 _consecutiveLoopsWithCANs = 0;
                 return false;
@@ -65,10 +66,10 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Perform checksum with supplied list.
+        /// Perform checksum with supplied packet.
         /// </summary>
-        /// <param name="packetInfo">Packets to be checked.</param>
-        /// <returns>Two count list of checksum</returns>
+        /// <param name="packetInfo">Packets to be summed.</param>
+        /// <returns>The checksum in array form.</returns>
         private byte[] CheckSum(IEnumerable<byte> packetInfo) {
             if (Mode == XModemMode.Checksum)
                 return new byte[] { (byte)packetInfo.Sum(b => b) };
@@ -95,7 +96,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// This overload of the Abort method can override the general rule of when to initiate a cancel or not.
+        /// Performs abort.
         /// </summary>
         /// <param name="e">An instance of the AbortedEventArgs class.</param>
         /// <param name="sendCAN">Whether to initiate cancel or not.</param>
@@ -106,7 +107,7 @@ namespace XModemProtocol {
         }
 
         /// <summary>
-        /// Resets variables, and some cleanup in the instance in order to prepare for an operation.
+        /// Resets variables, and performs some cleanup in order to prepare for an operation.
         /// </summary>
         private void Reset() {
             _tempBuffer = null;
