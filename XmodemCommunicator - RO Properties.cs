@@ -13,12 +13,25 @@ namespace XModemProtocol {
         /// Denotes what role is currently being played or was last played by instance.
         /// </summary>
         public XModemRole Role {
-            get { return _role; }
+            get {
+                lock (_roleLockToken) { 
+                    return _role;
+                }
+            }
             private set {
-                if (_role == value) return;
-                XModemRole oldRole = _role;
-                _role = value;
-                Task.Run(() => RoleUpdated?.Invoke(this, new RoleUpdatedEventArgs(_role, oldRole)));
+                lock (_roleLockToken) { 
+                    XModemRole oldRole = _role;
+                    _role = value;
+                    if (_role == XModemRole.Receiver) {
+                        _data = null;
+                        Packets = null;
+                        _rebuildPackets = false;
+                    }
+                    else if (_data == null) {
+                        _role = XModemRole.Receiver;
+                    } 
+                    if (_role != oldRole) Task.Run(() => RoleUpdated?.Invoke(this, new RoleUpdatedEventArgs(_role, oldRole)));
+                }
             }
         }
 
@@ -27,20 +40,18 @@ namespace XModemProtocol {
         /// </summary>
         public XModemStates State {
             get {
-                lock (this) {
+                lock (_stateLockToken) {
                     return _state;
                 }
             }
             private set {
-                if (_state == value) return;
-                XModemStates oldState;
-                lock (this) {
+                lock (_stateLockToken) {
+                    XModemStates oldState;
                     oldState = _state;
                     _state = value;
+                    if (_state != oldState) Task.Run(() => StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState)));
                 }
-                Task.Run(() => StateUpdated?.Invoke(this, new StateUpdatedEventArgs(_state, oldState)));
             }
         }
-
     }
 }

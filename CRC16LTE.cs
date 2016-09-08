@@ -28,9 +28,10 @@ namespace XModemProtocol {
         public int Polynomial {
             get { return _polynomial; }
             set {
+                value &= 0xffff;
                 // If _polynomial and value are equal, do nothing.
                 if (_polynomial == value) return;
-                _polynomial = 0xFFFF & value;
+                _polynomial = value;
                 // If setting polynomial, table must be calculated.
                 for (int i = 0, temp, a; i < _lookupTable.Length; ++i) {
                     temp = 0;
@@ -63,7 +64,7 @@ namespace XModemProtocol {
         public byte[] ComputeChecksum(IEnumerable<byte> input) {
             return input.Aggregate(
                 ((InitialCRCValue.ElementAtOrDefault(1) << 8) | InitialCRCValue.ElementAtOrDefault(0)),
-                (crc, next) => 0xFFFF & ((crc << 8) ^ _lookupTable[((crc >> 8) ^ (0xff & next))]),
+                (crc, next) => 0xFFFF & ((crc << 8) ^ _lookupTable[((crc >> 8) ^ (0xFF & next))]),
                 crc => new byte[] { (byte)(crc / 256), (byte)(crc % 256) }
             );
         }

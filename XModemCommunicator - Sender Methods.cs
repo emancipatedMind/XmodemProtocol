@@ -16,27 +16,24 @@ namespace XModemProtocol {
             if (State != XModemStates.Idle)  return;
             State = XModemStates.Initializing;
             Role = XModemRole.Sender;
+            if (Role == XModemRole.Receiver) {
+                // Check if Role allows a change to Sender. If not, _data is null, and an abort is needed.
+                Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty), false);
+                return;
+            }
             Reset();
 
             if (options != null) {
-                // Get set options passed in.
+                // Set options passed in.
                 XModemProtocolOptions localOptions = (XModemProtocolOptions)options?.Clone();
                 SetCommonOptions(localOptions);
                 Mode = localOptions.Mode;
                 SenderInitializationTimeout = localOptions.SenderInitializationTimeout;
             }
 
-            // Check if _data is null. It is null if previous operation has not filled it.
-            // A previous operation could either be a past Receive, or passed in through the
-            // Data property.
-            // If it is null, abort.
-            if (_data == null) {
-                Abort(new AbortedEventArgs(XModemAbortReason.BufferEmpty), false);
-                return;
-            }
-
             // If checks have indicated that packets need to be built, perform.
-            if (_rebuildPackets == true) BuildPackets();
+            Task buildPackets = null;
+            if (_rebuildPackets == true) buildPackets = Task.Run(() => BuildPackets());
 
             // If user has indicated they would like to have a timeout, set that up.
             if (SenderInitializationTimeout > 0) {
@@ -47,8 +44,10 @@ namespace XModemProtocol {
                 };
             }
 
-            // Fire event in case user has specified method to run before operation begins.
+            // Await BuildPackets method and then fire event in case user has
+            // specified method to run before operation begins.
             // If this event throws error, abort before rethrowing error.
+            buildPackets?.Wait();
             try {
                 OperationPending?.Invoke();
             }
@@ -225,8 +224,9 @@ namespace XModemProtocol {
         /// <returns>The count of the packets.</returns>
         public int BuildPackets() {
 
-            // If no data, can't build packets. Return.
-            if (_data == null) return 0;
+            // If flag isn't set, XModemCommunicator will not build packets.
+            if (_rebuildPackets == false) return 0;
+            _rebuildPackets = false;
             Packets = new List<List<byte>>();
             
             // Loop to build packets.
@@ -272,7 +272,6 @@ namespace XModemProtocol {
             }
             // Fire method indicating packets have finished being built.
             Task.Run(() => PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets)));
-            _rebuildPackets = false;
             return Packets.Count;
         }
 

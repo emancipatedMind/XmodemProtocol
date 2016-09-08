@@ -26,10 +26,11 @@ namespace XModemProtocol {
             set {
                 if (State != XModemStates.Idle) return;
                 if (value == null) {
-                    _data = null;
+                    Role = XModemRole.Receiver;
                 }
                 else if (_data == null || !_data.SequenceEqual(value)) {
                     _data = new List<byte>(value);
+                    Role = XModemRole.Sender;
                     _rebuildPackets = true;
                 }
             }
@@ -39,20 +40,42 @@ namespace XModemProtocol {
         /// Mode of instance.
         /// </summary>
         public XModemMode Mode {
-            get { return _mode; }
+            get {
+                lock (_modeLockToken) { 
+                    return _mode;
+                }
+            }
             set {
-                if (Role == XModemRole.Receiver && value == XModemMode.CRC)
-                    value = XModemMode.OneK;
-                if (_mode == value) return; 
-                XModemMode oldMode = _mode;
-                _mode = value;
-                _rebuildPackets = true;
-                Task.Run(() => ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode)));
+                lock (_modeLockToken) {
+                    bool isReceiver = Role == XModemRole.Receiver;
+                    if (isReceiver == true && value == XModemMode.CRC)
+                        value = XModemMode.OneK;
+                    XModemMode oldMode = _mode;
+                    _mode = value;
+                    if (isReceiver == false) {
+                        if (Packets != null && oldMode == XModemMode.OneK && _mode != XModemMode.Checksum) {
+                            if (_mode == XModemMode.OneK) {
+                                if (Packets.Count > 1 && Packets[0].Count < 1029)
+                                    _rebuildPackets = true;
+                            } 
+                            else if (_mode == XModemMode.CRC) {
+                                foreach(var p in Packets) {
+                                    if (p.Count != 133) {
+                                        _rebuildPackets = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else _rebuildPackets = true;
+                    }
+                    if (_mode != oldMode) Task.Run(() => ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, oldMode)));
+                }
             }
         }
         #endregion
 
-        #region Shared options
+        #region Shared options.
         /// <summary>
         /// Default : 5.
         /// Shared option.
@@ -68,7 +91,7 @@ namespace XModemProtocol {
         public int CancellationBytesRequired { get; set; } = 5;
         #endregion
 
-        #region XModem Bytes
+        #region XModem Bytes.
         /// <summary>
         /// Default: 0x01.
         /// Sender begins each 128-byte packet with this header.

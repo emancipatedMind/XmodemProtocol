@@ -8,7 +8,7 @@
         /// </summary>
         Timeout,
         /// <summary>
-        /// The amount of consecutive NAKs received has been exceeded.
+        /// The amount of consecutive NAKs sent has been exceeded.
         /// </summary>
         ConsecutiveNAKLimitExceeded,
         /// <summary>

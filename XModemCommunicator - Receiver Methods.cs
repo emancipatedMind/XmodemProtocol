@@ -242,7 +242,6 @@ namespace XModemProtocol {
                         case XModemStates.Cancelled:
                             throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.Cancelled), true);
                     }
-
                 }
             }
 

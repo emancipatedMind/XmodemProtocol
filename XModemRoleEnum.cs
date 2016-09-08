@@ -4,16 +4,12 @@
     /// </summary>
     public enum XModemRole {
         /// <summary>
-        /// Notes that the instance has not yet performed a Send or Receiver operation.
+        /// Represents the Receiver role. Default Role.
         /// </summary>
-        None,
+        Receiver,
         /// <summary>
         /// Represents the Sender role.
         /// </summary>
         Sender,
-        /// <summary>
-        /// Represents the Receiver role.
-        /// </summary>
-        Receiver,
     }
 }

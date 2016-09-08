@@ -7,16 +7,14 @@ namespace XModemProtocol {
         // Just fields to be used by the instance.
 
         List<byte> _tempBuffer = null;
-
         int _packetIndex = 0;
-
         int _countOfCsSent = 0;
         int _numOfInitializationBytesSent = 0;
-
         int _consecutiveNAKs = 0;
         int _consecutiveLoopsWithCANs = 0;
-
         bool _rebuildPackets = false;
+        System.Timers.Timer _initializationTimeOut;
+        ManualResetEvent _initializationWaitHandle = new ManualResetEvent(false);
 
         #region Backing Fields
         List<byte> _data = null;
@@ -26,11 +24,14 @@ namespace XModemProtocol {
         int _receiverMaxNumberOfInitializationBytesInTotal = 10;
         XModemMode _mode = XModemMode.OneK;
         XModemStates _state = XModemStates.Idle;
-        XModemRole _role = XModemRole.None;
+        XModemRole _role = XModemRole.Receiver;
         #endregion
 
-        System.Timers.Timer _initializationTimeOut;
+        #region Lock Tokens
+        object _modeLockToken = new object();
+        object _roleLockToken = new object();
+        object _stateLockToken = new object();
+        #endregion
 
-        ManualResetEvent _initializationWaitHandle = new ManualResetEvent(false);
     }
 }

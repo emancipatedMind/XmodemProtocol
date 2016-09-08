@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+
 namespace XModemProtocol {
     /// <summary>
     /// Class used to hold options used by both the Sender, and Receiver.
