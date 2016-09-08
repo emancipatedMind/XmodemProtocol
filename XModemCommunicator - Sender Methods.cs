@@ -49,7 +49,13 @@ namespace XModemProtocol {
             // If this event throws error, abort before rethrowing error.
             buildPackets?.Wait();
             try {
-                OperationPending?.Invoke();
+                if (OperationPending != null) {
+                    bool? performOperation = OperationPending?.Invoke();
+                    if (performOperation.HasValue == true && performOperation.Value == false) {
+                        Abort(new AbortedEventArgs(XModemAbortReason.Cancelled), false);
+                        return;
+                    }
+                }
             }
             catch {
                 Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed), false);

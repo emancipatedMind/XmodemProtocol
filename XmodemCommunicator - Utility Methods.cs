@@ -127,9 +127,21 @@ namespace XModemProtocol {
         /// </summary>
         /// <returns>If instance was in position to be cancelled, returns true. Otherwise, false.</returns>
         public void CancelOperation() {
-            if (State == XModemStates.Idle || State == XModemStates.PendingCompletion) return;
-            else if (State == XModemStates.Initializing) while(State == XModemStates.Initializing) { } 
-            State = XModemStates.Cancelled;
+            bool pollAgain;
+            do {
+                pollAgain = false;
+                switch (State) {
+                    case XModemStates.ReceiverReceivingPackets:
+                    case XModemStates.ReceiverSendingInitializationByte:
+                    case XModemStates.SenderAwaitingInitializationFromReceiver:
+                    case XModemStates.SenderPacketsBeingSent:
+                        State = XModemStates.Cancelled;
+                        break;
+                    case XModemStates.Initializing:
+                        pollAgain = true;
+                        break;
+                }
+            } while (pollAgain == true);
         }
     }
 }

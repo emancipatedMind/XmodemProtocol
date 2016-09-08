@@ -68,7 +68,13 @@ namespace XModemProtocol {
             // Invoke OperationPending event. If exception is thrown, the operation is aborted, and the 
             // exception is rethrown. 
             try {
-                OperationPending?.Invoke();
+                if (OperationPending != null) {
+                    bool? performOperation = OperationPending?.Invoke();
+                    if (performOperation.HasValue == true && performOperation.Value == false) {
+                        Abort(new AbortedEventArgs(XModemAbortReason.Cancelled), false);
+                        return;
+                    }
+                }
             }
             catch {
                 Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed), false);

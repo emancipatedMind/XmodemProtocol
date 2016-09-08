@@ -32,7 +32,8 @@ namespace XModemProtocol {
         /// This event fires whenever XModemCommunicator is about to start a send or receive operation.
         /// Must complete before operation begins.
         /// </summary>
-        public event Action OperationPending;
+        /// <returns>Whether to perform operation(true) or not(false).</returns>
+        public event Func<bool> OperationPending;
 
         /// <summary>
         /// This event fires asynchronously whenever XModemCommunicator changes its state.
