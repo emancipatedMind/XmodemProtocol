@@ -28,7 +28,7 @@ namespace XModemProtocol {
         public int Polynomial {
             get { return _polynomial; }
             set {
-                value &= 0xffff;
+                value &= 0xFFFF;
                 // If _polynomial and value are equal, do nothing.
                 if (_polynomial == value) return;
                 _polynomial = value;
