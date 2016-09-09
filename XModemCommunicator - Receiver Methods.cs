@@ -71,13 +71,13 @@ namespace XModemProtocol {
                 if (OperationPending != null) {
                     bool? performOperation = OperationPending?.Invoke();
                     if (performOperation.HasValue == true && performOperation.Value == false) {
-                        Abort(new AbortedEventArgs(XModemAbortReason.Cancelled), false);
+                        Abort(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent), false);
                         return;
                     }
                 }
             }
             catch {
-                Abort(new AbortedEventArgs(XModemAbortReason.InitializationFailed), false);
+                Abort(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent), false);
                 throw;
             }
 

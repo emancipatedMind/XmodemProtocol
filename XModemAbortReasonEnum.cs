@@ -4,27 +4,27 @@
     /// </summary>
     public enum XModemAbortReason {
         /// <summary>
-        /// Timeout has occured during transfer.
+        /// Buffer containing bytes to be sent is empty.
         /// </summary>
-        Timeout,
-        /// <summary>
-        /// The amount of consecutive NAKs sent has been exceeded.
-        /// </summary>
-        ConsecutiveNAKLimitExceeded,
-        /// <summary>
-        /// Operation was cancelled by user.
-        /// </summary>
-        Cancelled,
+        BufferEmpty,
         /// <summary>
         /// A cancellation request was detected on the line.
         /// </summary>
         CancellationRequestReceived,
         /// <summary>
-        /// Buffer containing bytes to be sent is empty.
+        /// Operation was cancelled by user.
         /// </summary>
-        BufferEmpty,
+        Cancelled,
         /// <summary>
-        /// Initialization has failed due to Exception in OperationPending eventhandler, Receiver never got response, or Sender never received initialization byte.
+        /// Operation was foregone by OperationPendingEvent returning false.
+        /// </summary>
+        CancelledByOperationPendingEvent,
+        /// <summary>
+        /// The amount of consecutive NAKs sent has been exceeded.
+        /// </summary>
+        ConsecutiveNAKLimitExceeded,
+        /// <summary>
+        /// Initialization has failed because Receiver never got response, or Sender never received initialization byte.
         /// Sender may be instructed to never use this abort by setting SenderInitializationTimeout to 0.
         /// </summary>
         InitializationFailed,
@@ -32,5 +32,9 @@
         /// Send or receive operation has failed due to some error.
         /// </summary>
         OperationFailed,
+        /// <summary>
+        /// Timeout has occured during transfer.
+        /// </summary>
+        Timeout,
     }
 }
