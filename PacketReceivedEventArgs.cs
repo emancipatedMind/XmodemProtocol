@@ -18,12 +18,6 @@ namespace XModemProtocol {
         /// Flag which denotes whether the packet was validated.
         /// </summary>
         public bool PacketVerified { get; private set; }
-        /// <summary>
-        /// Initializes a new instance of the XModemProtocol.PacketReceivedEventArgs class.
-        /// </summary>
-        /// <param name="packetNumber">Packet number received.</param>
-        /// <param name="packetReceived">Actual packet received.</param>
-        /// <param name="packetVerified">Whether packet was verified.</param>
         internal PacketReceivedEventArgs(int packetNumber, List<byte> packetReceived, bool packetVerified) {
             PacketNumber = packetNumber;
             PacketVerified = packetVerified;

@@ -88,9 +88,6 @@ namespace XModemProtocol {
         }
 
 
-        /// <summary>
-        /// Receiver Method. Method that performs receive operation.
-        /// </summary>
         private void ReceiveOperation() {
 
             _tempBuffer = new List<byte>();
@@ -186,7 +183,7 @@ namespace XModemProtocol {
                             }
 
                             // See if Sender has sent cancellation.
-                            if (DetectCancellation(_tempBuffer)) {
+                            if (CancellationDetected(_tempBuffer)) {
                                 State = XModemStates.Cancelled;
                                 throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
                             } 
@@ -275,12 +272,6 @@ namespace XModemProtocol {
             }
         }
 
-        /// <summary>
-        /// Receiver Method. Method used to validate whether packet is a valid packet or not.
-        /// </summary>
-        /// <param name="buffer">Packet passed in.</param>
-        /// <param name="payLoadSize">Size of payload. Normally 128 or 1024.</param>
-        /// <returns>Returns bool indicating whether packet was validated or not.</returns>
         private bool ValidatePacket(IEnumerable<byte> buffer, int payLoadSize) {
             List<byte> packet = buffer.ToList();
             bool packetVerifed = true;
@@ -337,18 +328,11 @@ namespace XModemProtocol {
             return packetVerifed;
         }
 
-        /// <summary>
-        /// Receiver Method. Send ACK.
-        /// </summary>
         private void SendACK() {
             Port.Write(ACK);
             _consecutiveNAKs = 0;
         }
 
-        /// <summary>
-        /// Receiver Method. Increment Consecutive NAKS sent. If below limit, send NAK.
-        /// </summary>
-        /// <returns>Returns true if ReceiverConsecutiveNAKBytesRequiredForCancellation has been exceeded.</returns>
         private bool SendNAK() {
             if (++_consecutiveNAKs > ReceiverConsecutiveNAKBytesRequiredForCancellation) return true;
             Port.Write(NAK);

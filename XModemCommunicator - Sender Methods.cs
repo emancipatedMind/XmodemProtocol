@@ -98,7 +98,7 @@ namespace XModemProtocol {
                             else continue;
 
                             // If a cancellation is detected, throw XModemProtocolException ending operation.
-                            if (DetectCancellation(_tempBuffer)) {
+                            if (CancellationDetected(_tempBuffer)) {
                                 State = XModemStates.Cancelled;
                                 throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
                             }
@@ -161,7 +161,7 @@ namespace XModemProtocol {
                             else continue;
 
                             // If cancellation detected, exit infinite loop using exception.
-                            if (DetectCancellation(_tempBuffer)) {
+                            if (CancellationDetected(_tempBuffer)) {
                                 throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
                             }
 
@@ -286,25 +286,20 @@ namespace XModemProtocol {
         /// </summary>
         private void SendPacket() {
             List<byte> packet;
-            bool fireEvent = true;
             int index = _packetIndex;
 
             // Check to see if index is within range of Packets.
             // If so, get the packet at that index.
             if (index < Packets.Count)  {
                 packet = Packets[index];
+                PacketToSend?.Invoke(this, new PacketToSendEventArgs(++index, packet)); 
             }
             // If not, this indicates that all packets have been transmitted.
             // Set flag indicating not to fire PacketToSend event. Set packet to EOT, and 
             // change state.
             else {
-                fireEvent = false;
                 packet = new List<byte> { EOT };
                 State = XModemStates.PendingCompletion;
-            }
-            // If fireEvent flag is set, well... fire event.
-            if (fireEvent == true) {
-                PacketToSend?.Invoke(this, new PacketToSendEventArgs(++index, packet)); 
             }
 
             // Write out packet.

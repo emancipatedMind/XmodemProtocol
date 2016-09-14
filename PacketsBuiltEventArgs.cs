@@ -10,10 +10,6 @@ namespace XModemProtocol {
         /// The new count of packets.
         /// </summary>
         public List<List<byte>> Packets { get; private set; }
-        /// <summary>
-        /// Initializes a new instance of the XModemProtocol.PacketsBuiltEventArgs class.
-        /// </summary>
-        /// <param name="packets">A list of the packets built.</param>
         internal PacketsBuiltEventArgs(List<List<byte>> packets) {
             Packets = new List<List<byte>>(packets);
         }
