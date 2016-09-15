@@ -41,7 +41,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbortedEventArgs.cs" />
-    <Compile Include="CRC16LTE.cs" />
+    <Compile Include="CRC\BaseFunctions.cs" />
+    <Compile Include="CRC\ChecksumCalculator.cs" />
+    <Compile Include="CRC\CRC16LTE.cs" />
+    <Compile Include="CRC\ICRCChecksumValidator.cs" />
+    <Compile Include="CRC\ICRCChecksumCalculator.cs" />
+    <Compile Include="CRC\ICRCInitialValue.cs" />
+    <Compile Include="CRC\ICRCLookUpTable.cs" />
+    <Compile Include="IChecksumCalculator.cs" />
+    <Compile Include="CRC\ICRCPolynomial.cs" />
+    <Compile Include="CRC\LookupTable.cs" />
     <Compile Include="PacketReceivedEventArgs.cs" />
     <Compile Include="PortExtensions.cs" />
     <Compile Include="RoleUpdatedEventArgs .cs" />

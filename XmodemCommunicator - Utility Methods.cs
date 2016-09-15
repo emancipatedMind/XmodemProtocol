@@ -57,7 +57,7 @@ namespace XModemProtocol {
             if (Mode == XModemMode.Checksum)
                 return new byte[] { (byte)packetInfo.Sum(b => b) };
             else
-                return CheckSumValidator.GetChecksum(packetInfo);
+                return CheckSumValidator.CalculateChecksum(packetInfo).ToArray();
         }
 
         private void SetCommonOptions(XModemProtocolOptions options) {

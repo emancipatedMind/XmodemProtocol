@@ -308,7 +308,8 @@ namespace XModemProtocol {
                     }
                 }
                 else {
-                    if (!CheckSum(packet.GetRange(3, packet.Count - 3)).SequenceEqual(CRC16LTE.Zeros)) {
+
+                    if (CheckSumValidator.ValidateChecksum(packet.GetRange(3, packet.Count - 3)) == false) {
                         throw new XModemProtocolException();
                     }
                 }

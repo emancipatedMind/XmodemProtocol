@@ -6,10 +6,19 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocol", "XModemProtocol.csproj", "{49523120-C2E7-4B79-A2D0-FC9F4D031A54}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocolTester", "..\XModemProtocolTester\XModemProtocolTester.csproj", "{084866D6-73A7-482D-A141-A4A6D04AC8E6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49523120-C2E7-4B79-A2D0-FC9F4D031A54} = {49523120-C2E7-4B79-A2D0-FC9F4D031A54}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocolReceiverTester", "..\XModemProtocolReceiverTester\XModemProtocolReceiverTester.csproj", "{B96227C8-6139-45AD-B7C5-45C5C9E96BDC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49523120-C2E7-4B79-A2D0-FC9F4D031A54} = {49523120-C2E7-4B79-A2D0-FC9F4D031A54}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCRCUsingNUnit", "..\TestCRCUsingNUnit\TestCRCUsingNUnit.csproj", "{2AF8F554-E0BF-474A-BE11-33E6A39723A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCRC", "..\TestCRC\TestCRC.csproj", "{11803E2F-5326-41C0-85BA-9D6B687DEA38}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49523120-C2E7-4B79-A2D0-FC9F4D031A54} = {49523120-C2E7-4B79-A2D0-FC9F4D031A54}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +38,10 @@ Global
 		{B96227C8-6139-45AD-B7C5-45C5C9E96BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B96227C8-6139-45AD-B7C5-45C5C9E96BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B96227C8-6139-45AD-B7C5-45C5C9E96BDC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AF8F554-E0BF-474A-BE11-33E6A39723A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AF8F554-E0BF-474A-BE11-33E6A39723A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AF8F554-E0BF-474A-BE11-33E6A39723A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AF8F554-E0BF-474A-BE11-33E6A39723A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11803E2F-5326-41C0-85BA-9D6B687DEA38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11803E2F-5326-41C0-85BA-9D6B687DEA38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11803E2F-5326-41C0-85BA-9D6B687DEA38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11803E2F-5326-41C0-85BA-9D6B687DEA38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
