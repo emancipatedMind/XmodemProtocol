@@ -22,7 +22,7 @@ namespace XModemProtocol.CRC {
 
         private ICRCLookUpTable iCRCLookUpTable { get; } = new LookUpTable(0x1021);
 
-        private ICRCChecksumCalculator iCRCGetChecksum { get; } = ChecksumCalculator.Instance;
+        private ICRCChecksumCalculator iCRCGetChecksum { get; } = CRCChecksumCalculator.Instance;
 
         /// <summary>
         /// Reference used by ValidateChecksum(). 

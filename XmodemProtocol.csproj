@@ -42,8 +42,9 @@
   <ItemGroup>
     <Compile Include="AbortedEventArgs.cs" />
     <Compile Include="CRC\BaseFunctions.cs" />
-    <Compile Include="CRC\ChecksumCalculator.cs" />
+    <Compile Include="CRC\CRCChecksumCalculator.cs" />
     <Compile Include="CRC\CRC16LTE.cs" />
+    <Compile Include="CRC\CRCException.cs" />
     <Compile Include="CRC\ICRCChecksumValidator.cs" />
     <Compile Include="CRC\ICRCChecksumCalculator.cs" />
     <Compile Include="CRC\ICRCInitialValue.cs" />

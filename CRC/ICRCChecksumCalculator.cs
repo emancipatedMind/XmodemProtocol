@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace XModemProtocol.CRC {
-    public interface ICRCChecksumCalculator : IChecksumCalculator, ICRCInitialValue {
+    public interface ICRCChecksumCalculator : ICRCInitialValue {
         ICRCLookUpTable Table { get; set; }
+        IEnumerable<byte> CalculateChecksum(IEnumerable<byte> input);
     }
 }

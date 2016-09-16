@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace XModemProtocol.CRC {
-    public class ChecksumCalculator : BaseFunctions, ICRCChecksumCalculator {
+    public class CRCChecksumCalculator : BaseFunctions, ICRCChecksumCalculator {
 
-        public static ChecksumCalculator Instance { get; } = new ChecksumCalculator();
+        public static CRCChecksumCalculator Instance { get; } = new CRCChecksumCalculator();
         public IEnumerable<byte> InitialCRCValue { get; set; } = new byte[2];
         public ICRCLookUpTable Table { get; set; }
 
-        private ChecksumCalculator() { }
+        private CRCChecksumCalculator() { }
 
         private int _runningChecksum;
         private int _currentByte;
@@ -27,6 +27,7 @@ namespace XModemProtocol.CRC {
         /// <param name="input">Message for which checksum will be computed.</param>
         /// <returns>A two byte enumerable containing checksum.</returns>
         public IEnumerable<byte> CalculateChecksum(IEnumerable<byte> input) {
+            if (Table == null) throw new CRCException("ICRCChecksumCalculator needs ICRCLookUpTable.");
             _input = input.ToList();
             ComputeChecksum();
             return CheckSumAsArray();

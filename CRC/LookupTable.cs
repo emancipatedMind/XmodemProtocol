@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XModemProtocol.CRC {
+﻿namespace XModemProtocol.CRC {
     public class LookUpTable : BaseFunctions, ICRCLookUpTable {
 
         private int[] _lookupTable = new int[256];
         private int _polynomial;
         private int _controlByte;
         private int _tableValue;
+        private int _currentIndex;
         private bool _tableBuilt = false;
-
 
         public int Polynomial {
             get { return _polynomial; }
@@ -36,13 +30,15 @@ namespace XModemProtocol.CRC {
         }
 
         private void MakeTable() {
-            for (int index = 0; index < _lookupTable.Length; ++index) {
-                CreateNewControlByteUsing(index);
+            for (_currentIndex = 0; _currentIndex < _lookupTable.Length; ++_currentIndex) {
+                CreateNewControlByte();
                 CalculateNextTableValueFromControlByte();
-                InsertTableValueIntoTableAt(index);
+                InsertTableValueIntoTable();
             }
             _tableBuilt = true;
         }
+
+        private void CreateNewControlByte() => _controlByte = _currentIndex << 8;
 
         private void CalculateNextTableValueFromControlByte() {
             _tableValue = 0;
@@ -54,38 +50,32 @@ namespace XModemProtocol.CRC {
         }
 
         private void ShiftTableValueAndXORWithPolynomialIfNecessary() {
-            bool xorIsNecessary = IsXorWithPolynomialNeeded();
-            _tableValue <<= 1;
-            if (xorIsNecessary) _tableValue = _tableValue ^ Polynomial;
+            if (XorIsNecessary()) _tableValue = (_tableValue << 1) ^ Polynomial;
+            else _tableValue <<= 1;
         }
 
-        private bool IsXorWithPolynomialNeeded() {
+        private bool XorIsNecessary() {
             int xorResult = _tableValue ^ _controlByte;
-            int mostSignificantBit = ApplyMask(xorResult, 0x8000); 
-            return mostSignificantBit == 0x8000;
+            int mostSignificantBitOfXorResult = ApplyMask(xorResult, 0x8000); 
+            return mostSignificantBitOfXorResult == 0x8000;
         }
 
-        private void InsertTableValueIntoTableAt(int index) => _lookupTable[index] = _tableValue;
-
-        private void CreateNewControlByteUsing(int index) => _controlByte = index << 8;
+        private void InsertTableValueIntoTable() => _lookupTable[_currentIndex] = _tableValue;
 
         #region ObjectOverrides
         public override string ToString() {
             return $"[Polynomial : 0x{Polynomial:4x}]";
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return ToString().GetHashCode();
         }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj) {
             if (obj is LookUpTable && GetHashCode() == obj.GetHashCode())
                 return true;
             else return false;
         }
         #endregion        
-
     }
 }
