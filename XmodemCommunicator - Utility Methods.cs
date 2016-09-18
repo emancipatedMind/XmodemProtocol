@@ -54,10 +54,10 @@ namespace XModemProtocol {
         }
 
         private byte[] CheckSum(IEnumerable<byte> packetInfo) {
-            if (Mode == XModemMode.Checksum)
+            //if (Mode == XModemMode.Checksum)
                 return new byte[] { (byte)packetInfo.Sum(b => b) };
-            else
-                return CheckSumValidator.CalculateChecksum(packetInfo).ToArray();
+            //else
+                //return CheckSumValidator.CalculateChecksum(packetInfo).ToArray();
         }
 
         private void SetCommonOptions(XModemProtocolOptions options) {

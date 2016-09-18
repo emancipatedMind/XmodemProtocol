@@ -1,31 +1,21 @@
-﻿namespace XModemProtocol.CRC {
+﻿namespace XModemProtocol.Calculators {
     public class LookUpTable : BaseFunctions, ICRCLookUpTable {
 
         private int[] _lookupTable = new int[256];
-        private int _polynomial;
         private int _controlByte;
         private int _tableValue;
         private int _currentIndex;
-        private bool _tableBuilt = false;
 
-        public int Polynomial {
-            get { return _polynomial; }
-            set {
-                value = ApplyMask(value, 0xFFFF);
-                if (_polynomial == value) return;
-                _polynomial = value;
-                _tableBuilt = false;
-            }
-        }
+        public int Polynomial { get; private set; }
 
         public ICRCLookUpTable Table { get { return this; } }
 
         public LookUpTable(int polynomial) {
             Polynomial = polynomial;
+            MakeTable();
         }
 
         public int QueryTable(int index) {
-            if (_tableBuilt == false) MakeTable(); 
             return _lookupTable[index];
         }
 
@@ -35,7 +25,6 @@
                 CalculateNextTableValueFromControlByte();
                 InsertTableValueIntoTable();
             }
-            _tableBuilt = true;
         }
 
         private void CreateNewControlByte() => _controlByte = _currentIndex << 8;

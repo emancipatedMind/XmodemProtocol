@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XModemProtocol.CRC {
+namespace XModemProtocol {
     public class CRCException : ApplicationException {
         public CRCException(string message ) : base(message) { }
     }

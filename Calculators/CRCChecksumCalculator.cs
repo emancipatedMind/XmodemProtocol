@@ -4,22 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XModemProtocol.CRC {
+namespace XModemProtocol.Calculators {
     public class CRCChecksumCalculator : BaseFunctions, ICRCChecksumCalculator {
 
-        public static CRCChecksumCalculator Instance { get; } = new CRCChecksumCalculator();
         public IEnumerable<byte> InitialCRCValue { get; set; } = new byte[2];
-        public ICRCLookUpTable Table { get; set; }
 
-        private CRCChecksumCalculator() { }
-
+        private ICRCLookUpTable _table;
         private int _runningChecksum;
         private int _currentByte;
         private int _operandFromTable;
-
         private int _checkSum;
-
         private List<byte> _input;
+
+        public CRCChecksumCalculator(ICRCLookUpTable table) {
+            _table = table;
+        }
 
         /// <summary>
         /// A method used to calculate checksum.
@@ -27,7 +26,7 @@ namespace XModemProtocol.CRC {
         /// <param name="input">Message for which checksum will be computed.</param>
         /// <returns>A two byte enumerable containing checksum.</returns>
         public IEnumerable<byte> CalculateChecksum(IEnumerable<byte> input) {
-            if (Table == null) throw new CRCException("ICRCChecksumCalculator needs ICRCLookUpTable.");
+            if (_table == null) throw new CRCException("ICRCChecksumCalculator needs ICRCLookUpTable.");
             _input = input.ToList();
             ComputeChecksum();
             return CheckSumAsArray();
@@ -53,7 +52,7 @@ namespace XModemProtocol.CRC {
 
         private void GetOperandFromLookupTable() {
             int indexOfValueNeededFromLookupTable = (_runningChecksum >> 8) ^ _currentByte;
-            _operandFromTable = Table.QueryTable(indexOfValueNeededFromLookupTable); 
+            _operandFromTable = _table.QueryTable(indexOfValueNeededFromLookupTable); 
         }
         
         private void ReCalculateRunningCheckSumWithOperandFromTable () {

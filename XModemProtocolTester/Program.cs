@@ -8,19 +8,140 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XModemProtocol;
-using XModemProtocol.CRC;
+using XModemProtocol.Builders;
+using XModemProtocol.Calculators;
+using XModemProtocol.Options;
+using XModemProtocol.Validators.Checksum;
 using NUnit.Framework;
 
-namespace XModemProtocolTester
-{
+namespace XModemProtocolTester {
     partial class Program {
         static void Main(string[] args) {
+            IXModemProtocolOptions options = new XModemProtocolOptions();
+            ISummationChecksumCalculator calculator = new NormalChecksumCalculator();
+            ICRCChecksumCalculator cRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+            IPacketBuilder builder = new NormalPacketBuilder(options, calculator);
+            var message = Enumerable.Repeat((byte)0x34,127);
+            var packets = builder.GetPackets(message);
+            Debug.WriteLine(packets.Count);
+            foreach (var packet in packets) { 
+                foreach(var b in packet) 
+                    Debug.Write($"{b:X2} ");
+                Debug.Write(Environment.NewLine);
+            }
+            Debug.WriteLine(packets[0].Count == 132 ? "Full Packet" : "Recheck! Missing bytes");
         }
     }
 
+    [TestFixture]
+    public class TestPacketBuilder {
+        IXModemProtocolOptions _options = new XModemProtocolOptions();
+        ISummationChecksumCalculator _calculator = new NormalChecksumCalculator();
+        ICRCChecksumCalculator _CRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+        IPacketBuilder _builder;
+        IEnumerable<byte> shortMessage = Enumerable.Repeat((byte)0x34,127);
+        IEnumerable<byte> longMessage = Enumerable.Repeat((byte)0x34,129);
+
+        [Test]
+        public void TestNormalPacketBuilder() {
+            _builder = new NormalPacketBuilder(_options, _calculator);
+
+            var packets = _builder.GetPackets(shortMessage);
+            Assert.AreEqual(packets[0].Count, 132);
+            Assert.AreEqual(packets.Count, 1);
+
+            packets = _builder.GetPackets(longMessage);
+            Assert.AreEqual(packets[0].Count, 132);
+            Assert.AreEqual(packets.Count, 2);
+        }
+        [Test] 
+        public void TestCRCPacketBuilder() {
+            _builder = new CRCPacketBuilder(_options, _CRCCalculator);
+
+            var packets = _builder.GetPackets(shortMessage);
+            Assert.AreEqual(packets[0].Count, 133);
+            Assert.AreEqual(packets.Count, 1);
+
+            packets = _builder.GetPackets(longMessage);
+            Assert.AreEqual(packets[0].Count, 133);
+            Assert.AreEqual(packets.Count, 2);
+        }
+        [Test] 
+        public void TestOneKPacketBuilder() {
+            _builder = new OneKPacketBuilder(_options, _CRCCalculator);
+
+            var packets = _builder.GetPackets(shortMessage);
+            Assert.AreEqual(packets[0].Count, 133);
+            Assert.AreEqual(packets.Count, 1);
+            Assert.AreEqual(packets[0][0] , 0x01);
+
+            packets = _builder.GetPackets(longMessage);
+            Assert.AreEqual(packets[0].Count, 1029);
+            Assert.AreEqual(packets.Count, 1);
+            Assert.AreEqual(packets[0][0] , 0x02);
+        }
+
+    }
+
     [TestFixture] 
-    public class TestCRCLookupTable {
+    public class TestIChecksumCalculator {
+
+        byte[] _collection = new byte[] { 0x00, 0x19, 0x88, 0x33, 0x72, };
+
+        [Test] 
+        public void TestChecksumCalculator() {
+            IChecksumCalculator calculator = new NormalChecksumCalculator();
+            int checksum = _collection.Sum(currentByte => currentByte);
+            byte lsb = (byte)(checksum & 0xFF);
+            Assert.AreEqual(lsb, calculator.CalculateChecksum(_collection).ElementAt(0));
+        }
+
+    }
+
+    [TestFixture] 
+    public class TestNormalValidator {
+        
+        byte[] _collection = new byte[] { 0x00, 0x19, 0x88, 0x33, 0x72, };
+
+        [Test] 
+        public void TestIChecksumValidator() {
+            byte validLSB = 0x46;
+            byte invalidLSB = 0x95;
+            List<byte> validatedMessage = new List<byte>();
+            validatedMessage.AddRange(_collection);
+            validatedMessage.Add(validLSB);
+
+            List<byte> invalidatedMessage = new List<byte>();
+            invalidatedMessage.AddRange(_collection);
+            invalidatedMessage.Add(invalidLSB);
+
+            IChecksumValidator validator = new NormalChecksumValidator(new NormalChecksumCalculator());
+
+            Assert.IsTrue(validator.ValidateChecksum(validatedMessage)); 
+            Assert.IsFalse(validator.ValidateChecksum(invalidatedMessage)); 
+
+        }
+
+    }
+
+    [TestFixture] 
+    public class TestICRCChecksumValidator {
+
+        [Test] 
+        public void TestCRCChecksumValidator() {
+
+            ICRCChecksumCalculator calculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+            ICRCChecksumValidator validator = new CRCChecksumValidator(calculator);
+            validator.ChecksumReference = new byte[2];
+
+            Assert.IsTrue(validator.ValidateChecksum(new byte[] { 0xE5, 0xAD, 0x8B })); 
+            Assert.IsFalse(validator.ValidateChecksum(new byte[] { 0xE5, 0xAA, 0x8B })); 
+        }
+
+    }
+
+    [TestFixture] 
+    public class TestICRCLookupTable {
         List<int[]> _indicesToCheck = new List<int[]> {
             new int[] { 0, 1, 187, 254, 255, },
             new int[] { 0, 4129, 5808, 3793, 7920, },
@@ -28,7 +149,7 @@ namespace XModemProtocolTester
 
         [Test] 
         public void TestSetOfValuesOnCRCLookUpTable() {
-            var table = new LookUpTable(0x1021);
+            ICRCLookUpTable table = new LookUpTable(0x1021);
 
             for(int i = 0; i < _indicesToCheck[0].Length; i++) {
                 Assert.AreEqual(table.QueryTable(_indicesToCheck[0][i]), _indicesToCheck[1][i]); 
@@ -38,20 +159,18 @@ namespace XModemProtocolTester
 
     [TestFixture] 
     public class TestICRCChecksumCalculator {
+
+        ICRCChecksumCalculator _crc = new CRCChecksumCalculator(new LookUpTable(0x1021));
+
         [Test]
-        public void TestValueD9InICRCChecksumCalculator() {
-            var crc = new CRC16LTE();
-            Assert.True(Enumerable.SequenceEqual(crc.CalculateChecksum(new byte[] { 0xD9 }), new byte[] { 0x5A, 0x54 }));
+        public void TestValuesD9AndA5InICRCChecksumCalculator() {
+            Assert.True(Enumerable.SequenceEqual(_crc.CalculateChecksum(new byte[] { 0xD9 }), new byte[] { 0x5A, 0x54 }));
+            Assert.True(Enumerable.SequenceEqual(_crc.CalculateChecksum(new byte[] { 0xA5 }), new byte[] { 0xE5, 0x4F }));
         }
-        [Test]
-        public void TestValueA5InICRCChecksumCalculator() {
-            var crc = new CRC16LTE();
-            Assert.True(Enumerable.SequenceEqual(crc.CalculateChecksum(new byte[] { 0xA5 }), new byte[] { 0xE5, 0x4F }));
-        }
+
         [Test]
         public void TestE5AD8BInICRCChecksumCalculator() {
-            var crc = new CRC16LTE();
-            Assert.True(Enumerable.SequenceEqual(crc.CalculateChecksum(new byte[] { 0xE5, 0xAD, 0x8B }), new byte[] { 0x00, 0x00 }));
+            Assert.True(Enumerable.SequenceEqual(_crc.CalculateChecksum(new byte[] { 0xE5, 0xAD, 0x8B }), new byte[] { 0x00, 0x00 }));
         }
     }
 }

@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocol", "XModemProtocol.csproj", "{49523120-C2E7-4B79-A2D0-FC9F4D031A54}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModemProtocolTester", "XModemProtocolTester\XModemProtocolTester.csproj", "{084866D6-73A7-482D-A141-A4A6D04AC8E6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49523120-C2E7-4B79-A2D0-FC9F4D031A54} = {49523120-C2E7-4B79-A2D0-FC9F4D031A54}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

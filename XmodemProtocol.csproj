@@ -41,24 +41,36 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbortedEventArgs.cs" />
-    <Compile Include="CRC\BaseFunctions.cs" />
-    <Compile Include="CRC\CRCChecksumCalculator.cs" />
-    <Compile Include="CRC\CRC16LTE.cs" />
-    <Compile Include="CRC\CRCException.cs" />
-    <Compile Include="CRC\ICRCChecksumValidator.cs" />
-    <Compile Include="CRC\ICRCChecksumCalculator.cs" />
-    <Compile Include="CRC\ICRCInitialValue.cs" />
-    <Compile Include="CRC\ICRCLookUpTable.cs" />
-    <Compile Include="IChecksumCalculator.cs" />
-    <Compile Include="CRC\ICRCPolynomial.cs" />
-    <Compile Include="CRC\LookupTable.cs" />
+    <Compile Include="Builders\CRCPacketBuilder.cs" />
+    <Compile Include="Builders\IPacketBuilder.cs" />
+    <Compile Include="Builders\NormalPacketBuilder.cs" />
+    <Compile Include="Builders\OneKPacketBuilder.cs" />
+    <Compile Include="Calculators\BaseFunctions.cs" />
+    <Compile Include="Calculators\CRCChecksumCalculator.cs" />
+    <Compile Include="Calculators\ISummationChecksumCalculator.cs" />
+    <Compile Include="Options\IXModemProtocolOptions.cs" />
+    <Compile Include="Options\XModemProtocolOptions.cs" />
+    <Compile Include="Builders\PacketBuilder.cs" />
+    <Compile Include="Validators\Checksum\CRCChecksumValidator.cs" />
+    <Compile Include="CRCException.cs" />
+    <Compile Include="Validators\Checksum\ICRCChecksumValidator.cs" />
+    <Compile Include="Calculators\ICRCChecksumCalculator.cs" />
+    <Compile Include="Calculators\ICRCLookUpTable.cs" />
+    <Compile Include="Validators\Checksum\IValidateChecksum.cs" />
+    <Compile Include="Calculators\IChecksumCalculator.cs" />
+    <Compile Include="Calculators\LookupTable.cs" />
+    <Compile Include="Validators\Checksum\IChecksumValidator.cs" />
+    <Compile Include="Calculators\NormalChecksumCalculator.cs" />
     <Compile Include="PacketReceivedEventArgs.cs" />
     <Compile Include="PortExtensions.cs" />
     <Compile Include="RoleUpdatedEventArgs .cs" />
+    <Compile Include="Validators\Packet\IPacketValidator.cs" />
+    <Compile Include="Validators\Packet\PacketValidator.cs" />
     <Compile Include="XModemAbortReasonEnum.cs" />
     <Compile Include="CompletedEventArgs.cs" />
     <Compile Include="ModeUpdatedEventArgs.cs" />
     <Compile Include="PacketsBuiltEventArgs.cs" />
+    <Compile Include="Validators\Checksum\NormalChecksumValidator.cs" />
     <Compile Include="XModemCommunicator - Receiver Methods.cs" />
     <Compile Include="XModemCommunicator - Sender Methods.cs" />
     <Compile Include="XModemCommunicator - Utility Methods.cs" />
@@ -75,6 +87,9 @@
     <Compile Include="XModemModeEnum.cs" />
     <Compile Include="XModemProtocolException.cs" />
     <Compile Include="XModemProtocolOptions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Validators\Cancellation\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

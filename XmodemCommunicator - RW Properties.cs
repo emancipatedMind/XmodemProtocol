@@ -12,7 +12,7 @@ namespace XModemProtocol {
         /// <summary>
         /// Object used for CRC.
         /// </summary>
-        public CRC.CRC16LTE CheckSumValidator { get; set; } = new CRC.CRC16LTE();
+        public Validators.Checksum.CRCChecksumValidator CheckSumValidator { get; set; } = new Validators.Checksum.CRCChecksumValidator(new Calculators.CRCChecksumCalculator(new Calculators.LookUpTable(0x1021)));
 
         #region Shared Properties.
         /// <summary>
