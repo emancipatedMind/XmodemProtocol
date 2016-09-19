@@ -26,7 +26,6 @@ namespace XModemProtocol.Calculators {
         /// <param name="input">Message for which checksum will be computed.</param>
         /// <returns>A two byte enumerable containing checksum.</returns>
         public IEnumerable<byte> CalculateChecksum(IEnumerable<byte> input) {
-            if (_table == null) throw new CRCException("ICRCChecksumCalculator needs ICRCLookUpTable.");
             _input = input.ToList();
             ComputeChecksum();
             return CheckSumAsArray();

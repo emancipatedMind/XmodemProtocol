@@ -1,4 +1,5 @@
 ﻿using System;
+using XModemProtocol.EventData;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {

@@ -14,8 +14,8 @@ namespace XModemProtocol.Validators.Packet {
         private byte _packetNumberExpected;
         private List<byte> _data;
 
-        protected PacketValidator(
-            IValidateChecksum validator, IXModemProtocolOptions options) {
+        public PacketValidator(
+            IXModemProtocolOptions options, IValidateChecksum validator) {
             Reset();
             _validator = validator;
             _options = options;
@@ -53,7 +53,7 @@ namespace XModemProtocol.Validators.Packet {
 
         private bool ChecksumIsIncorrect() {
             List<byte> payload = _data.GetRange(3, _data.Count - 3);
-            return _validator.ValidateChecksum(payload); 
+            return _validator.ValidateChecksum(payload) == false; 
         }
     }
 }

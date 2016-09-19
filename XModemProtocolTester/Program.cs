@@ -12,25 +12,85 @@ using XModemProtocol.Builders;
 using XModemProtocol.Calculators;
 using XModemProtocol.Options;
 using XModemProtocol.Validators.Checksum;
+using XModemProtocol.Validators.Packet;
 using NUnit.Framework;
 
 namespace XModemProtocolTester {
     partial class Program {
         static void Main(string[] args) {
-            IXModemProtocolOptions options = new XModemProtocolOptions();
-            ISummationChecksumCalculator calculator = new NormalChecksumCalculator();
-            ICRCChecksumCalculator cRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
-            IPacketBuilder builder = new NormalPacketBuilder(options, calculator);
-            var message = Enumerable.Repeat((byte)0x34,127);
-            var packets = builder.GetPackets(message);
-            Debug.WriteLine(packets.Count);
-            foreach (var packet in packets) { 
-                foreach(var b in packet) 
-                    Debug.Write($"{b:X2} ");
-                Debug.Write(Environment.NewLine);
-            }
-            Debug.WriteLine(packets[0].Count == 132 ? "Full Packet" : "Recheck! Missing bytes");
         }
+    }
+
+    [TestFixture]
+    public class TestPacketValidator {
+        static IXModemProtocolOptions _options = new XModemProtocolOptions();
+
+        static ISummationChecksumCalculator _calculator = new NormalChecksumCalculator();
+        static IChecksumValidator _normalChecksumValidator = new NormalChecksumValidator(_calculator);
+        IPacketValidator _validator = new PacketValidator(_options, _normalChecksumValidator);
+
+        static ICRCChecksumCalculator _cRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+        static ICRCChecksumValidator _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
+        IPacketValidator _crcValidator = new PacketValidator(_options, _crcChecksumValidator);
+
+        IEnumerable<byte> _shortPacketHeader = new byte[] { 0x01, 0x01, 0xFE };
+        IEnumerable<byte> _shortPacketMessage = Enumerable.Repeat((byte)0x43,128);
+
+        IEnumerable<byte> _longPacketHeader = new byte[] { 0x02, 0x01, 0xFE };
+        IEnumerable<byte> _longPacketMessage = Enumerable.Repeat((byte)0x43,1024);
+
+        byte _shortPacketChecksum = 0x80;
+        IEnumerable<byte> _shortPacketCRCChecksum = new byte[] { 0x9E, 0xB0 };
+        IEnumerable<byte> _longPacketCRCChecksum = new byte[] { 0x83, 0xE9 };
+
+        List<byte> _shortPacket;
+        List<byte> _longPacket;
+
+        [Test]
+        public void TestOneKPacketValidator() {
+            _longPacket = new List<byte>(_longPacketHeader);
+            _longPacket.AddRange(_longPacketMessage);
+            _longPacket.AddRange(_longPacketCRCChecksum);
+            // Test normal validator.
+            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket));
+            // Test resend of packet.
+            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket));
+            _longPacket[131] = 0x73;
+            _crcValidator.Reset();
+            // Test incorrect checksum.
+            Assert.IsFalse(_crcValidator.ValidatePacket(_longPacket));
+        }
+
+        [Test]
+        public void TestNormalPacketValidator() {
+            _shortPacket = new List<byte>(_shortPacketHeader);
+            _shortPacket.AddRange(_shortPacketMessage);
+            _shortPacket.Add(_shortPacketChecksum);
+            // Test normal validator.
+            Assert.IsTrue(_validator.ValidatePacket(_shortPacket));
+            // Test resend of packet.
+            Assert.IsTrue(_validator.ValidatePacket(_shortPacket));
+            _shortPacket[131] = 0x73;
+            _validator.Reset();
+            // Test incorrect checksum.
+            Assert.IsFalse(_validator.ValidatePacket(_shortPacket));
+        }
+
+        [Test]
+        public void TestCRCPacketValidator() {
+            _shortPacket = new List<byte>(_shortPacketHeader);
+            _shortPacket.AddRange(_shortPacketMessage);
+            _shortPacket.AddRange(_shortPacketCRCChecksum);
+            // Test normal validator.
+            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket));
+            // Test resend of packet.
+            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket));
+            _shortPacket[131] = 0x73;
+            _crcValidator.Reset();
+            // Test incorrect checksum.
+            Assert.IsFalse(_crcValidator.ValidatePacket(_shortPacket));
+        }
+
     }
 
     [TestFixture]
