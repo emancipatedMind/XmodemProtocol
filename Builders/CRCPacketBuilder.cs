@@ -9,8 +9,8 @@ namespace XModemProtocol.Builders {
     using Calculators;
     public class CRCPacketBuilder : PacketBuilder {
 
-        public CRCPacketBuilder(IXModemProtocolOptions options, ICRCChecksumCalculator calculator) :
-            base(options, calculator) { }
+        public CRCPacketBuilder(ICRCChecksumCalculator calculator) :
+            base(calculator) { }
 
         protected override void AttachHeader() {
             _currentPacket.Add(_options.SOH);

@@ -21,13 +21,13 @@ namespace XModemProtocol.Builders {
         private List<List<byte>> _packets;
         private int _packetNumber;
 
-        protected PacketBuilder(IXModemProtocolOptions options, IChecksumCalculator calculator) {
-            _options = options;
+        protected PacketBuilder(IChecksumCalculator calculator) {
             _calculator = calculator;
         }
 
-        public List<List<byte>> GetPackets(IEnumerable<byte> input) {
+        public List<List<byte>> GetPackets(IEnumerable<byte> input, IXModemProtocolOptions options) {
             _data = input.ToList();
+            _options = options;
             _packetNumber = 1;
             _position = 0;
             _packets = new List<List<byte>>();

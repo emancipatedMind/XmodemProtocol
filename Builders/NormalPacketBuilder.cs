@@ -9,8 +9,8 @@ namespace XModemProtocol.Builders {
     using Calculators;
     public class NormalPacketBuilder : PacketBuilder {
 
-        public NormalPacketBuilder(IXModemProtocolOptions options, ISummationChecksumCalculator calculator) :
-            base(options, calculator) { }
+        public NormalPacketBuilder(ISummationChecksumCalculator calculator) :
+            base(calculator) { }
 
         protected override void AttachHeader() {
             _currentPacket.Add(_options.SOH);

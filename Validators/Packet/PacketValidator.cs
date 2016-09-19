@@ -14,19 +14,18 @@ namespace XModemProtocol.Validators.Packet {
         private byte _packetNumberExpected;
         private List<byte> _data;
 
-        public PacketValidator(
-            IXModemProtocolOptions options, IValidateChecksum validator) {
+        public PacketValidator( IValidateChecksum validator) {
             Reset();
             _validator = validator;
-            _options = options;
         } 
 
         public void Reset() {
             _packetNumberExpected = 1;
         }
 
-        public bool ValidatePacket(IEnumerable<byte> input) {
+        public bool ValidatePacket(IEnumerable<byte> input, IXModemProtocolOptions options) {
             _data = input.ToList();
+            _options = options;
             if (PacketExpectedIsIncorrect()) {
                 if (PacketIsDuplicate())
                     return true;

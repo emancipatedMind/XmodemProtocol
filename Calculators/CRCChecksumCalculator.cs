@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace XModemProtocol.Calculators {
+    using Options;
     public class CRCChecksumCalculator : BaseFunctions, ICRCChecksumCalculator {
 
         public IEnumerable<byte> InitialCRCValue { get; set; } = new byte[2];

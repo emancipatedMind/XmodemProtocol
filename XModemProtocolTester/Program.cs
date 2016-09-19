@@ -27,11 +27,11 @@ namespace XModemProtocolTester {
 
         static ISummationChecksumCalculator _calculator = new NormalChecksumCalculator();
         static IChecksumValidator _normalChecksumValidator = new NormalChecksumValidator(_calculator);
-        IPacketValidator _validator = new PacketValidator(_options, _normalChecksumValidator);
+        IPacketValidator _validator = new PacketValidator(_normalChecksumValidator);
 
         static ICRCChecksumCalculator _cRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
         static ICRCChecksumValidator _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
-        IPacketValidator _crcValidator = new PacketValidator(_options, _crcChecksumValidator);
+        IPacketValidator _crcValidator = new PacketValidator(_crcChecksumValidator);
 
         IEnumerable<byte> _shortPacketHeader = new byte[] { 0x01, 0x01, 0xFE };
         IEnumerable<byte> _shortPacketMessage = Enumerable.Repeat((byte)0x43,128);
@@ -52,13 +52,13 @@ namespace XModemProtocolTester {
             _longPacket.AddRange(_longPacketMessage);
             _longPacket.AddRange(_longPacketCRCChecksum);
             // Test normal validator.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket));
+            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket, _options));
             // Test resend of packet.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket));
+            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket, _options));
             _longPacket[131] = 0x73;
             _crcValidator.Reset();
             // Test incorrect checksum.
-            Assert.IsFalse(_crcValidator.ValidatePacket(_longPacket));
+            Assert.IsFalse(_crcValidator.ValidatePacket(_longPacket, _options));
         }
 
         [Test]
@@ -67,13 +67,13 @@ namespace XModemProtocolTester {
             _shortPacket.AddRange(_shortPacketMessage);
             _shortPacket.Add(_shortPacketChecksum);
             // Test normal validator.
-            Assert.IsTrue(_validator.ValidatePacket(_shortPacket));
+            Assert.IsTrue(_validator.ValidatePacket(_shortPacket, _options));
             // Test resend of packet.
-            Assert.IsTrue(_validator.ValidatePacket(_shortPacket));
+            Assert.IsTrue(_validator.ValidatePacket(_shortPacket, _options));
             _shortPacket[131] = 0x73;
             _validator.Reset();
             // Test incorrect checksum.
-            Assert.IsFalse(_validator.ValidatePacket(_shortPacket));
+            Assert.IsFalse(_validator.ValidatePacket(_shortPacket, _options));
         }
 
         [Test]
@@ -82,13 +82,13 @@ namespace XModemProtocolTester {
             _shortPacket.AddRange(_shortPacketMessage);
             _shortPacket.AddRange(_shortPacketCRCChecksum);
             // Test normal validator.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket));
+            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket, _options));
             // Test resend of packet.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket));
+            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket, _options));
             _shortPacket[131] = 0x73;
             _crcValidator.Reset();
             // Test incorrect checksum.
-            Assert.IsFalse(_crcValidator.ValidatePacket(_shortPacket));
+            Assert.IsFalse(_crcValidator.ValidatePacket(_shortPacket, _options));
         }
 
     }
@@ -104,38 +104,38 @@ namespace XModemProtocolTester {
 
         [Test]
         public void TestNormalPacketBuilder() {
-            _builder = new NormalPacketBuilder(_options, _calculator);
+            _builder = new NormalPacketBuilder(_calculator);
 
-            var packets = _builder.GetPackets(shortMessage);
+            var packets = _builder.GetPackets(shortMessage, _options);
             Assert.AreEqual(packets[0].Count, 132);
             Assert.AreEqual(packets.Count, 1);
 
-            packets = _builder.GetPackets(longMessage);
+            packets = _builder.GetPackets(longMessage, _options);
             Assert.AreEqual(packets[0].Count, 132);
             Assert.AreEqual(packets.Count, 2);
         }
         [Test] 
         public void TestCRCPacketBuilder() {
-            _builder = new CRCPacketBuilder(_options, _CRCCalculator);
+            _builder = new CRCPacketBuilder(_CRCCalculator);
 
-            var packets = _builder.GetPackets(shortMessage);
+            var packets = _builder.GetPackets(shortMessage, _options);
             Assert.AreEqual(packets[0].Count, 133);
             Assert.AreEqual(packets.Count, 1);
 
-            packets = _builder.GetPackets(longMessage);
+            packets = _builder.GetPackets(longMessage, _options);
             Assert.AreEqual(packets[0].Count, 133);
             Assert.AreEqual(packets.Count, 2);
         }
         [Test] 
         public void TestOneKPacketBuilder() {
-            _builder = new OneKPacketBuilder(_options, _CRCCalculator);
+            _builder = new OneKPacketBuilder(_CRCCalculator);
 
-            var packets = _builder.GetPackets(shortMessage);
+            var packets = _builder.GetPackets(shortMessage, _options);
             Assert.AreEqual(packets[0].Count, 133);
             Assert.AreEqual(packets.Count, 1);
             Assert.AreEqual(packets[0][0] , 0x01);
 
-            packets = _builder.GetPackets(longMessage);
+            packets = _builder.GetPackets(longMessage, _options);
             Assert.AreEqual(packets[0].Count, 1029);
             Assert.AreEqual(packets.Count, 1);
             Assert.AreEqual(packets[0][0] , 0x02);

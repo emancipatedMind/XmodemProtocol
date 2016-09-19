@@ -9,8 +9,8 @@ namespace XModemProtocol.Builders {
     using Calculators;
     public class OneKPacketBuilder : PacketBuilder {
 
-        public OneKPacketBuilder(IXModemProtocolOptions options, ICRCChecksumCalculator calculator) :
-            base(options, calculator) { }
+        public OneKPacketBuilder(ICRCChecksumCalculator calculator) :
+            base(calculator) { }
 
         protected override void AttachHeader() {
             byte header = _options.STX;
