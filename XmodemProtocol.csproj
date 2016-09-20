@@ -50,6 +50,13 @@
     <Compile Include="Calculators\BaseFunctions.cs" />
     <Compile Include="Calculators\CRCChecksumCalculator.cs" />
     <Compile Include="Calculators\ISummationChecksumCalculator.cs" />
+    <Compile Include="Factories\IToolFactory.cs" />
+    <Compile Include="Factories\Tools\IXModemTools.cs" />
+    <Compile Include="Factories\Tools\XModemOneKTools.cs" />
+    <Compile Include="Factories\Tools\XModemCRCTools.cs" />
+    <Compile Include="Factories\Tools\XModem128Tools.cs" />
+    <Compile Include="Factories\Tools\XModemTool.cs" />
+    <Compile Include="Factories\XModemToolFactory.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />
     <Compile Include="Builders\PacketBuilder.cs" />
