@@ -13,7 +13,7 @@ namespace XModemProtocol.Detectors {
         IXModemProtocolOptions _options;
 
         public bool CancellationDetected(IEnumerable<byte> input , IXModemProtocolOptions options) {
-            _input = _input.ToList();
+            _input = input.ToList();
             _options = options;
             if (DetectionIsUnnecessary()) return false;
             GetIndicesOfCANBytes();
@@ -25,15 +25,10 @@ namespace XModemProtocol.Detectors {
         private bool DetectionIsUnnecessary() => _options.CancellationBytesRequired < 1;
 
         private void GetIndicesOfCANBytes() {
-            // LINQ to get indices of CAN bytes.
-            // 1). If byte is CAN, record index, if not, make index -1.
-            // 2). Remove all elements equal to -1,
-            // 3). Place elements in ascending order.
-            // 4). Convert to List<byte>. Only need to perform LINQ once.
-            _indicesOfCAN = _input.Select((currentByte, i) => { if (currentByte == _options.CAN) return i; else return -1; })
-                                     .Where(index => index > -1)
-                                     .OrderBy(index => index)
-                                     .ToList();
+            _indicesOfCAN = new List<int>();
+            for (int index = 0; index < _input.Count; index++)
+                if (_input[index] == _options.CAN)
+                    _indicesOfCAN.Add(index);
         }
 
         private bool CountOfCANBytesAreInsufficient() => _indicesOfCAN.Count < _options.CancellationBytesRequired;
@@ -52,8 +47,6 @@ namespace XModemProtocol.Detectors {
 
                 if (counter >= _options.CancellationBytesRequired) return true;
             }
-
-            // No eligible CAN sequence found.
             return false;
         }
 

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XModemProtocol.Builders;
 using XModemProtocol.Calculators;
+using XModemProtocol.Detectors;
 using XModemProtocol.Options;
 using XModemProtocol.Validators.Checksum;
 using XModemProtocol.Validators.Packet;
@@ -19,6 +20,50 @@ namespace XModemProtocolTester {
     partial class Program {
         static void Main(string[] args) {
         }
+    }
+
+    [TestFixture] 
+    public class TestCancellationDetector {
+
+        static XModemProtocolOptions _options = new XModemProtocolOptions();
+        static List<byte> _message;
+        static ICancellationDetector _detector = new CancellationDetector();
+
+        [Test]
+        public void TestDetector() {
+
+            _options.CancellationBytesRequired = 10;
+
+            _message = new List<byte>();
+            _message.Add(0x43);
+
+            _detector = new CancellationDetector();
+
+            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
+
+            _message.AddRange(Enumerable.Repeat((byte) 0x43, 50));
+
+            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
+
+            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
+
+            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
+
+            _message.Add(0x43);
+            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
+            _message.Add(0x43);
+            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
+            _message.Add(0x43);
+            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
+
+            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
+
+            _message.Add(0x43);
+            _message.AddRange(Enumerable.Repeat(_options.CAN, 10));
+
+            Assert.IsTrue(_detector.CancellationDetected(_message, _options));
+        }
+
     }
 
     [TestFixture]
