@@ -19,6 +19,7 @@ using NUnit.Framework;
 namespace XModemProtocolTester {
     partial class Program {
         static void Main(string[] args) {
+            
         }
     }
 

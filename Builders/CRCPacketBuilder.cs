@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XModemProtocol.Builders {
-    using Options;
+﻿namespace XModemProtocol.Builders {
     using Calculators;
     public class CRCPacketBuilder : PacketBuilder {
 

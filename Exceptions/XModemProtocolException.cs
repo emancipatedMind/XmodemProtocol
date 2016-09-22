@@ -23,5 +23,6 @@ namespace XModemProtocol {
             SendCancel = sendCancel;
             PacketVerified = packetVerified;
         }
+        internal XModemProtocolException(string message) : base(message) { }
     }
 }

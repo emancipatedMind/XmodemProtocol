@@ -7,7 +7,7 @@ namespace XModemProtocol.Options {
         int CancellationBytesRequired { get; }
         int CANSentDuringAbort { get; }
         byte EOT { get; }
-        XModemMode Mode { get; }
+        XModemMode Mode { get; set; }
         byte NAK { get; }
         int ReceiverConsecutiveNAKsRequiredForCancellation { get; }
         int ReceiverInitializationTimeout { get; }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.Builders;
-using XModemProtocol.Detectors;
+﻿using XModemProtocol.Builders;
 using XModemProtocol.Validators.Packet;
 
-namespace XModemProtocol.Factories.Tools {
+namespace XModemProtocol.Factories.Tools
+{
     public class XModemCRCTools : XModemTool {
 
         public XModemCRCTools() {

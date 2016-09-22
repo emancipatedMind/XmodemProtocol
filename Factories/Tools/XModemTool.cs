@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.Builders;
+﻿using XModemProtocol.Builders;
 using XModemProtocol.Calculators;
 using XModemProtocol.Detectors;
 using XModemProtocol.Validators.Packet;
 using XModemProtocol.Validators.Checksum;
 
-namespace XModemProtocol.Factories.Tools {
+namespace XModemProtocol.Factories.Tools
+{
     public abstract class XModemTool : IXModemTools {
 
         protected IPacketValidator _validator;

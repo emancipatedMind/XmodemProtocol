@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\Communicator.cs" />
+    <Compile Include="Communication\ICommunicator.cs" />
     <Compile Include="Detectors\CancellationDetector.cs" />
     <Compile Include="Detectors\ICancellationDetector.cs" />
     <Compile Include="EventData\AbortedEventArgs.cs" />
@@ -57,7 +59,14 @@
     <Compile Include="Factories\Tools\XModem128Tools.cs" />
     <Compile Include="Factories\Tools\XModemTool.cs" />
     <Compile Include="Factories\XModemToolFactory.cs" />
+    <Compile Include="Operations\Initialize\IInitializer.cs" />
+    <Compile Include="Operations\Initialize\Initializer.cs" />
+    <Compile Include="Options\Context.cs" />
+    <Compile Include="Options\IContext.cs" />
+    <Compile Include="Options\IRequirements.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
+    <Compile Include="Options\Requirements.cs" />
+    <Compile Include="Operations\Initialize\SendInitializer.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />
     <Compile Include="Builders\PacketBuilder.cs" />
     <Compile Include="Validators\Checksum\CRCChecksumValidator.cs" />
@@ -70,7 +79,7 @@
     <Compile Include="Validators\Checksum\IChecksumValidator.cs" />
     <Compile Include="Calculators\NormalChecksumCalculator.cs" />
     <Compile Include="EventData\PacketReceivedEventArgs.cs" />
-    <Compile Include="PortExtensions.cs" />
+    <Compile Include="Communication\PortExtensions.cs" />
     <Compile Include="EventData\RoleUpdatedEventArgs .cs" />
     <Compile Include="Validators\Packet\IPacketValidator.cs" />
     <Compile Include="Validators\Packet\PacketValidator.cs" />
@@ -96,9 +105,7 @@
     <Compile Include="Exceptions\XModemProtocolException.cs" />
     <Compile Include="XModemProtocolOptions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Operations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

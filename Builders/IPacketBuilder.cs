@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using XModemProtocol.Calculators;
-using XModemProtocol.Options;
 
 namespace XModemProtocol.Builders {
     using Options;

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XModemProtocol.Factories {
+﻿namespace XModemProtocol.Factories
+{
     using Tools;
-    interface IToolFactory {
+    public interface IToolFactory {
         IXModemTools GetToolsFor(XModemMode mode); 
     }
 }
