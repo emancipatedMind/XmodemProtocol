@@ -61,12 +61,15 @@
     <Compile Include="Factories\XModemToolFactory.cs" />
     <Compile Include="Operations\Initialize\IInitializer.cs" />
     <Compile Include="Operations\Initialize\Initializer.cs" />
+    <Compile Include="Operations\Invoke\IInvoker.cs" />
+    <Compile Include="Operations\Invoke\Invoker.cs" />
+    <Compile Include="Operations\Invoke\InvokeSend.cs" />
     <Compile Include="Options\Context.cs" />
     <Compile Include="Options\IContext.cs" />
     <Compile Include="Options\IRequirements.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
     <Compile Include="Options\Requirements.cs" />
-    <Compile Include="Operations\Initialize\SendInitializer.cs" />
+    <Compile Include="Operations\Initialize\InitializeSend.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />
     <Compile Include="Builders\PacketBuilder.cs" />
     <Compile Include="Validators\Checksum\CRCChecksumValidator.cs" />
@@ -88,6 +91,7 @@
     <Compile Include="EventData\ModeUpdatedEventArgs.cs" />
     <Compile Include="EventData\PacketsBuiltEventArgs.cs" />
     <Compile Include="Validators\Checksum\NormalChecksumValidator.cs" />
+    <Compile Include="XModemBase.cs" />
     <Compile Include="XModemCommunicator - Receiver Methods.cs" />
     <Compile Include="XModemCommunicator - Sender Methods.cs" />
     <Compile Include="XModemCommunicator - Utility Methods.cs" />

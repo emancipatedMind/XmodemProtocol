@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using XModemProtocol.EventData;
+using XModemProtocol.Exceptions;
 
 namespace XModemProtocol {
     public partial class XModemCommunicator {

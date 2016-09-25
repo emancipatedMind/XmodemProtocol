@@ -24,33 +24,39 @@ namespace XModemProtocol.Validators.Packet
         public bool ValidatePacket(IEnumerable<byte> input, IXModemProtocolOptions options) {
             _data = input.ToList();
             _options = options;
-            if (PacketExpectedIsIncorrect()) {
-                if (PacketIsDuplicate())
+            if (PacketExpectedIsIncorrect) {
+                if (PacketIsDuplicate)
                     return true;
                 return false;
             }
-            if (OnesComplementIsIncorrect()) return false;
-            if (ChecksumIsIncorrect()) return false;
+            if (OnesComplementIsIncorrect) return false;
+            if (ChecksumIsIncorrect) return false;
             _packetNumberExpected++;
             return true;
         }
 
-        private bool PacketExpectedIsIncorrect() => _data[1] != _packetNumberExpected;
+        private bool PacketExpectedIsIncorrect => _data[1] != _packetNumberExpected;
 
-        private bool PacketIsDuplicate() {
-            if (_packetNumberExpected == 1) return false; 
-            byte previousPacketNumber = (byte) ( _packetNumberExpected - 1);
-            return _data[1] == previousPacketNumber;
+        private bool PacketIsDuplicate {
+            get { 
+                if (_packetNumberExpected == 1) return false; 
+                byte previousPacketNumber = (byte) ( _packetNumberExpected - 1);
+                return _data[1] == previousPacketNumber;
+            }
         }
 
-        private bool OnesComplementIsIncorrect() {
-            byte onesComplement = (byte)(0xFF - _packetNumberExpected);
-            return _data[2] != onesComplement;
+        private bool OnesComplementIsIncorrect {
+            get { 
+                byte onesComplement = (byte)(0xFF - _packetNumberExpected);
+                return _data[2] != onesComplement;
+            }
         }
 
-        private bool ChecksumIsIncorrect() {
-            List<byte> payload = _data.GetRange(3, _data.Count - 3);
-            return _validator.ValidateChecksum(payload) == false; 
+        private bool ChecksumIsIncorrect {
+            get {
+                List<byte> payload = _data.GetRange(3, _data.Count - 3);
+                return _validator.ValidateChecksum(payload) == false; 
+            }
         }
     }
 }

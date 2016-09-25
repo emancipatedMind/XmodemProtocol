@@ -11,11 +11,9 @@ namespace XModemProtocol.Communication {
             _port = port;
         }
 
-        public bool IsReadBufferEmpty {
-            get {
-                return _port.BytesToRead == 0;
-            }
-        }
+        public bool ReadBufferIsEmpty => _port.BytesToRead == 0;
+
+        public bool ReadBufferContainsData => _port.BytesToRead != 0;
 
         public void Flush() {
             _port.Flush();

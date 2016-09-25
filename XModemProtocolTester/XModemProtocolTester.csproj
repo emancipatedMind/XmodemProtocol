@@ -54,9 +54,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComSendCollection.cs" />
+    <Compile Include="ComStandIn.cs" />
     <Compile Include="IPlayCatchOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCancellationDetector.cs" />
+    <Compile Include="TestIChecksumCalculator.cs" />
+    <Compile Include="TestICRCChecksumCalculator.cs" />
+    <Compile Include="TestICRCChecksumValidator.cs" />
+    <Compile Include="TestICRCLookupTable.cs" />
+    <Compile Include="TestIInvoke.cs" />
+    <Compile Include="TestInitializer.cs" />
+    <Compile Include="TestNormalValidator.cs" />
+    <Compile Include="TestPacketBuilder.cs" />
+    <Compile Include="TestPacketValidator.cs" />
     <Compile Include="XCInterPlay.cs" />
   </ItemGroup>
   <ItemGroup>

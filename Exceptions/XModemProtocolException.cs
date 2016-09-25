@@ -1,7 +1,7 @@
 ﻿using System;
 using XModemProtocol.EventData;
 
-namespace XModemProtocol {
+namespace XModemProtocol.Exceptions {
     /// <summary>
     /// The Exception used inside the XModemCommunicator class.
     /// </summary>

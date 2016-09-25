@@ -39,14 +39,16 @@
         }
 
         private void ShiftTableValueAndXORWithPolynomialIfNecessary() {
-            if (XorIsNecessary()) _tableValue = (_tableValue << 1) ^ Polynomial;
+            if (XorIsNecessary) _tableValue = (_tableValue << 1) ^ Polynomial;
             else _tableValue <<= 1;
         }
 
-        private bool XorIsNecessary() {
-            int xorResult = _tableValue ^ _controlByte;
-            int mostSignificantBitOfXorResult = ApplyMask(xorResult, 0x8000); 
-            return mostSignificantBitOfXorResult == 0x8000;
+        private bool XorIsNecessary {
+            get {
+                int xorResult = _tableValue ^ _controlByte;
+                int mostSignificantBitOfXorResult = ApplyMask(xorResult, 0x8000); 
+                return mostSignificantBitOfXorResult == 0x8000;
+            }
         }
 
         private void InsertTableValueIntoTable() => _lookupTable[_currentIndex] = _tableValue;

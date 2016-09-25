@@ -5,12 +5,8 @@
         public CRCPacketBuilder(ICRCChecksumCalculator calculator) :
             base(calculator) { }
 
-        protected override void AttachHeader() {
-            _currentPacket.Add(_options.SOH);
-        }
+        protected override void AttachHeader() => _currentPacket.Add(_options.SOH);
 
-        protected override void InitializePacketSize() {
-            _packetSize = 128;
-        }
+        protected override void InitializePacketSize() => _packetSize = 128;
     }
 }

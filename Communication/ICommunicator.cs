@@ -10,6 +10,7 @@ namespace XModemProtocol.Communication {
         void Write(IEnumerable<byte> buffer);
         void Flush();
         List<byte> ReadAllBytes();
-        bool IsReadBufferEmpty { get; }
+        bool ReadBufferIsEmpty { get; }
+        bool ReadBufferContainsData { get; }
     }
 }
