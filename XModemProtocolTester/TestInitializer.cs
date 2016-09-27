@@ -21,7 +21,6 @@ namespace XModemProtocolTester {
             IInitializer ini = new InitializeSend();
             Requirements requirements = new Requirements();
             requirements.Context = context;
-            requirements.ToolFactory = new XModemToolFactory();
             requirements.Options = options;
             requirements.Communicator = com;
 

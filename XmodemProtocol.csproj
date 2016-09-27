@@ -64,12 +64,17 @@
     <Compile Include="Operations\Invoke\IInvoker.cs" />
     <Compile Include="Operations\Invoke\Invoker.cs" />
     <Compile Include="Operations\Invoke\InvokeSend.cs" />
+    <Compile Include="Operations\IOperation.cs" />
+    <Compile Include="Operations\Operation.cs" />
+    <Compile Include="Operations\SendOperation.cs" />
     <Compile Include="Options\Context.cs" />
     <Compile Include="Options\IContext.cs" />
     <Compile Include="Options\IRequirements.cs" />
+    <Compile Include="Options\ISendReceiveRequirements.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
     <Compile Include="Options\Requirements.cs" />
     <Compile Include="Operations\Initialize\InitializeSend.cs" />
+    <Compile Include="Options\SendReceiveRequirements.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />
     <Compile Include="Builders\PacketBuilder.cs" />
     <Compile Include="Validators\Checksum\CRCChecksumValidator.cs" />

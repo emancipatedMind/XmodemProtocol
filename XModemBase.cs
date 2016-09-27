@@ -17,21 +17,34 @@ using XModemProtocol.Options;
 namespace XModemProtocol {
     public class XModemBase {
 
-        public XModemBase(SerialPort port) {
-            Port = port;
-        }
-
-        IXModemProtocolOptions _options = new Options.XModemProtocolOptions();
         IRequirements _requirements;
         CancellationTokenSource _tokenSource;
         IToolFactory _toolFactory = new XModemToolFactory();
+        IXModemTools _tools;
         IContext _context = new Context();
-        List<byte> _data;
         ICommunicator _communicator;
-        IInitializer _initializer;
-        IInvoker _invoker;
 
-        SerialPort Port { get; set; }
+        public XModemBase(SerialPort port) {
+            Port = port;
+            Options = new Options.XModemProtocolOptions();
+            _context.PacketsBuilt += (s, e) => {
+                this.PacketsBuilt?.Invoke(this, e);
+            };
+            _context.StateUpdated += (s, e) => {
+                this.StateUpdated?.Invoke(this, e);
+            };
+        }
+
+        SerialPort _port;
+        public SerialPort Port {
+            set {
+                _port = value;
+                _communicator = new Communicator(value);     
+                _context.StateUpdated += (s, e) => {
+                    StateUpdated?.Invoke(s, e); 
+                };
+            }
+        }
 
         public void CancelOperation() {
             _tokenSource?.Cancel();
@@ -40,12 +53,18 @@ namespace XModemProtocol {
         private void SendCancel() {
             _communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
         }
+        private void BuildPackets() {
+            if (_data.Count == 0) return;
+            _context.Packets = _tools.Builder.GetPackets(_data, Options);
+        }
 
+        List<byte> _data = new List<byte>();
         public IEnumerable<byte> Data {
             set {
                 if (value == null) return;
-                else if (_data == null || !_data.SequenceEqual(value)) {
+                else if (_data.SequenceEqual(value) == false) {
                     _data = value.ToList();
+                    BuildPackets();
                 }
             }
         }
@@ -53,6 +72,24 @@ namespace XModemProtocol {
         public XModemStates State {
             get {
                 return _context.State;
+            }
+        }
+
+        IXModemProtocolOptions _options;
+        public IXModemProtocolOptions Options {
+            private get { return _options; }
+            set {
+                if (value == null) value = new Options.XModemProtocolOptions();
+                IXModemProtocolOptions oldOptions = _options;
+                _options = (IXModemProtocolOptions)value.Clone();
+                _options.ModeUpdated += (s, e) => {
+                    this.ModeUpdated?.Invoke(this, e);
+                };
+                bool modeCheck = false;
+                if (oldOptions == null || (modeCheck = oldOptions.Mode != _options.Mode) ) {
+                    _tools = _toolFactory.GetToolsFor(_options.Mode);
+                    if (modeCheck) BuildPackets();
+                } 
             }
         }
 
@@ -99,11 +136,6 @@ namespace XModemProtocol {
         public event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
 
         /// <summary>
-        /// This event fires asynchronously whenever XModemCommunicator changes its role.
-        /// </summary>
-        public event EventHandler<RoleUpdatedEventArgs> RoleUpdated;
-
-        /// <summary>
         /// This event fires when the operation has been aborted.
         /// State is not returned to idle until after this event has completed. 
         /// </summary>
@@ -115,5 +147,5 @@ namespace XModemProtocol {
         /// </summary>
         public event EventHandler<CompletedEventArgs> Completed;
         #endregion
-    }
 }
+    }

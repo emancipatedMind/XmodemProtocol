@@ -8,7 +8,7 @@ using XModemProtocol.EventData;
 namespace XModemProtocol.Operations.Invoke {
     using Options;
     public interface IInvoker {
-        void Invoke(IRequirements requirements);
+        void Invoke(ISendReceiveRequirements requirements);
         event EventHandler<PacketToSendEventArgs> PacketToSend;
         event EventHandler<PacketReceivedEventArgs> PacketReceived;
     }

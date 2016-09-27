@@ -1,5 +1,6 @@
 ﻿using System;
 namespace XModemProtocol.Options {
+    using EventData;
     public interface IXModemProtocolOptions : ICloneable {
         byte ACK { get; }
         byte C { get; }
@@ -18,5 +19,6 @@ namespace XModemProtocol.Options {
         byte SOH { get; }
         byte STX { get; }
         byte SUB { get; }
+        event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
     }
 }

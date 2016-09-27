@@ -1,4 +1,5 @@
 ﻿using System;
+using XModemProtocol.EventData;
 
 namespace XModemProtocol.Options {
     /// <summary>
@@ -11,13 +12,23 @@ namespace XModemProtocol.Options {
         /// </summary>
         public XModemProtocolOptions() { }
 
+        public event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
+        private XModemMode _mode = XModemMode.OneK;
         #region Shared Options
         /// <summary>
         /// Shared option.
         /// Mode to be used by XModemCommunicator.
         /// If using receiver, CRC will be upgraded to 1k automatically.
         /// </summary>
-        public XModemMode Mode { get; set; } = XModemMode.OneK;
+        public XModemMode Mode {
+            get { return _mode; }
+            set {
+                if (_mode == value) return;
+                var _oldMode = _mode;
+                _mode = value;
+                ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, _oldMode));
+            }
+        }
 
         /// <summary>
         /// Shared option.

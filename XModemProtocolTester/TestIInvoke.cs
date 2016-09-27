@@ -13,15 +13,16 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestInvoke {
 
-        Requirements _req = new Requirements();
-        XModemProtocolOptions _options = new XModemProtocolOptions();
-        IXModemTools _tools;
-        Context _context = new Context();
-        ComSendCollection _com = new ComSendCollection();
-        CancellationTokenSource _cts;
-        IInvoker _invoker = new InvokeSend();
-        List<List<byte>> _sentData;
-        IEnumerable<byte> _data;
+        private SendReceiveRequirements _req = new SendReceiveRequirements();
+        private XModemProtocolOptions _options = new XModemProtocolOptions();
+        private IXModemTools _tools;
+        private Context _context = new Context();
+        private ComSendCollection _com = new ComSendCollection();
+        private CancellationTokenSource _cts;
+        private IInvoker _invoker = new InvokeSend();
+        private List<List<byte>> _sentData;
+        private IEnumerable<byte> _data;
+        private XModemToolFactory _toolFactory;
 
         [Test] 
         public void TestInvokeSend() {
@@ -29,10 +30,12 @@ namespace XModemProtocolTester {
             _cts = new CancellationTokenSource();
             _context.Token = _cts.Token;
 
+            _toolFactory = new XModemToolFactory();
+
             _req.Context = _context;
-            _req.ToolFactory = new XModemToolFactory();
             _req.Communicator = _com;
             _req.Options = _options;
+
 
             _data = GetRandomData(10000);
             TestMode(XModemProtocol.XModemMode.Checksum);
@@ -42,7 +45,8 @@ namespace XModemProtocolTester {
 
         private void TestMode(XModemProtocol.XModemMode mode) {
             _options.Mode = mode;
-            _tools = _req.ToolFactory.GetToolsFor(_options.Mode);
+            _tools = _toolFactory.GetToolsFor(_options.Mode);
+            _req.Detector = _tools.Detector;
             _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
             _sentData = new List<List<byte>>(_req.Context.Packets);
             _sentData.Add(new List<byte> { _options.EOT });
@@ -66,15 +70,17 @@ namespace XModemProtocolTester {
             _context.Token = _cts.Token;
 
             _req.Context = _context;
-            _req.ToolFactory = new XModemToolFactory();
             _req.Communicator = _com;
             _req.Options = _options;
+
+            _toolFactory = new XModemToolFactory();
 
             _data = GetRandomData(10000);
             var nakCollection = new List<byte> { _options.NAK };
             var ackCollection = new List<byte> { _options.ACK };
             var canCollection = Enumerable.Repeat((byte) _options.CAN, _options.CancellationBytesRequired); 
-            _tools = _req.ToolFactory.GetToolsFor(_options.Mode);
+            _tools = _toolFactory.GetToolsFor(_options.Mode);
+            _req.Detector = _tools.Detector;
             _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
             _com.CollectionToSend = new List<List<byte>> {
                 nakCollection,

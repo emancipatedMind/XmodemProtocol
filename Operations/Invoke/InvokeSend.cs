@@ -47,7 +47,7 @@ namespace XModemProtocol.Operations.Invoke {
         }
 
         private void CheckForCancellation() {
-            if(_tools.Detector.CancellationDetected(_buffer, _requirements.Options)) {
+            if(_requirements.Detector.CancellationDetected(_buffer, _requirements.Options)) {
                 _requirements.Context.State = XModemStates.Cancelled;
                 throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
             }

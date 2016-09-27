@@ -67,6 +67,7 @@
     <Compile Include="TestIInvoke.cs" />
     <Compile Include="TestInitializer.cs" />
     <Compile Include="TestNormalValidator.cs" />
+    <Compile Include="TestOperationcs.cs" />
     <Compile Include="TestPacketBuilder.cs" />
     <Compile Include="TestPacketValidator.cs" />
     <Compile Include="XCInterPlay.cs" />

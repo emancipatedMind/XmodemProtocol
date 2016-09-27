@@ -22,10 +22,6 @@ namespace XModemProtocol.Factories.Tools
         public abstract IPacketValidator Validator { get; }
 
         public XModemTool() {
-            _calculator = new NormalChecksumCalculator();
-            _cRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
-            _normalChecksumValidator = new NormalChecksumValidator(_calculator);
-            _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
             _detector = new CancellationDetector();
         }
 

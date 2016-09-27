@@ -14,8 +14,6 @@ namespace XModemProtocol.Options {
 
         public IXModemProtocolOptions Options { get; set; }
 
-        public IToolFactory ToolFactory { get; set; }
-
         public ICommunicator Communicator { get; set; }
 
     }

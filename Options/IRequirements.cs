@@ -11,7 +11,6 @@ namespace XModemProtocol.Options {
     public interface IRequirements {
         IXModemProtocolOptions Options { get; }
         IContext Context { get; }
-        IToolFactory ToolFactory { get; }
         ICommunicator Communicator { get; }
     }
 }
