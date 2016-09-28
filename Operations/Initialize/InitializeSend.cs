@@ -36,7 +36,6 @@ namespace XModemProtocol.Operations.Initialize {
                 else if (NAKwasReceived) {
                     if (SenderIsCRC) {
                         _requirements.Options.Mode = XModemMode.Checksum;
-                        _requirements.Context.BuildRequested = true;
                     }
                 }
                 else continue;

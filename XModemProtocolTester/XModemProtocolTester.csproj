@@ -59,6 +59,7 @@
     <Compile Include="IPlayCatchOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomDataGenerator.cs" />
     <Compile Include="TestCancellationDetector.cs" />
     <Compile Include="TestIChecksumCalculator.cs" />
     <Compile Include="TestICRCChecksumCalculator.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="TestIInvoke.cs" />
     <Compile Include="TestInitializer.cs" />
     <Compile Include="TestNormalValidator.cs" />
-    <Compile Include="TestOperationcs.cs" />
+    <Compile Include="TestOperation.cs" />
     <Compile Include="TestPacketBuilder.cs" />
     <Compile Include="TestPacketValidator.cs" />
     <Compile Include="XCInterPlay.cs" />

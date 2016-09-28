@@ -61,23 +61,9 @@ namespace XModemProtocol.Operations.Invoke {
             }
         }
 
-        private bool LastPacketAlreadySent {
-            get {
-                return _requirements.Context.Packets.Count == _indexToBeSent;
-            }
-        }
-
-        public bool LastResponseWasACK {
-            get {
-                return _buffer.Last() == _requirements.Options.ACK; 
-            }
-        }
-
-        public bool LastResponseWasNAK {
-            get {
-                return _buffer.Last() == _requirements.Options.NAK; 
-            }
-        }
+        private bool LastPacketAlreadySent => _requirements.Context.Packets.Count == _indexToBeSent;
+        private bool LastResponseWasACK => _buffer.Last() == _requirements.Options.ACK; 
+        private bool LastResponseWasNAK => _buffer.Last() == _requirements.Options.NAK; 
 
         private void SendPacket() {
             FirePacketToSendEvent(); 
@@ -93,7 +79,7 @@ namespace XModemProtocol.Operations.Invoke {
         }
 
         protected void FirePacketToSendEvent() {
-            base.FirePacketToSendEvent(_indexToBeSent, _requirements.Context.Packets[_indexToBeSent]);
+            base.FirePacketToSendEvent(_indexToBeSent + 1, _requirements.Context.Packets[_indexToBeSent]);
         }
     }
 }

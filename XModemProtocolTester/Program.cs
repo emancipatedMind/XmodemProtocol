@@ -10,8 +10,8 @@ using XModemProtocol.Options;
 namespace XModemProtocolTester {
     partial class Program {
         static void Main(string[] args) {
-            var tester = new TestInvoke();
-            tester.TestNAKResend();
+            var tester = new TestOperation();
+            tester.TestSendOperation();
         }
     }
 }

@@ -23,6 +23,10 @@ namespace XModemProtocolTester {
         private List<List<byte>> _sentData;
         private IEnumerable<byte> _data;
         private XModemToolFactory _toolFactory;
+        private RandomDataGenerator _randomDataGenerator = new RandomDataGenerator {
+            Domain = 0x5E,
+            Offset = 0x20,
+        };
 
         [Test] 
         public void TestInvokeSend() {
@@ -37,7 +41,7 @@ namespace XModemProtocolTester {
             _req.Options = _options;
 
 
-            _data = GetRandomData(10000);
+            _data = _randomDataGenerator.GetRandomData(10000);
             TestMode(XModemProtocol.XModemMode.Checksum);
             TestMode(XModemProtocol.XModemMode.CRC);
             TestMode(XModemProtocol.XModemMode.OneK);
@@ -56,14 +60,6 @@ namespace XModemProtocolTester {
             _com.Flush();
         }
 
-        private IEnumerable<byte> GetRandomData(int length) {
-            var rand = new Random();
-            var data = new List<byte>();
-            for (int i = 0; i < length; i++) 
-                data.Add((byte)(rand.Next(0x5E) + 0x20));
-            return data;
-        }
-
         [Test] 
         public void TestNAKResend() {
             _cts = new CancellationTokenSource();
@@ -75,7 +71,7 @@ namespace XModemProtocolTester {
 
             _toolFactory = new XModemToolFactory();
 
-            _data = GetRandomData(10000);
+            _data = _randomDataGenerator.GetRandomData(10000);
             var nakCollection = new List<byte> { _options.NAK };
             var ackCollection = new List<byte> { _options.ACK };
             var canCollection = Enumerable.Repeat((byte) _options.CAN, _options.CancellationBytesRequired); 

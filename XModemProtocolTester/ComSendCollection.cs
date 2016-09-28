@@ -35,8 +35,8 @@ namespace XModemProtocolTester {
         public override bool ReadBufferContainsData {
             get {
                 if (_collectionToSend == null) return false;
-                else if (_collectionToSend.Count == 1) return true;
-                else if (_index >= _collectionToSend.Count) return false;
+                if (_collectionToSend.Count == 1) return true;
+                if (_index >= _collectionToSend.Count) return false;
                 else return true;
             }
         }

@@ -96,23 +96,15 @@
     <Compile Include="EventData\ModeUpdatedEventArgs.cs" />
     <Compile Include="EventData\PacketsBuiltEventArgs.cs" />
     <Compile Include="Validators\Checksum\NormalChecksumValidator.cs" />
-    <Compile Include="XModemBase.cs" />
+    <Compile Include="XModemCommunicator.cs" />
     <Compile Include="XModemCommunicator - Receiver Methods.cs" />
-    <Compile Include="XModemCommunicator - Sender Methods.cs" />
-    <Compile Include="XModemCommunicator - Utility Methods.cs" />
     <Compile Include="EventData\PacketToSendEventArgs.cs" />
     <Compile Include="XModemRoleEnum.cs" />
     <Compile Include="XModemStatesEnum.cs" />
     <Compile Include="EventData\StateUpdatedEventArgs.cs" />
-    <Compile Include="XModemCommunicator - Events.cs" />
-    <Compile Include="XModemCommunicator - RO Properties.cs" />
-    <Compile Include="XModemCommunicator - Fields.cs" />
-    <Compile Include="XModemCommunicator - RW Properties.cs" />
-    <Compile Include="XModemCommunicator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XModemModeEnum.cs" />
     <Compile Include="Exceptions\XModemProtocolException.cs" />
-    <Compile Include="XModemProtocolOptions.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
