@@ -59,6 +59,9 @@
     <Compile Include="Factories\Tools\XModem128Tools.cs" />
     <Compile Include="Factories\Tools\XModemTool.cs" />
     <Compile Include="Factories\XModemToolFactory.cs" />
+    <Compile Include="Operations\Finalize\Finalizer.cs" />
+    <Compile Include="Operations\Finalize\FinalizeSend.cs" />
+    <Compile Include="Operations\Finalize\IFinalizer.cs" />
     <Compile Include="Operations\Initialize\IInitializer.cs" />
     <Compile Include="Operations\Initialize\Initializer.cs" />
     <Compile Include="Operations\Invoke\IInvoker.cs" />

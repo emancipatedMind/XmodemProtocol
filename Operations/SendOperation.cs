@@ -12,17 +12,12 @@ namespace XModemProtocol.Operations {
             _initializer = new Initialize.InitializeSend();
             _invoker = new Invoke.InvokeSend();
             _invoker.PacketToSend += FirePacketToSendEvent;
+            _finalizer = new Finalize.FinalizeSend();
         }
 
-        protected override void Go() {
-            _initializer.Initialize(_requirements);
-            if(ModeChangedInInitialization) {
-                _tools = _toolFactory.GetToolsFor(_requirements.Options.Mode);
-                _requirements.Context.Packets = _tools.Builder.GetPackets(_requirements.Context.Data, _requirements.Options);
-            }
-            _invoker.Invoke(_requirements);
+        protected override void TransitionToInvoke() {
+            _tools = _toolFactory.GetToolsFor(_requirements.Options.Mode);
+            _requirements.Context.Packets = _tools.Builder.GetPackets(_requirements.Context.Data, _requirements.Options);
         }
-
-
     }
 }

@@ -56,7 +56,7 @@ namespace XModemProtocol {
         }
 
         private void BuildPackets() {
-            if (_context.Data.Count == 0) return;
+            if (_context.Data == null || _context.Data.Count == 0) return;
             _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
         }
 
@@ -90,12 +90,12 @@ namespace XModemProtocol {
             }
         }
 
-        public void Send(IXModemProtocolOptions options) {
+        public void Send() {
             _role = XModemRole.Sender;
             PerformOperation();
         }
 
-        public void Receive(IXModemProtocolOptions options) {
+        public void Receive() {
             _role = XModemRole.Receiver;
             PerformOperation();
         }

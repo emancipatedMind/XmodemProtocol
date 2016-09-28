@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using XModemProtocol.Factories;
 using XModemProtocol.Factories.Tools;
 using XModemProtocol.Options;
+using XModemProtocol.Operations.Finalize;
 using XModemProtocol.Operations.Initialize;
 using XModemProtocol.Operations.Invoke;
 using XModemProtocol.EventData;
@@ -16,6 +17,7 @@ namespace XModemProtocol.Operations {
 
         protected IInvoker _invoker;
         protected IInitializer _initializer;
+        protected IFinalizer _finalizer;
         protected ISendReceiveRequirements _requirements;
         protected IToolFactory _toolFactory = new XModemToolFactory();
         protected IXModemTools _tools;
@@ -33,12 +35,16 @@ namespace XModemProtocol.Operations {
                 Options = requirements.Options,
             };
             _mode = _requirements.Options.Mode;
-            Go();
+            _initializer.Initialize(_requirements);
+            if (ModeChangedInInitialization)
+                TransitionToInvoke();
+            _invoker.Invoke(_requirements);
+            _finalizer.Finalize(_requirements);
         }
 
-        protected abstract void Go();
+        protected abstract void TransitionToInvoke();
 
-        protected bool ModeChangedInInitialization => _requirements.Options.Mode != _mode;
+        private bool ModeChangedInInitialization => _requirements.Options.Mode != _mode;
 
         protected void FirePacketToSendEvent(object sender, PacketToSendEventArgs args) {
             PacketToSend?.Invoke(sender, args);
