@@ -1,28 +1,33 @@
 ﻿using System.Linq;
-using System.Timers;
 
 namespace XModemProtocol.Operations.Initialize {
+    using System;
     using Communication;
     using Exceptions;
     public class InitializeSend : Initializer {
 
-        byte _latestResponse;
+        private byte _latestResponse;
 
         protected override void InitializeTimeoutTimer() {
             int timeoutTime = _requirements.Options.SenderInitializationTimeout;
             if (timeoutTime < 1) return;
-            _timer = new Timer(timeoutTime);
-            _timer.Elapsed += _timer_Elapsed;
+            _timer = new System.Timers.Timer(timeoutTime);
+            _timer.Elapsed += (s, e) => {
+                _timer.Stop();
+                _waitHandle.Set();
+            };
             _timer.Start();
         }
 
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e) {
-            _timer.Stop();
-            _waitHandle.Set();
+        protected override void UpdateState() {
+            _requirements.Context.State = XModemStates.SenderAwaitingInitializationFromReceiver;
+        }
+
+        protected override void Reset() {
+            _waitHandle = new System.Threading.ManualResetEvent(false);
         }
 
         protected override void Initialize() {
-            _requirements.Context.State = XModemStates.SenderAwaitingInitializationFromReceiver;
             AwaitInitializationFromReceiver();
         }
 

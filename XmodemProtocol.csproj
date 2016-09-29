@@ -64,8 +64,10 @@
     <Compile Include="Operations\Finalize\IFinalizer.cs" />
     <Compile Include="Operations\Initialize\IInitializer.cs" />
     <Compile Include="Operations\Initialize\Initializer.cs" />
+    <Compile Include="Operations\Initialize\InitializeReceive.cs" />
     <Compile Include="Operations\Invoke\IInvoker.cs" />
     <Compile Include="Operations\Invoke\Invoker.cs" />
+    <Compile Include="Operations\Invoke\InvokeReceive.cs" />
     <Compile Include="Operations\Invoke\InvokeSend.cs" />
     <Compile Include="Operations\IOperation.cs" />
     <Compile Include="Operations\Operation.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Calculators\NormalChecksumCalculator.cs" />
     <Compile Include="EventData\PacketReceivedEventArgs.cs" />
     <Compile Include="Communication\PortExtensions.cs" />
-    <Compile Include="EventData\RoleUpdatedEventArgs .cs" />
     <Compile Include="Validators\Packet\IPacketValidator.cs" />
     <Compile Include="Validators\Packet\PacketValidator.cs" />
     <Compile Include="XModemAbortReasonEnum.cs" />
@@ -102,7 +103,6 @@
     <Compile Include="XModemCommunicator.cs" />
     <Compile Include="XModemCommunicator - Receiver Methods.cs" />
     <Compile Include="EventData\PacketToSendEventArgs.cs" />
-    <Compile Include="XModemRoleEnum.cs" />
     <Compile Include="XModemStatesEnum.cs" />
     <Compile Include="EventData\StateUpdatedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -55,6 +55,7 @@ namespace XModemProtocolTester {
             _sentData = new List<List<byte>>(_req.Context.Packets);
             _sentData.Add(new List<byte> { _options.EOT });
             _com.BytesToSend = new List<byte> { _options.ACK };
+            _com.BytesRead = new List<List<byte>>();
             _invoker.Invoke(_req);
             Assert.AreEqual(_sentData, _com.BytesRead);
             _com.Flush();
@@ -95,6 +96,7 @@ namespace XModemProtocolTester {
 
             bool excThrown = false;
             try {
+                _com.BytesRead = new List<List<byte>>();
                 _invoker.Invoke(_req);
             }
             catch (XModemProtocolException ex) {

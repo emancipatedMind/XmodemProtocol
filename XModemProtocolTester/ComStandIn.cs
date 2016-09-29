@@ -7,16 +7,14 @@ namespace XModemProtocolTester
 {
     public class ComStandIn : ICommunicator {
         public virtual List<byte> BytesToSend { get; set; }
-        public List<List<byte>> BytesRead { get; private set; } = new List<List<byte>>();
-
+        public List<List<byte>> BytesRead { get; set; } = new List<List<byte>>();
+        public virtual int BytesInReadBuffer => BytesToSend?.Count ?? 0;
         public virtual bool ReadBufferContainsData => BytesToSend?.Count != 0;
         public bool ReadBufferIsEmpty => !ReadBufferContainsData;
-        public void Flush() {
-            BytesRead = new List<List<byte>>();
-            BytesToSend = new List<byte>();
-        }
+        public void Flush() { }
         public List<byte> ReadAllBytes() => BytesToSend;
         public void Write(IEnumerable<byte> buffer) {
+            if (BytesRead == null) BytesRead = new List<List<byte>>(); 
             BytesRead.Add(buffer.ToList());
             string desc = "[ ";
             foreach (var b in buffer)
@@ -25,6 +23,7 @@ namespace XModemProtocolTester
             Debug.WriteLine(desc); 
         }
         public void Write(byte buffer) {
+            if (BytesRead == null) BytesRead = new List<List<byte>>(); 
             BytesRead.Add(new List<byte> {buffer});
             Debug.WriteLine($"[ 0x{buffer:X2} ]");
         }

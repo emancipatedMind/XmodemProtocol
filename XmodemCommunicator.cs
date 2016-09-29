@@ -18,13 +18,13 @@ using XModemProtocol.Options;
 namespace XModemProtocol {
     public class XModemCommunicator {
 
+        IToolFactory _toolFactory = new XModemToolFactory();
+        IContext _context = new Context();
+
         IRequirements _requirements;
         CancellationTokenSource _tokenSource;
-        IToolFactory _toolFactory = new XModemToolFactory();
         IXModemTools _tools;
-        IContext _context = new Context();
         ICommunicator _communicator;
-        XModemRole _role;
         IOperation _operation;
 
         public XModemCommunicator(ICommunicator communicator) {
@@ -38,8 +38,7 @@ namespace XModemProtocol {
             };
         } 
 
-        public XModemCommunicator(SerialPort port) : this(new Communicator(port))  {
-        }
+        public XModemCommunicator(SerialPort port) : this(new Communicator(port))  { }
 
         public SerialPort Port {
             set {
@@ -63,7 +62,7 @@ namespace XModemProtocol {
         public IEnumerable<byte> Data {
             set {
                 if (value == null) return;
-                else if (_context.Data == null || _context.Data.SequenceEqual(value) == false) {
+                if (_context.Data == null || _context.Data.SequenceEqual(value) == false) {
                     _context.Data = new List<byte>(value);
                     BuildPackets();
                 }
@@ -91,12 +90,17 @@ namespace XModemProtocol {
         }
 
         public void Send() {
-            _role = XModemRole.Sender;
+            _operation = new SendOperation();
+            _operation.PacketToSend += (s, e) => {
+                PacketToSend?.Invoke(this, e);
+            };
+            if (_context.Data == null || _context.Data.Count == 0)
+                throw new Exceptions.XModemProtocolException(new AbortedEventArgs(XModemAbortReason.BufferEmpty)); 
             PerformOperation();
         }
 
         public void Receive() {
-            _role = XModemRole.Receiver;
+            return;
             PerformOperation();
         }
 
@@ -107,23 +111,12 @@ namespace XModemProtocol {
                         throw new Exceptions.XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent));
                 _tokenSource = new CancellationTokenSource();
                 _context.Token = _tokenSource.Token;
-                switch (_role) {
-                    case XModemRole.Sender:
-                        _operation = new SendOperation();
-                        _operation.PacketToSend += (s, e) => {
-                            PacketToSend?.Invoke(this, e);
-                        };
-                        if (_context.Data == null || _context.Data.Count == 0)
-                            throw new Exceptions.XModemProtocolException(new AbortedEventArgs(XModemAbortReason.BufferEmpty)); 
-                        break;
-                    default:
-                        return;
-                }
                 _requirements = new Requirements {
                     Communicator = _communicator,
                     Context = _context,
                     Options = _options,
                 };
+                _communicator.Flush();
                 _operation.Go(_requirements);
                 Completed?.Invoke(this, new CompletedEventArgs(_context.Data));
             }

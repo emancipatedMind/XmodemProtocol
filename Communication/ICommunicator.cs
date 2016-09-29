@@ -12,5 +12,6 @@ namespace XModemProtocol.Communication {
         List<byte> ReadAllBytes();
         bool ReadBufferIsEmpty { get; }
         bool ReadBufferContainsData { get; }
+        int BytesInReadBuffer { get; }
     }
 }

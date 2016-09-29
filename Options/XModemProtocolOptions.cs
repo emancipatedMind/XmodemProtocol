@@ -138,9 +138,9 @@ namespace XModemProtocol.Options {
                 return _receiverInitializationTimeout;
             }
             set {
-                if (_receiverInitializationTimeout < 1000)
+                if (value < 1000)
                     _receiverInitializationTimeout = 1000;
-                else if (_receiverInitializationTimeout > 10000)
+                else if (value > 10000)
                     _receiverInitializationTimeout = 10000;
                 else _receiverInitializationTimeout = value;
             }
@@ -159,9 +159,9 @@ namespace XModemProtocol.Options {
                 return _receiverTimeoutDuringPacketReception;
             }
             set {
-                if (_receiverTimeoutDuringPacketReception < 5000)
+                if (value < 5000)
                     _receiverTimeoutDuringPacketReception = 5000;
-                else if (_receiverTimeoutDuringPacketReception > 20000)
+                else if (value > 20000)
                     _receiverTimeoutDuringPacketReception = 20000;
                 else _receiverTimeoutDuringPacketReception = value;
             }
@@ -177,9 +177,9 @@ namespace XModemProtocol.Options {
         public int ReceiverMaxNumberOfInitializationBytesForCRC {
             get { return _receiverMaxNumberOfInitializationBytesForCRC; }
             set {
-                if (_receiverMaxNumberOfInitializationBytesForCRC < 1)
+                if (value < 1)
                     _receiverMaxNumberOfInitializationBytesForCRC = 1;
-                else if (_receiverMaxNumberOfInitializationBytesForCRC > 10)
+                else if (value > 10)
                     _receiverMaxNumberOfInitializationBytesForCRC = 10;
                 else _receiverMaxNumberOfInitializationBytesForCRC = value;
 
@@ -199,7 +199,7 @@ namespace XModemProtocol.Options {
         public int ReceiverMaxNumberOfInitializationBytesInTotal {
             get { return _receiverMaxNumberOfInitializationBytesInTotal; }
             set {
-                if (_receiverMaxNumberOfInitializationBytesInTotal < 5)
+                if (value < 5)
                     _receiverMaxNumberOfInitializationBytesInTotal = 5;
                 else _receiverMaxNumberOfInitializationBytesInTotal = value;
 

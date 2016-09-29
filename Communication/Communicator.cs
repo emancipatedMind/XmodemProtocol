@@ -11,6 +11,8 @@ namespace XModemProtocol.Communication {
             _port = port;
         }
 
+        public int BytesInReadBuffer => _port.BytesToRead;
+
         public bool ReadBufferIsEmpty => _port.BytesToRead == 0;
 
         public bool ReadBufferContainsData => _port.BytesToRead != 0;

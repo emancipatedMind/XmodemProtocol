@@ -29,7 +29,7 @@ namespace XModemProtocol.Operations.Invoke {
 
                 CheckForCancellation();
 
-                if(LastResponseWasACK) {
+                if (LastResponseWasACK) {
                     _indexToBeSent++;
                     if (LastPacketAlreadySent) {
                         SendEOT();
