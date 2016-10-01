@@ -7,7 +7,7 @@ using XModemProtocol.Options;
 
 namespace XModemProtocol.Operations.Finalize {
     public abstract class Finalizer : IFinalizer {
-        IRequirements _requirements;
+        protected IRequirements _requirements;
 
         public void Finalize(IRequirements requirements) {
             _requirements = requirements;

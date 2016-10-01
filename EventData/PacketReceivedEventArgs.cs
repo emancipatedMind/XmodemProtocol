@@ -14,13 +14,8 @@ namespace XModemProtocol.EventData {
         /// The contents of the packet that was received.
         /// </summary>
         public List<byte> PacketReceived { get; private set; }
-        /// <summary>
-        /// Flag which denotes whether the packet was validated.
-        /// </summary>
-        public bool PacketVerified { get; private set; }
-        internal PacketReceivedEventArgs(int packetNumber, List<byte> packetReceived, bool packetVerified) {
+        internal PacketReceivedEventArgs(int packetNumber, List<byte> packetReceived) {
             PacketNumber = packetNumber;
-            PacketVerified = packetVerified;
             PacketReceived = new List<byte>(packetReceived);
         }
     }

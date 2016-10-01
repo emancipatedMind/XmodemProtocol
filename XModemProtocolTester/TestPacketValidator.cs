@@ -39,13 +39,13 @@ namespace XModemProtocolTester
             _longPacket.AddRange(_longPacketMessage);
             _longPacket.AddRange(_longPacketCRCChecksum);
             // Test normal validator.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket, _options));
+            Assert.AreEqual(ValidationResult.Valid, _crcValidator.ValidatePacket(_longPacket, _options));
             // Test resend of packet.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_longPacket, _options));
+            Assert.AreEqual(ValidationResult.Duplicate, _crcValidator.ValidatePacket(_longPacket, _options));
             _longPacket[131] = 0x73;
             _crcValidator.Reset();
             // Test incorrect checksum.
-            Assert.IsFalse(_crcValidator.ValidatePacket(_longPacket, _options));
+            Assert.AreEqual(ValidationResult.Invalid, _crcValidator.ValidatePacket(_longPacket, _options));
         }
 
         [Test]
@@ -54,13 +54,13 @@ namespace XModemProtocolTester
             _shortPacket.AddRange(_shortPacketMessage);
             _shortPacket.Add(_shortPacketChecksum);
             // Test normal validator.
-            Assert.IsTrue(_validator.ValidatePacket(_shortPacket, _options));
+            Assert.AreEqual(ValidationResult.Valid, _validator.ValidatePacket(_shortPacket, _options));
             // Test resend of packet.
-            Assert.IsTrue(_validator.ValidatePacket(_shortPacket, _options));
+            Assert.AreEqual(ValidationResult.Duplicate, _validator.ValidatePacket(_shortPacket, _options));
             _shortPacket[131] = 0x73;
             _validator.Reset();
             // Test incorrect checksum.
-            Assert.IsFalse(_validator.ValidatePacket(_shortPacket, _options));
+            Assert.AreEqual(ValidationResult.Invalid, _validator.ValidatePacket(_shortPacket, _options));
         }
 
         [Test]
@@ -69,13 +69,13 @@ namespace XModemProtocolTester
             _shortPacket.AddRange(_shortPacketMessage);
             _shortPacket.AddRange(_shortPacketCRCChecksum);
             // Test normal validator.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket, _options));
+            Assert.AreEqual(ValidationResult.Valid, _crcValidator.ValidatePacket(_shortPacket, _options));
             // Test resend of packet.
-            Assert.IsTrue(_crcValidator.ValidatePacket(_shortPacket, _options));
+            Assert.AreEqual(ValidationResult.Duplicate, _crcValidator.ValidatePacket(_shortPacket, _options));
             _shortPacket[131] = 0x73;
             _crcValidator.Reset();
             // Test incorrect checksum.
-            Assert.IsFalse(_crcValidator.ValidatePacket(_shortPacket, _options));
+            Assert.AreEqual(ValidationResult.Invalid, _crcValidator.ValidatePacket(_shortPacket, _options));
         }
 
     }

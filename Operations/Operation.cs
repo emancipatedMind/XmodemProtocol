@@ -29,15 +29,18 @@ namespace XModemProtocol.Operations {
         public void Go(IRequirements requirements) {
             _tools = _toolFactory.GetToolsFor(requirements.Options.Mode);
             _requirements = new SendReceiveRequirements {
+                Detector = _tools.Detector,
                 Communicator = requirements.Communicator,
                 Context = requirements.Context,
-                Detector = _tools.Detector,
                 Options = requirements.Options,
+                Validator = _tools.Validator,
             };
             _mode = _requirements.Options.Mode;
             _initializer.Initialize(_requirements);
-            if (ModeChangedInInitialization)
+            if (ModeChangedInInitialization) {
+                _tools = _toolFactory.GetToolsFor(requirements.Options.Mode);
                 TransitionToInvoke();
+            }
             _invoker.Invoke(_requirements);
             _finalizer.Finalize(_requirements);
         }

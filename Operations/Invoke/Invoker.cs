@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.Detectors;
-using XModemProtocol.Factories.Tools;
-using XModemProtocol.Options;
-using XModemProtocol.Communication;
 using XModemProtocol.EventData;
+using XModemProtocol.Exceptions;
+using XModemProtocol.Options;
 
 namespace XModemProtocol.Operations.Invoke {
     public abstract class Invoker : IInvoker {
@@ -28,8 +23,27 @@ namespace XModemProtocol.Operations.Invoke {
             PacketToSend?.Invoke(this, new PacketToSendEventArgs(packetNumber, packet)); 
         }
 
-        protected virtual void FirePacketReceivedEvent (int packetNumber, List<byte> packet, bool packetVerified) {
-            PacketReceived?.Invoke(this, new PacketReceivedEventArgs(packetNumber, packet, packetVerified)); 
+        protected virtual void FirePacketReceivedEvent (int packetNumber, List<byte> packet) {
+            PacketReceived?.Invoke(this, new PacketReceivedEventArgs(packetNumber, packet)); 
+        }
+
+        protected virtual void CheckForCancellation() {
+            if(_requirements.Detector.CancellationDetected(_buffer, _requirements.Options)) {
+                _requirements.Context.State = XModemStates.Cancelled;
+                throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
+            }
+        }
+
+        protected virtual bool NotCancelled {
+            get {
+                if ( _requirements.Context.Token.IsCancellationRequested)
+                    throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.Cancelled));
+                return true;
+            }
+        }
+
+        protected virtual void Reset() {
+            _buffer = new List<byte>();
         }
 
     }

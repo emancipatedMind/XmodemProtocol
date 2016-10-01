@@ -100,7 +100,12 @@ namespace XModemProtocol {
         }
 
         public void Receive() {
-            return;
+            _operation = new ReceiveOperation();
+            _operation.PacketReceived += (s, e) => {
+                PacketReceived?.Invoke(this, e);
+            };
+            _context.Data = new List<byte>();
+            _context.Packets = new List<List<byte>>();
             PerformOperation();
         }
 

@@ -122,7 +122,7 @@ namespace XModemProtocol.Options {
         /// <summary>
         /// Default : 5.
         /// Used exclusively by Receiver.
-        /// Number of consecutive NAKs that will prompt an abort.
+        /// Number of consecutive NAKs that will prompt an abort. 0 signals no abort should occur due to consecutive NAKs.
         /// </summary>
         public int ReceiverConsecutiveNAKsRequiredForCancellation { get; set; } = 5;
 

@@ -60,6 +60,7 @@
     <Compile Include="Factories\Tools\XModemTool.cs" />
     <Compile Include="Factories\XModemToolFactory.cs" />
     <Compile Include="Operations\Finalize\Finalizer.cs" />
+    <Compile Include="Operations\Finalize\FinalizeReceive.cs" />
     <Compile Include="Operations\Finalize\FinalizeSend.cs" />
     <Compile Include="Operations\Finalize\IFinalizer.cs" />
     <Compile Include="Operations\Initialize\IInitializer.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Operations\Invoke\InvokeSend.cs" />
     <Compile Include="Operations\IOperation.cs" />
     <Compile Include="Operations\Operation.cs" />
+    <Compile Include="Operations\ReceiveOperation.cs" />
     <Compile Include="Operations\SendOperation.cs" />
     <Compile Include="Options\Context.cs" />
     <Compile Include="Options\IContext.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Calculators\NormalChecksumCalculator.cs" />
     <Compile Include="EventData\PacketReceivedEventArgs.cs" />
     <Compile Include="Communication\PortExtensions.cs" />
+    <Compile Include="Validators\Packet\ValidationResultEnum.cs" />
     <Compile Include="Validators\Packet\IPacketValidator.cs" />
     <Compile Include="Validators\Packet\PacketValidator.cs" />
     <Compile Include="XModemAbortReasonEnum.cs" />

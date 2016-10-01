@@ -3,8 +3,11 @@ using System.Linq;
 
 namespace XModemProtocol.Validators.Packet
 {
+    using System;
     using Checksum;
     using Options;
+    using EventData;
+
     public class PacketValidator : IPacketValidator {
 
         private IValidateChecksum _validator;
@@ -21,18 +24,16 @@ namespace XModemProtocol.Validators.Packet
             _packetNumberExpected = 1;
         }
 
-        public bool ValidatePacket(IEnumerable<byte> input, IXModemProtocolOptions options) {
+        public ValidationResult ValidatePacket(IEnumerable<byte> input, IXModemProtocolOptions options) {
             _data = input.ToList();
             _options = options;
             if (PacketExpectedIsIncorrect) {
-                if (PacketIsDuplicate)
-                    return true;
-                return false;
+                return PacketIsDuplicate ? ValidationResult.Duplicate : ValidationResult.Invalid;
             }
-            if (OnesComplementIsIncorrect) return false;
-            if (ChecksumIsIncorrect) return false;
+            if (OnesComplementIsIncorrect) return ValidationResult.Invalid;
+            if (ChecksumIsIncorrect) return ValidationResult.Invalid;
             _packetNumberExpected++;
-            return true;
+            return ValidationResult.Valid;
         }
 
         private bool PacketExpectedIsIncorrect => _data[1] != _packetNumberExpected;
