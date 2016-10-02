@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="ComSendCollection.cs" />
     <Compile Include="ComStandIn.cs" />
-    <Compile Include="IPlayCatchOptions.cs" />
+    <Compile Include="InterPlayComm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomDataGenerator.cs" />

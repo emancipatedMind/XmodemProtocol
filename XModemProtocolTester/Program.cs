@@ -10,8 +10,10 @@ using XModemProtocol.Options;
 namespace XModemProtocolTester {
     partial class Program {
         static void Main(string[] args) {
-            var tester = new TestInvoke();
-            tester.TestInvokeReceive();
+            //var tester = new TestInvoke();
+            //tester.TestInvokeReceive();
+            var xcip = new XCInterPlay();
+            xcip.PlayCatch();
         }
     }
 }

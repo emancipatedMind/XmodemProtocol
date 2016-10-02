@@ -94,7 +94,6 @@
     <Compile Include="Validators\Checksum\IChecksumValidator.cs" />
     <Compile Include="Calculators\NormalChecksumCalculator.cs" />
     <Compile Include="EventData\PacketReceivedEventArgs.cs" />
-    <Compile Include="Communication\PortExtensions.cs" />
     <Compile Include="Validators\Packet\ValidationResultEnum.cs" />
     <Compile Include="Validators\Packet\IPacketValidator.cs" />
     <Compile Include="Validators\Packet\PacketValidator.cs" />
@@ -104,7 +103,6 @@
     <Compile Include="EventData\PacketsBuiltEventArgs.cs" />
     <Compile Include="Validators\Checksum\NormalChecksumValidator.cs" />
     <Compile Include="XModemCommunicator.cs" />
-    <Compile Include="XModemCommunicator - Receiver Methods.cs" />
     <Compile Include="EventData\PacketToSendEventArgs.cs" />
     <Compile Include="XModemStatesEnum.cs" />
     <Compile Include="EventData\StateUpdatedEventArgs.cs" />

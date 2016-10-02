@@ -51,10 +51,14 @@ namespace XModemProtocol.Operations.Invoke {
 
                 PauseAndResetWatchDog();
                 CheckForCancellation();
+
                 if (EOTwasReceived) {
                     SendACK();
                     return;
                 }
+
+                if (BufferLengthIsTooShort) continue;
+
                 if (BufferContainsValidPacket) {
                     SendACK();
                     if (PacketIsNotDuplicate) {
@@ -65,6 +69,19 @@ namespace XModemProtocol.Operations.Invoke {
                 else SendNAK();
 
                 Reset();
+            }
+        }
+
+        private bool BufferLengthIsTooShort {
+            get {
+                if (_buffer.Count < 2) return true;
+                else if (_buffer[0] == _requirements.Options.SOH) {
+                    return _buffer.Count < 132;
+                }
+                else if (_buffer[0] == _requirements.Options.STX) {
+                    return _buffer.Count < 1029;
+                }
+                else return true;
             }
         }
 

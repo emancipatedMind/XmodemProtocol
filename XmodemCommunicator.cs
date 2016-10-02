@@ -38,7 +38,7 @@ namespace XModemProtocol {
             };
         } 
 
-        public XModemCommunicator(SerialPort port) : this(new Communicator(port))  { }
+        public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
 
         public SerialPort Port {
             set {
@@ -67,6 +67,10 @@ namespace XModemProtocol {
                     BuildPackets();
                 }
             }
+            get {
+                if (_context.Data == null || _context.Data.Count < 1) return null;
+                return new List<byte>(_context.Data);
+            }
         }
 
         public XModemStates State => _context.State;
@@ -94,8 +98,11 @@ namespace XModemProtocol {
             _operation.PacketToSend += (s, e) => {
                 PacketToSend?.Invoke(this, e);
             };
-            if (_context.Data == null || _context.Data.Count == 0)
-                throw new Exceptions.XModemProtocolException(new AbortedEventArgs(XModemAbortReason.BufferEmpty)); 
+            if (_context.Data == null || _context.Data.Count == 0) {
+                Aborted.Invoke(this, new AbortedEventArgs(XModemAbortReason.BufferEmpty));
+                _context.State = XModemStates.Idle;
+                return;
+            }
             PerformOperation();
         }
 

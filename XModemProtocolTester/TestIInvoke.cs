@@ -1,14 +1,14 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using XModemProtocol.Exceptions;
 using XModemProtocol.Factories;
 using XModemProtocol.Factories.Tools;
-using XModemProtocol.Options;
-using XModemProtocol.Operations.Invoke;
 using XModemProtocol.Operations.Finalize;
-using NUnit.Framework;
+using XModemProtocol.Operations.Invoke;
+using XModemProtocol.Options;
 
 namespace XModemProtocolTester {
     [TestFixture] 

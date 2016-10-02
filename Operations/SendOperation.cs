@@ -16,7 +16,6 @@ namespace XModemProtocol.Operations {
         }
 
         protected override void TransitionToInvoke() {
-            _tools = _toolFactory.GetToolsFor(_requirements.Options.Mode);
             _requirements.Context.Packets = _tools.Builder.GetPackets(_requirements.Context.Data, _requirements.Options);
         }
     }
