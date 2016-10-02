@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using XModemProtocol.Communication;
@@ -11,11 +10,10 @@ using XModemProtocol.Exceptions;
 using XModemProtocol.Factories;
 using XModemProtocol.Factories.Tools;
 using XModemProtocol.Operations;
-using XModemProtocol.Operations.Initialize;
-using XModemProtocol.Operations.Invoke;
 using XModemProtocol.Options;
 
-namespace XModemProtocol {
+namespace XModemProtocol
+{
     public class XModemCommunicator {
 
         IToolFactory _toolFactory = new XModemToolFactory();
@@ -24,34 +22,38 @@ namespace XModemProtocol {
         IRequirements _requirements;
         CancellationTokenSource _tokenSource;
         IXModemTools _tools;
-        ICommunicator _communicator;
         IOperation _operation;
 
         public XModemCommunicator(ICommunicator communicator) {
-            _communicator = communicator;
-            Options = new Options.XModemProtocolOptions();
+            Communicator = communicator;
+            Options = new XModemProtocolOptions();
             _context.PacketsBuilt += (s, e) => {
-                Task.Run(()=> this.PacketsBuilt?.Invoke(this, e));
+                Task.Run(()=> PacketsBuilt?.Invoke(this, e));
             };
             _context.StateUpdated += (s, e) => {
-                Task.Run(()=> this.StateUpdated?.Invoke(this, e));
+                Task.Run(()=> StateUpdated?.Invoke(this, e));
             };
         } 
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
 
-        public SerialPort Port {
-            set {
-                _communicator = new Communicator(value);     
-            }
-        }
-
+        /// <summary>
+        /// Port passed to channel to facilitate transfer.
+        /// </summary>
+        public SerialPort Port { set { Communicator = new Communicator(value); } } 
+        /// <summary>
+        /// Channel used to facilitate transfer.
+        /// </summary>
+        public ICommunicator Communicator { private get; set; }
+        /// <summary>
+        /// Used to cancel operation in progress.
+        /// </summary>
         public void CancelOperation() {
             _tokenSource?.Cancel();
         }
 
         private void SendCancel() {
-            _communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
+            Communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
         }
 
         private void BuildPackets() {
@@ -59,6 +61,9 @@ namespace XModemProtocol {
             _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
         }
 
+        /// <summary>
+        /// Data received from transfer or data to be sent.
+        /// </summary>
         public IEnumerable<byte> Data {
             set {
                 if (value == null) return;
@@ -73,9 +78,15 @@ namespace XModemProtocol {
             }
         }
 
+        /// <summary>
+        /// Current state.
+        /// </summary>
         public XModemStates State => _context.State;
 
         IXModemProtocolOptions _options;
+        /// <summary>
+        /// Options used during transfer.
+        /// </summary>
         public IXModemProtocolOptions Options {
             private get { return _options; }
             set {
@@ -93,7 +104,11 @@ namespace XModemProtocol {
             }
         }
 
+        /// <summary>
+        /// Send Operation. Send the bytes contained in Data.
+        /// </summary>
         public void Send() {
+            if (_context.State != XModemStates.Idle) return;
             _operation = new SendOperation();
             _operation.PacketToSend += (s, e) => {
                 PacketToSend?.Invoke(this, e);
@@ -106,7 +121,11 @@ namespace XModemProtocol {
             PerformOperation();
         }
 
+        /// <summary>
+        /// Receive Operation. Receive bytes from awaiting sender.
+        /// </summary>
         public void Receive() {
+            if (_context.State != XModemStates.Idle) return;
             _operation = new ReceiveOperation();
             _operation.PacketReceived += (s, e) => {
                 PacketReceived?.Invoke(this, e);
@@ -124,11 +143,11 @@ namespace XModemProtocol {
                 _tokenSource = new CancellationTokenSource();
                 _context.Token = _tokenSource.Token;
                 _requirements = new Requirements {
-                    Communicator = _communicator,
+                    Communicator = Communicator,
                     Context = _context,
                     Options = _options,
                 };
-                _communicator.Flush();
+                Communicator.Flush();
                 _operation.Go(_requirements);
                 Completed?.Invoke(this, new CompletedEventArgs(_context.Data));
             }

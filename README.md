@@ -18,19 +18,19 @@ Can be used to send or receive bytes across a serial line.
  Fires when the instance builds packets.
 * _PacketToSend_ 
 
- Fires when the instance is ready to send a packet.
+ Fires when the instance is ready to send a packet. A blocking method will prevent packet from being sent.
 * _PacketReceived_ 
 
  Fires when a packet is received.
 * _Aborted_
 
- Fires if the operation is aborted
+ Fires if the operation is aborted. Instance will not return to being idle until event completes.
 * _Completed_ 
 
- Fires when the operation completes successfully.
+ Fires when the operation completes successfully. Instance will not return to being idle until event completes.
 * _OperationPending_ 
 
- Fires before the operation begins. The return value is a bool which determines if operation will run or not.
+ Fires before the operation begins. The return value is a bool which determines if operation will run or not. _**Will not fire if Data contains no bytes, and performing send operation.**_
 
 ## Author
 Peter T. Owens-Finch
