@@ -5,8 +5,33 @@ Supports XModem, XModem-1k & XModem-CRC.
 
 Can be used to send or receive bytes across a serial line.
 
-##Events supported
+### Properties
+* _Data_
 
+ Data Property.
+* _Communicator_
+
+ Communicator Property
+* _Port_
+
+ Port Property
+* _Options_
+
+ Options Property
+ 
+### Methods
+* _Send_
+
+ Send Operation.
+* _Receive_
+
+ Receive Operation.
+ 
+* _CancelOperation_
+
+ Cancel Operation.
+ 
+### Events supported
 * _ModeUpdated_
 
  Fires when the mode of the instance is updated.
@@ -32,6 +57,6 @@ Can be used to send or receive bytes across a serial line.
 
  Fires before the operation begins. The return value is a bool which determines if operation will run or not. _**Will not fire if Data contains no bytes, and performing send operation.**_
 
-## Author
+### Author
 Peter T. Owens-Finch
 powensfinch@gmail.com
