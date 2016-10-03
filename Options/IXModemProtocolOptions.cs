@@ -8,7 +8,7 @@ namespace XModemProtocol.Options {
         int CancellationBytesRequired { get; }
         int CANSentDuringAbort { get; }
         byte EOT { get; }
-        XModemMode Mode { get; set; }
+        XModemMode Mode { get; }
         byte NAK { get; }
         int ReceiverConsecutiveNAKsRequiredForCancellation { get; }
         int ReceiverInitializationTimeout { get; }
@@ -19,6 +19,5 @@ namespace XModemProtocol.Options {
         byte SOH { get; }
         byte STX { get; }
         byte SUB { get; }
-        event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
     }
 }

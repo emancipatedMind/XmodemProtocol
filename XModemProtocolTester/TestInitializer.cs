@@ -54,7 +54,7 @@ namespace XModemProtocolTester {
 
             _com.BytesToSend = null;
             _com.BytesRead = null;
-            _options.Mode = XModemProtocol.XModemMode.CRC;
+            _context.Mode = XModemProtocol.XModemMode.CRC;
             excThrown = false;
             try {
                 _ini.Initialize(_requirements);
@@ -68,7 +68,7 @@ namespace XModemProtocolTester {
             _com.BytesToSend = null;
             _com.BytesRead = null;
             expectedData = new List<List<byte>>(Enumerable.Repeat(new List<byte> { _options.NAK }, _options.ReceiverMaxNumberOfInitializationBytesInTotal));
-            _options.Mode = XModemProtocol.XModemMode.Checksum;
+            _context.Mode = XModemProtocol.XModemMode.Checksum;
             excThrown = false;
             try {
                 _ini.Initialize(_requirements);
@@ -101,21 +101,21 @@ namespace XModemProtocolTester {
         public void TestInitializeSend() {
             _ini = new InitializeSend();
             Setup();
-            _options.Mode = XModemProtocol.XModemMode.OneK;
+            _context.Mode = XModemProtocol.XModemMode.OneK;
 
             _com.BytesToSend = new List<byte> { _options.C };
 
             _ini.Initialize(_requirements);
-            Assert.AreEqual(XModemProtocol.XModemMode.OneK, _options.Mode);
+            Assert.AreEqual(XModemProtocol.XModemMode.OneK, _context.Mode);
 
-            _options.Mode = XModemProtocol.XModemMode.CRC;
+            _context.Mode = XModemProtocol.XModemMode.CRC;
             _ini.Initialize(_requirements);
-            Assert.AreEqual(XModemProtocol.XModemMode.CRC, _options.Mode);
+            Assert.AreEqual(XModemProtocol.XModemMode.CRC, _context.Mode);
 
             _com.BytesToSend = new List<byte> { _options.NAK };
 
             _ini.Initialize(_requirements);
-            Assert.AreEqual(XModemProtocol.XModemMode.Checksum, _options.Mode);
+            Assert.AreEqual(XModemProtocol.XModemMode.Checksum, _context.Mode);
 
             _com.BytesToSend = new List<byte> { _options.C };
             bool excThrown = false;

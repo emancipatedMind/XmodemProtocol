@@ -22,7 +22,7 @@ namespace XModemProtocol.Operations.Initialize {
 
         protected override void Reset() {
             _waitHandle = new System.Threading.ManualResetEvent(true);
-            if (ModeIsNotChecksum) _requirements.Options.Mode = XModemMode.OneK;
+            if (ModeIsNotChecksum) _requirements.Context.Mode = XModemMode.OneK;
             _initializationBytesSent = 0;
             _numOfCsSent = 0;
         }
@@ -34,7 +34,7 @@ namespace XModemProtocol.Operations.Initialize {
                     _waitHandle.Reset();
                     if (ModeIsNotChecksum) {
                         if (CRCInitializationHasFailed) {
-                            _requirements.Options.Mode = XModemMode.Checksum;
+                            _requirements.Context.Mode = XModemMode.Checksum;
                         }
                     }
                     if (InitializationHasFailed) {
@@ -57,13 +57,13 @@ namespace XModemProtocol.Operations.Initialize {
 
         private bool ReadBufferContainsAtLeastOnePacketOfData {
             get {
-                int bytesThreshold = _requirements.Options.Mode == XModemMode.Checksum ? 132 : 133;
+                int bytesThreshold = _requirements.Context.Mode == XModemMode.Checksum ? 132 : 133;
                 return _requirements.Communicator.BytesInReadBuffer >= bytesThreshold; 
             }
         }
 
-        private bool ModeIsChecksum => _requirements.Options.Mode == XModemMode.Checksum;
-        private bool ModeIsNotChecksum => _requirements.Options.Mode != XModemMode.Checksum;
+        private bool ModeIsChecksum => _requirements.Context.Mode == XModemMode.Checksum;
+        private bool ModeIsNotChecksum => _requirements.Context.Mode != XModemMode.Checksum;
 
         private bool CRCInitializationHasFailed =>
             ++_numOfCsSent > _requirements.Options.ReceiverMaxNumberOfInitializationBytesForCRC;

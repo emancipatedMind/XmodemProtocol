@@ -21,7 +21,7 @@ namespace XModemProtocol.Operations.Invoke {
 
         protected override void Invoke() {
             _requirements.Context.State = XModemStates.ReceiverReceivingPackets;
-            _numbOfBytesToShave = _requirements.Options.Mode == XModemMode.Checksum ? 4 : 5;
+            _numbOfBytesToShave = _requirements.Context.Mode == XModemMode.Checksum ? 4 : 5;
             _checkShouldOccur = _requirements.Options.ReceiverConsecutiveNAKsRequiredForCancellation > 0;
             _requirements.Validator.Reset();
             ConfigureTimers();

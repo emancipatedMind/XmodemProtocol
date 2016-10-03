@@ -9,7 +9,6 @@ using XModemProtocol.EventData;
 namespace XModemProtocol.Options {
     public class Context : IContext {
 
-
         private XModemStates _state = XModemStates.Idle;
         public XModemStates State {
             get { return _state; }
@@ -40,8 +39,19 @@ namespace XModemProtocol.Options {
         public List<byte> Data { get; set; }
         public CancellationToken Token { get; set; }
 
+        private XModemMode _mode = XModemMode.OneK;
+        public XModemMode Mode {
+            get { return _mode; }
+            set {
+                if (_mode == value) return;
+                var _oldMode = _mode;
+                _mode = value;
+                ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, _oldMode));
+            }
+        }
 
         public event EventHandler<StateUpdatedEventArgs> StateUpdated;
         public event EventHandler<PacketsBuiltEventArgs> PacketsBuilt;
+        public event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
     }
 }

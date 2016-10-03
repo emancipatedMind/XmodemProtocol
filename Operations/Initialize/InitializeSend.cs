@@ -40,7 +40,7 @@ namespace XModemProtocol.Operations.Initialize {
                 }
                 else if (NAKwasReceived) {
                     if (SenderIsCRC) {
-                        _requirements.Options.Mode = XModemMode.Checksum;
+                        _requirements.Context.Mode = XModemMode.Checksum;
                     }
                 }
                 else continue;
@@ -63,11 +63,11 @@ namespace XModemProtocol.Operations.Initialize {
 
         private bool CwasReceived => _latestResponse == _requirements.Options.C;
 
-        private bool ChecksumIsForced => _requirements.Options.Mode == XModemMode.Checksum;
+        private bool ChecksumIsForced => _requirements.Context.Mode == XModemMode.Checksum;
 
         private bool NAKwasReceived => _latestResponse == _requirements.Options.NAK;
 
-        private bool SenderIsCRC => _requirements.Options.Mode != XModemMode.Checksum;
+        private bool SenderIsCRC => _requirements.Context.Mode != XModemMode.Checksum;
 
     }
 }

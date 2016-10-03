@@ -28,9 +28,9 @@ namespace XModemProtocolTester {
 
         [Test]
         public void TestSendOperation() {
-            //_options.Mode = XModemProtocol.XModemMode.CRC;
+            //_context.Mode = XModemProtocol.XModemMode.CRC;
             _context.Data = _rdg.GetRandomData(40000).ToList();
-            _tools = _toolFactory.GetToolsFor(_options.Mode);
+            _tools = _toolFactory.GetToolsFor(_context.Mode);
             _context.Packets = _tools.Builder.GetPackets(_context.Data, _options);
             List<List<byte>> dts = new List<List<byte>> {
                 new List<byte> { _options.C },

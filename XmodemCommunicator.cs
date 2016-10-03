@@ -33,6 +33,9 @@ namespace XModemProtocol
             _context.StateUpdated += (s, e) => {
                 Task.Run(()=> StateUpdated?.Invoke(this, e));
             };
+            _context.ModeUpdated += (s, e) => {
+                Task.Run(()=> ModeUpdated?.Invoke(this, e));
+            };
         } 
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
@@ -93,12 +96,10 @@ namespace XModemProtocol
                 if (value == null) value = new Options.XModemProtocolOptions();
                 IXModemProtocolOptions oldOptions = _options;
                 _options = (IXModemProtocolOptions)value.Clone();
-                _options.ModeUpdated += (s, e) => {
-                    Task.Run(() => this.ModeUpdated?.Invoke(this, e));
-                };
+                _context.Mode = _options.Mode;
                 bool modeCheck = false;
                 if (oldOptions == null || (modeCheck = oldOptions.Mode != _options.Mode) ) {
-                    _tools = _toolFactory.GetToolsFor(_options.Mode);
+                    _tools = _toolFactory.GetToolsFor(_context.Mode);
                     if (modeCheck) BuildPackets();
                 } 
             }

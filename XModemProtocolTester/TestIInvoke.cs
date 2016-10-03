@@ -34,9 +34,9 @@ namespace XModemProtocolTester {
         [Test]
         public void TestInvokeReceive() {
             TestModeForInvokeReceive();
-            _options.Mode = XModemProtocol.XModemMode.CRC;
+            _context.Mode = XModemProtocol.XModemMode.CRC;
             TestModeForInvokeReceive();
-            _options.Mode = XModemProtocol.XModemMode.Checksum;
+            _context.Mode = XModemProtocol.XModemMode.Checksum;
             TestModeForInvokeReceive();
         }
 
@@ -57,7 +57,7 @@ namespace XModemProtocolTester {
             _context.Data = new List<byte>();
             _context.Packets = new List<List<byte>>();
 
-            _tools = _toolFactory.GetToolsFor(_options.Mode);
+            _tools = _toolFactory.GetToolsFor(_context.Mode);
 
             _packets = _tools.Builder.GetPackets(_data, _options);
             _packets.Add(new List<byte> { _options.EOT });

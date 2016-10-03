@@ -27,7 +27,7 @@ namespace XModemProtocol.Operations {
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         public void Go(IRequirements requirements) {
-            _tools = _toolFactory.GetToolsFor(requirements.Options.Mode);
+            _tools = _toolFactory.GetToolsFor(requirements.Context.Mode);
             _requirements = new SendReceiveRequirements {
                 Detector = _tools.Detector,
                 Communicator = requirements.Communicator,
@@ -35,10 +35,10 @@ namespace XModemProtocol.Operations {
                 Options = requirements.Options,
                 Validator = _tools.Validator,
             };
-            _mode = _requirements.Options.Mode;
+            _mode = _requirements.Context.Mode;
             _initializer.Initialize(_requirements);
             if (ModeChangedInInitialization) {
-                _tools = _toolFactory.GetToolsFor(requirements.Options.Mode);
+                _tools = _toolFactory.GetToolsFor(requirements.Context.Mode);
                 TransitionToInvoke();
             }
             _invoker.Invoke(_requirements);
@@ -47,7 +47,7 @@ namespace XModemProtocol.Operations {
 
         protected abstract void TransitionToInvoke();
 
-        private bool ModeChangedInInitialization => _requirements.Options.Mode != _mode;
+        private bool ModeChangedInInitialization => _requirements.Context.Mode != _mode;
 
         protected void FirePacketToSendEvent(object sender, PacketToSendEventArgs args) {
             PacketToSend?.Invoke(sender, args);
