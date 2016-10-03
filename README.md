@@ -1,28 +1,34 @@
 # XModem Protocol
 ## Implementation of the XMODEM Protocol compatible with .NET written in C#.
-
-Supports XModem, XModem-1k & XModem-CRC.
-
+Supports XModem, XModem-1k & XModem-CRC.  
 This library can be used to send or receive bytes across a serial line.
 
 ### Properties
-
 * _**Data**_  
- * Read/Write  
+ * Read/Write
+ * _System.Collections.Generic.IEnumerable&lt;byte&gt;_  
  Accepts, and returns a collection of type _IEnumerable&lt;byte&gt;_. This is the data that will be sent or the data that was received.
 
 * _**Communicator**_
- * Write Only  
+ * Write Only
+ * _XModemProtocol.Communication.ICommunicator_  
  Accepts an instance of a class that implements the _ICommunicator_ interface. This object will be used to facilitate the transfer of bytes.
 
 * _**Port**_
- * Write Only  
+ * Write Only
+ * _System.IO.Ports.SerialPort_  
  Accepts an instance of the _SerialPort_ class. This will be passed to a generic object that implements the _ICommunicator_ interface.
 
 * _**Options**_
- * Write Only  
+ * Write Only
+ * _XModemProtocol.XModemCommunicator_  
  Accepts an instance of a class that implements the _IXModemProtocolOptions_ interface. This contains the bytes that _XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemCommunicator_ operates.
- 
+
+* _**State**_
+ * Read Only
+ * _XModemProtocol.XModemStates_  
+ Returns the current state of _XModemCommunicator_.
+
 ### Methods
 * _**Send**_  
  Send Operation.
