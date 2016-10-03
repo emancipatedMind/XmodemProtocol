@@ -6,54 +6,54 @@ Supports XModem, XModem-1k & XModem-CRC.
 Can be used to send or receive bytes across a serial line.
 
 ### Properties
-* _Data_
+* _**Data**_
 
  Data Property.
-* _Communicator_
+* _**Communicator**_
 
- Communicator Property
-* _Port_
+ Write only property that accepts a class that implements the _ICommunicator_ interface. This class will be used to facilitate the transfer of bytes.
+* _**Port**_
 
- Port Property
-* _Options_
+ Write only property that accepts a _SerialPort_ class. This will be passed to a generic class that implements the _ICommunicator_ interface.
+* _**Options**_
 
- Options Property
+ Write only property that accepts a class that implements the _IXModemProtocolOptions_ interface. This class contains the bytes that _XModemCommunicator_ will use to facilitate along with some other options to customize how _XModemCommunicator_ operates.
  
 ### Methods
-* _Send_
+* _**Send**_
 
  Send Operation.
-* _Receive_
+* _**Receive**_
 
  Receive Operation.
  
-* _CancelOperation_
+* _**CancelOperation**_
 
  Cancel Operation.
  
 ### Events supported
-* _ModeUpdated_
+* _**ModeUpdated**_
 
  Fires when the mode of the instance is updated.
-* _StateUpdated_ 
+* _**StateUpdated**_ 
 
  Fires when the state of the instance is updated.
-* _PacketsBuilt_ 
+* _**PacketsBuilt**_ 
 
  Fires when the instance builds packets.
-* _PacketToSend_ 
+* _**PacketToSend**_ 
 
  Fires when the instance is ready to send a packet. A blocking method will prevent packet from being sent.
-* _PacketReceived_ 
+* _**PacketReceived**_ 
 
  Fires when a packet is received.
-* _Aborted_
+* _**Aborted**_
 
  Fires if the operation is aborted. Instance will not return to being idle until event completes.
-* _Completed_ 
+* _**Completed**_ 
 
  Fires when the operation completes successfully. Instance will not return to being idle until event completes.
-* _OperationPending_ 
+* _**OperationPending**_ 
 
  Fires before the operation begins. The return value is a bool which determines if operation will run or not. _**Will not fire if Data contains no bytes, and performing send operation.**_
 
