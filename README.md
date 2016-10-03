@@ -21,7 +21,7 @@ This library can be used to send or receive bytes across a serial line.
 
 * _**Options**_
  * Write Only
- * _XModemProtocol.XModemCommunicator_  
+ * _XModemProtocol.Options.IXModemProtocolOptions_  
  Accepts an instance of a class that implements the _IXModemProtocolOptions_ interface. This contains the bytes that _XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemCommunicator_ operates.
 
 * _**State**_
