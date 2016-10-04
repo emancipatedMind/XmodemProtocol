@@ -16,14 +16,17 @@ namespace XModemProtocol
 {
     public class XModemCommunicator {
 
+        #region Fields
         IToolFactory _toolFactory = new XModemToolFactory();
         IContext _context = new Context();
-
         IRequirements _requirements;
         CancellationTokenSource _tokenSource;
         IXModemTools _tools;
         IOperation _operation;
+        IXModemProtocolOptions _options;
+        #endregion
 
+        #region Constructors
         public XModemCommunicator(ICommunicator communicator) {
             Communicator = communicator;
             Options = new XModemProtocolOptions();
@@ -39,43 +42,34 @@ namespace XModemProtocol
         } 
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
+        #endregion
 
+        #region Properties
         /// <summary>
         /// Port passed to channel to facilitate transfer.
         /// </summary>
-        public SerialPort Port { set { Communicator = new Communicator(value); } } 
+        public SerialPort Port { set { Communicator = new Communicator(value); } }
         /// <summary>
         /// Channel used to facilitate transfer.
         /// </summary>
         public ICommunicator Communicator { private get; set; }
-        /// <summary>
-        /// Used to cancel operation in progress.
-        /// </summary>
-        public void CancelOperation() {
-            _tokenSource?.Cancel();
-        }
-
-        private void SendCancel() {
-            Communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
-        }
-
-        private void BuildPackets() {
-            if (_context.Data == null || _context.Data.Count == 0) return;
-            _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
-        }
 
         /// <summary>
         /// Data received from transfer or data to be sent.
         /// </summary>
-        public IEnumerable<byte> Data {
-            set {
+        public IEnumerable<byte> Data
+        {
+            set
+            {
                 if (value == null) return;
-                if (_context.Data == null || _context.Data.SequenceEqual(value) == false) {
+                if (_context.Data == null || _context.Data.SequenceEqual(value) == false)
+                {
                     _context.Data = new List<byte>(value);
                     BuildPackets();
                 }
             }
-            get {
+            get
+            {
                 if (_context.Data == null || _context.Data.Count < 1) return null;
                 return new List<byte>(_context.Data);
             }
@@ -86,35 +80,41 @@ namespace XModemProtocol
         /// </summary>
         public XModemStates State => _context.State;
 
-        IXModemProtocolOptions _options;
         /// <summary>
         /// Options used during transfer.
         /// </summary>
-        public IXModemProtocolOptions Options {
+        public IXModemProtocolOptions Options
+        {
             private get { return _options; }
-            set {
+            set
+            {
                 if (value == null) value = new Options.XModemProtocolOptions();
                 IXModemProtocolOptions oldOptions = _options;
                 _options = (IXModemProtocolOptions)value.Clone();
                 _context.Mode = _options.Mode;
                 bool modeCheck = false;
-                if (oldOptions == null || (modeCheck = oldOptions.Mode != _options.Mode) ) {
+                if (oldOptions == null || (modeCheck = oldOptions.Mode != _options.Mode))
+                {
                     _tools = _toolFactory.GetToolsFor(_context.Mode);
                     if (modeCheck) BuildPackets();
-                } 
+                }
             }
         }
+        #endregion
 
+        #region Operations
         /// <summary>
         /// Send Operation. Send the bytes contained in Data.
         /// </summary>
         public void Send() {
             if (_context.State != XModemStates.Idle) return;
             _operation = new SendOperation();
-            _operation.PacketToSend += (s, e) => {
+            _operation.PacketToSend += (s, e) =>
+            {
                 PacketToSend?.Invoke(this, e);
             };
-            if (_context.Data == null || _context.Data.Count == 0) {
+            if (_context.Data == null || _context.Data.Count == 0)
+            {
                 Aborted.Invoke(this, new AbortedEventArgs(XModemAbortReason.BufferEmpty));
                 _context.State = XModemStates.Idle;
                 return;
@@ -128,7 +128,8 @@ namespace XModemProtocol
         public void Receive() {
             if (_context.State != XModemStates.Idle) return;
             _operation = new ReceiveOperation();
-            _operation.PacketReceived += (s, e) => {
+            _operation.PacketReceived += (s, e) =>
+            {
                 PacketReceived?.Invoke(this, e);
             };
             _context.Data = new List<byte>();
@@ -136,7 +137,7 @@ namespace XModemProtocol
             PerformOperation();
         }
 
-        private void PerformOperation() {
+        private void PerformOperation()  {
             try {
                 if (OperationPending != null) 
                     if (OperationPending() == false)
@@ -165,6 +166,16 @@ namespace XModemProtocol
                 _context.State = XModemStates.Idle;
             }
         }
+
+        /// <summary>
+        /// Used to cancel operation in progress.
+        /// </summary>
+        public void CancelOperation() {
+            _tokenSource?.Cancel();
+        }
+        #endregion
+
+        #region Events
 
         #region Sender Only Events
         /// <summary>
@@ -219,6 +230,21 @@ namespace XModemProtocol
         /// State is not returned to idle until after this event has completed. 
         /// </summary>
         public event EventHandler<CompletedEventArgs> Completed;
+        #endregion
+
+        #endregion
+
+        #region Support Methods
+        private void SendCancel()
+        {
+            Communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
+        }
+
+        private void BuildPackets()
+        {
+            if (_context.Data == null || _context.Data.Count == 0) return;
+            _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
+        }
         #endregion
     }
 }

@@ -4,7 +4,7 @@ Supports XModem, XModem-1k & XModem-CRC.
 This library can be used to send or receive bytes across a serial line.
 
 ### Properties
-* _**Data**_  
+* _**Data**_
  * Read/Write
  * _System.Collections.Generic.IEnumerable&lt;byte&gt;_  
  Accepts, and returns a collection of type _IEnumerable&lt;byte&gt;_. This is the data that will be sent or the data that was received.
@@ -31,13 +31,13 @@ This library can be used to send or receive bytes across a serial line.
 
 ### Methods
 * _**Send**_  
- Send Operation.
+ Puts _XModemCommuniator_ in the sender role awaiting initialization byte from receiver.
 
 * _**Receive**_  
- Receive Operation.
+ Puts _XModemCommuniator_ in the receiver role sending the initialization byte.
 
 * _**CancelOperation**_  
- Cancel Operation.
+ Cancels the send or receive operation.
 
 ### Events supported
 * _**ModeUpdated**_  
