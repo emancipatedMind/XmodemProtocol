@@ -29,6 +29,9 @@ namespace XModemProtocolTester
             _senderCom.Partner = _receiverCom;
             _receiverCom.Partner = _senderCom;
 
+            _senderCom.WriteDebug = false; 
+            _receiverCom.WriteDebug = false; 
+
             SerialPort Port1 = new SerialPort {
                 BaudRate = 230400,
                 ReadTimeout = 10000,
@@ -50,23 +53,25 @@ namespace XModemProtocolTester
 
             Port1.Open();
             Port2.Open();
-            
-            //_sender = new XModemCommunicator(_senderCom);
-            //_receiver = new XModemCommunicator(_receiverCom);
 
-            _sender = new XModemCommunicator(Port1);
-            _receiver = new XModemCommunicator(Port2);
+            //_sender = new XModemCommunicator(Port1);
+            //_receiver = new XModemCommunicator(Port2);
+            
+            _sender = new XModemCommunicator(_senderCom);
+            _receiver = new XModemCommunicator(_receiverCom);
+
             _receiver.Options = new XModemProtocol.Options.XModemProtocolOptions {
-                Mode = XModemMode.Checksum
+                Mode = XModemMode.Checksum,
             };
-            _data = _rdg.GetRandomData(149600);
+            _sender.Options = new XModemProtocol.Options.XModemProtocolOptions {
+            };
+            _data = _rdg.GetRandomData(1000000);
+            //_data = File.ReadAllBytes(@"C:\Users\ptowensf\Desktop\Workbooks\Lab Upgrade\Dongle\Hex Files\42EF_DP_v1.009_12F91EEC_20150210.hex");
 
             SetEvents(_sender, "Port 1");
             SetEvents(_receiver, "Port 2");
 
             _sender.PacketsBuilt += (s, e) => Console.WriteLine($"Port 1 : {e.Packets.Count}");
-            _sender.Options = new XModemProtocol.Options.XModemProtocolOptions {
-            };
 
             _sender.Data = _data;
             Task[] tasks = new Task[] {
@@ -75,7 +80,9 @@ namespace XModemProtocolTester
             };
 
             Task.WaitAll(tasks);
-            Debug.WriteLine(_data.SequenceEqual(_receiver.Data)); 
+            Console.ReadLine();
+            //Debug.WriteLine(_data.SequenceEqual(_receiver.Data)); 
+            //Debug.WriteLine(Encoding.ASCII.GetString(_receiver.Data.ToArray()));
         }
 
         private void SetEvents(XModemCommunicator xmp, string name) {
@@ -90,7 +97,7 @@ namespace XModemProtocolTester
             };
             xmp.PacketToSend += (s, e) => {
                 if (e.PacketNumber % 100 == 0) {
-                    Debug.WriteLine(e.PacketNumber);
+                    Console.WriteLine(e.PacketNumber);
                 };
             };
         }

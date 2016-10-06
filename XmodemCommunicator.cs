@@ -115,7 +115,7 @@ namespace XModemProtocol
             };
             if (_context.Data == null || _context.Data.Count == 0)
             {
-                Aborted.Invoke(this, new AbortedEventArgs(XModemAbortReason.BufferEmpty));
+                Aborted?.Invoke(this, new AbortedEventArgs(XModemAbortReason.BufferEmpty));
                 _context.State = XModemStates.Idle;
                 return;
             }
@@ -160,7 +160,7 @@ namespace XModemProtocol
                         SendCancel();
                         break;
                 }
-                Aborted.Invoke(this, new AbortedEventArgs(ex.AbortArgs.Reason));
+                Aborted?.Invoke(this, new AbortedEventArgs(ex.AbortArgs.Reason));
             }
             finally {
                 _context.State = XModemStates.Idle;
