@@ -45,12 +45,15 @@ namespace XModemProtocol
         #endregion
 
         #region Properties
-        /// <summary>
-        /// Port passed to channel to facilitate transfer.
+        /// <summary> 
+        /// SerialPort to be used to create an instance of the
+        /// XModemProtocol.Communication.Communicator class.
         /// </summary>
         public SerialPort Port { set { Communicator = new Communicator(value); } }
         /// <summary>
-        /// Channel used to facilitate transfer.
+        /// Accepts an instance of a class that implements
+        /// the XModemProtocol.Communication.ICommunicator interface.
+        /// Object will be used to facilitate the transfer of bytes.
         /// </summary>
         public ICommunicator Communicator { private get; set; }
 
@@ -76,12 +79,16 @@ namespace XModemProtocol
         }
 
         /// <summary>
-        /// Current state.
+        /// Returns the current state of XModemProtocol.XModemCommunicator.
         /// </summary>
         public XModemStates State => _context.State;
 
         /// <summary>
-        /// Options used during transfer.
+        /// Accepts an instance of a class that implements the
+        /// XModemProtocol.Options.IXModemProtocolOptions interface.
+        /// This contains the bytes that XModemProtocol.XModemCommunicator
+        /// will use to facilitate transfer along with some other options
+        /// to customize how XModemProtocol.XModemCommunicator operates.
         /// </summary>
         public IXModemProtocolOptions Options {
             private get { return _options; }
@@ -96,8 +103,8 @@ namespace XModemProtocol
         }
 
         /// <summary>
-        /// Mode to be used by XModemCommunicator.
-        /// If using receiver, CRC will be upgraded to 1k automatically.
+        /// Mode to be used by XModemProtocol.XModemCommunicator.
+        /// If using Receive operation, CRC will upgraded to OneK automatically.
         /// </summary>
         public XModemMode Mode {
             get { return _context.Mode; }
@@ -112,7 +119,8 @@ namespace XModemProtocol
 
         #region Operations
         /// <summary>
-        /// Send Operation. Send the bytes contained in Data.
+        /// Puts XModemProtocol.XModemCommuniator in the sender role
+        /// awaiting initialization byte from receiver.
         /// </summary>
         public void Send() {
             if (_context.State != XModemStates.Idle) return;
@@ -131,7 +139,8 @@ namespace XModemProtocol
         }
 
         /// <summary>
-        /// Receive Operation. Receive bytes from awaiting sender.
+        /// Puts XModemProtocol.XModemCommuniator in the receiver role
+        /// sending the initialization byte.
         /// </summary>
         public void Receive() {
             if (_context.State != XModemStates.Idle) return;
@@ -143,6 +152,86 @@ namespace XModemProtocol
             _context.Data = new List<byte>();
             _context.Packets = new List<List<byte>>();
             PerformOperation();
+        }
+
+        /// <summary>
+        /// Cancels operation currently running. No effect if no operation running. 
+        /// </summary>
+        public void CancelOperation() {
+            _tokenSource?.Cancel();
+        }
+        #endregion
+
+        #region Events
+
+        #region Sender Only Events
+        /// <summary>
+        /// Fires asynchronously whenever XModemProtocol.XModemCommunicator finishes building packets.
+        /// </summary>
+        public event EventHandler<PacketsBuiltEventArgs> PacketsBuilt;
+
+        /// <summary>
+        /// Fires when XModemProtocol.XModemCommunicator is ready to send a packet.
+        /// A blocking method will prevent packet from being sent. Does not fire
+        /// when sending IXModemProtocolOptions.EOT.
+        /// </summary>
+        public event EventHandler<PacketToSendEventArgs> PacketToSend;
+        #endregion
+
+        #region Receiver Only Events
+        /// <summary>
+        /// Fires after a successful packet has been received by
+        /// XModemProtocol.XModemCommunicator. This event must complete
+        /// before XModemProtocol.XModemCommunicator will send
+        /// IXModemProtocolOptions.ACK. Does not fire when IXModemProtocolOptions.EOT is received.
+        /// </summary>
+        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        #endregion
+
+        #region Shared Events
+        /// <summary>
+        /// Must complete before operation begins.
+        /// Fires before the operation begins, and determines whether
+        /// operation will run or not. Will not fire if Data contains
+        /// no bytes, and performing Send operation.
+        /// </summary>
+        /// <returns>Whether to perform operation(true) or not(false).</returns>
+        public event Func<bool> OperationPending;
+
+        /// <summary>
+        /// Fires when the state of XModemProtocol.XModemCommunicator is updated.
+        /// </summary>
+        public event EventHandler<StateUpdatedEventArgs> StateUpdated;
+
+        /// <summary>
+        /// Fires when the mode of XModemProtocol.XModemCommunicator is updated.
+        /// </summary>
+        public event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
+
+        /// <summary>
+        /// Fires if the operation is aborted. XModemProtocol.XModemCommunicator
+        /// will not return to being idle until event completes.
+        /// </summary>
+        public event EventHandler<AbortedEventArgs> Aborted;
+
+        /// <summary>
+        /// Fires the operation completes successfully.
+        /// XModemProtocol.XModemCommunicator will not return to
+        /// being idle until event completes. 
+        /// </summary>
+        public event EventHandler<CompletedEventArgs> Completed;
+        #endregion
+
+        #endregion
+
+        #region Support Methods
+        private void SendCancel() {
+            Communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
+        }
+
+        private void BuildPackets() {
+            if (_context.Data == null || _context.Data.Count == 0) return;
+            _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
         }
 
         private void PerformOperation()  {
@@ -173,85 +262,6 @@ namespace XModemProtocol
             finally {
                 _context.State = XModemStates.Idle;
             }
-        }
-
-        /// <summary>
-        /// Used to cancel operation in progress.
-        /// </summary>
-        public void CancelOperation() {
-            _tokenSource?.Cancel();
-        }
-        #endregion
-
-        #region Events
-
-        #region Sender Only Events
-        /// <summary>
-        /// Used exclusively by Sender.
-        /// This event fires asynchronously whenever XModemCommunicator finishes building packets.
-        /// </summary>
-        public event EventHandler<PacketsBuiltEventArgs> PacketsBuilt;
-
-        /// <summary>
-        /// Used exclusively by Sender.
-        /// This event fires just before a packet is sent. A blocking method can prevent packet from being
-        /// sent. Does not fire when sending EOT.
-        /// </summary>
-        public event EventHandler<PacketToSendEventArgs> PacketToSend;
-        #endregion
-
-        #region Receiver Only Events
-        /// <summary>
-        /// Used exclusively by Receiver.
-        /// This event fires after a successful packet has been received, and verified. This event must
-        /// complete before XModemCommunicator will ACK sender. Does not fire when EOT is received.
-        /// </summary>
-        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
-        #endregion
-
-        #region Shared Events
-        /// <summary>
-        /// This event fires whenever XModemCommunicator is about to start a send or receive operation.
-        /// Must complete before operation begins.
-        /// </summary>
-        /// <returns>Whether to perform operation(true) or not(false).</returns>
-        public event Func<bool> OperationPending;
-
-        /// <summary>
-        /// This event fires asynchronously whenever XModemCommunicator changes its state.
-        /// </summary>
-        public event EventHandler<StateUpdatedEventArgs> StateUpdated;
-
-        /// <summary>
-        /// This event fires asynchronously whenever XModemCommunicator changes its mode.
-        /// </summary>
-        public event EventHandler<ModeUpdatedEventArgs> ModeUpdated;
-
-        /// <summary>
-        /// This event fires when the operation has been aborted.
-        /// State is not returned to idle until after this event has completed. 
-        /// </summary>
-        public event EventHandler<AbortedEventArgs> Aborted;
-
-        /// <summary>
-        /// This event fires when the final ACK has been received or sent.
-        /// State is not returned to idle until after this event has completed. 
-        /// </summary>
-        public event EventHandler<CompletedEventArgs> Completed;
-        #endregion
-
-        #endregion
-
-        #region Support Methods
-        private void SendCancel()
-        {
-            Communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
-        }
-
-        private void BuildPackets()
-        {
-            if (_context.Data == null || _context.Data.Count == 0) return;
-            _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
         }
         #endregion
     }
