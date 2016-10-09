@@ -1,5 +1,4 @@
-﻿namespace XModemProtocol.Factories.Tools
-{
+﻿namespace XModemProtocol.Factories.Tools {
     using Builders;
     using Detectors;
     using Validators.Packet;

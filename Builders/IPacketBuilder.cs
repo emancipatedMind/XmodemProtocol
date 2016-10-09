@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 namespace XModemProtocol.Builders {
     using Options;
     public interface IPacketBuilder {

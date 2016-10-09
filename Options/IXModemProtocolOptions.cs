@@ -1,6 +1,5 @@
 ﻿using System;
 namespace XModemProtocol.Options {
-    using EventData;
     public interface IXModemProtocolOptions : ICloneable {
         byte ACK { get; }
         byte C { get; }
@@ -8,7 +7,6 @@ namespace XModemProtocol.Options {
         int CancellationBytesRequired { get; }
         int CANSentDuringAbort { get; }
         byte EOT { get; }
-        XModemMode Mode { get; }
         byte NAK { get; }
         int ReceiverConsecutiveNAKsRequiredForCancellation { get; }
         int ReceiverInitializationTimeout { get; }

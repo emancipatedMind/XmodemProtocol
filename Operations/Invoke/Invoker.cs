@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using XModemProtocol.EventData;
-using XModemProtocol.Exceptions;
-using XModemProtocol.Options;
 
 namespace XModemProtocol.Operations.Invoke {
+    using EventData;
+    using Exceptions;
+    using Options;
     public abstract class Invoker : IInvoker {
         protected ISendReceiveRequirements _requirements;
         protected List<byte> _buffer = new List<byte>();

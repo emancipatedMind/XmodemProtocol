@@ -1,11 +1,9 @@
-﻿using XModemProtocol.Builders;
-using XModemProtocol.Calculators;
-using XModemProtocol.Detectors;
-using XModemProtocol.Validators.Packet;
-using XModemProtocol.Validators.Checksum;
-
-namespace XModemProtocol.Factories.Tools
-{
+﻿namespace XModemProtocol.Factories.Tools {
+    using Builders;
+    using Calculators;
+    using Detectors;
+    using Validators.Packet;
+    using Validators.Checksum;
     public abstract class XModemTool : IXModemTools {
 
         protected IPacketValidator _validator;
@@ -25,10 +23,6 @@ namespace XModemProtocol.Factories.Tools
             _detector = new CancellationDetector();
         }
 
-        public ICancellationDetector Detector {
-            get {
-                return _detector;
-            }
-        }
+        public ICancellationDetector Detector => _detector;
     }
 }

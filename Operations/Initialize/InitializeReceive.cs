@@ -1,7 +1,6 @@
-﻿using XModemProtocol.Exceptions;
-using XModemProtocol.EventData;
-
-namespace XModemProtocol.Operations.Initialize {
+﻿namespace XModemProtocol.Operations.Initialize {
+    using Exceptions;
+    using EventData;
     public class InitializeReceive : Initializer {
 
         private int _initializationBytesSent;

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
+﻿using System.Threading;
 
 namespace XModemProtocol.Operations.Initialize {
-    using Communication;
     using Options;
     public abstract class Initializer : IInitializer {
 

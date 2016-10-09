@@ -1,10 +1,8 @@
-﻿using XModemProtocol.Builders;
-using XModemProtocol.Calculators;
-using XModemProtocol.Validators.Packet;
-using XModemProtocol.Validators.Checksum;
-
-namespace XModemProtocol.Factories.Tools
-{
+﻿namespace XModemProtocol.Factories.Tools {
+    using Builders;
+    using Calculators;
+    using Validators.Packet;
+    using Validators.Checksum;
     public class XModemCRCTools : XModemTool {
 
         public XModemCRCTools() {
@@ -14,16 +12,8 @@ namespace XModemProtocol.Factories.Tools
             _builder = new CRCPacketBuilder(_cRCCalculator);
         }
 
-        public override IPacketBuilder Builder {
-            get {
-                return _builder;
-            }
-        }
+        public override IPacketBuilder Builder => _builder;
 
-        public override IPacketValidator Validator {
-            get {
-                return _validator;
-            }
-        }
+        public override IPacketValidator Validator => _validator;
     }
 }

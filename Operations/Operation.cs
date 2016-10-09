@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using XModemProtocol.Factories;
-using XModemProtocol.Factories.Tools;
-using XModemProtocol.Options;
-using XModemProtocol.Operations.Finalize;
-using XModemProtocol.Operations.Initialize;
-using XModemProtocol.Operations.Invoke;
-using XModemProtocol.EventData;
-
-namespace XModemProtocol.Operations {
+﻿namespace XModemProtocol.Operations {
+    using Factories;
+    using Factories.Tools;
+    using Options;
+    using Operations.Finalize;
+    using Operations.Initialize;
+    using Operations.Invoke;
+    using EventData;
     public abstract class Operation : IOperation {
 
         protected IInvoker _invoker;
@@ -23,8 +16,8 @@ namespace XModemProtocol.Operations {
         protected IXModemTools _tools;
         protected XModemMode _mode;
 
-        public event EventHandler<PacketToSendEventArgs> PacketToSend;
-        public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        public event System.EventHandler<PacketToSendEventArgs> PacketToSend;
+        public event System.EventHandler<PacketReceivedEventArgs> PacketReceived;
 
         public void Go(IRequirements requirements) {
             _tools = _toolFactory.GetToolsFor(requirements.Context.Mode);

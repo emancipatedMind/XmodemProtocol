@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.Options;
-using XModemProtocol.Communication;
-using XModemProtocol.Exceptions;
+﻿using System.Linq;
 
 namespace XModemProtocol.Operations.Invoke {
     public class InvokeSend : Invoker {

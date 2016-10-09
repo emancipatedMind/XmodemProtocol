@@ -2,18 +2,15 @@
 using System.Linq;
 
 namespace XModemProtocol.Calculators {
-    using Options;
     public class NormalChecksumCalculator : ISummationChecksumCalculator {
 
         List<byte> _input;
-
         public IEnumerable<byte> CalculateChecksum(IEnumerable<byte> input) {
             _input = input.ToList();
             return new byte[] { LeastSignificantByteOfSummation()};
         }
 
-        private byte LeastSignificantByteOfSummation() {
-            return (byte) _input.Sum(currentByte => currentByte);
-        }
+        private byte LeastSignificantByteOfSummation() =>
+            (byte) _input.Sum(currentByte => currentByte);
     }
 }

@@ -1,5 +1,4 @@
 ﻿namespace XModemProtocol.Builders {
-    using Options;
     using Calculators;
     public class NormalPacketBuilder : PacketBuilder {
 

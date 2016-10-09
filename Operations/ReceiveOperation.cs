@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.EventData;
-using XModemProtocol.Options;
-
-namespace XModemProtocol.Operations {
+﻿namespace XModemProtocol.Operations {
     public class ReceiveOperation : Operation {
 
         public ReceiveOperation() {
@@ -17,7 +9,7 @@ namespace XModemProtocol.Operations {
         }
 
         protected override void TransitionToInvoke() {
-            _requirements = new SendReceiveRequirements {
+            _requirements = new Options.SendReceiveRequirements {
                 Communicator = _requirements.Communicator,
                 Context = _requirements.Context,
                 Detector = _tools.Detector,

@@ -1,25 +1,10 @@
-﻿using System;
-using XModemProtocol.EventData;
-
-namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Options {
     /// <summary>
     /// Class used to hold options used by both the Sender, and Receiver.
     /// </summary>
     public class XModemProtocolOptions : IXModemProtocolOptions {
 
-        /// <summary>
-        /// Initializes a new instance of the XModemProtocol.XModemProtocolOptions class.
-        /// </summary>
-        public XModemProtocolOptions() { }
-
         #region Shared Options
-        /// <summary>
-        /// Shared option.
-        /// Mode to be used by XModemCommunicator.
-        /// If using receiver, CRC will be upgraded to 1k automatically.
-        /// </summary>
-        public XModemMode Mode { get; set; }
-
         /// <summary>
         /// Shared option.
         /// Number of CANs sent during an abort.
@@ -206,7 +191,6 @@ namespace XModemProtocol.Options {
         public object Clone() {
             return new XModemProtocolOptions {
                 // Shared Options
-                Mode = Mode,
                 ReceiverConsecutiveNAKsRequiredForCancellation = ReceiverConsecutiveNAKsRequiredForCancellation,
                 CANSentDuringAbort = CANSentDuringAbort,
                 CancellationBytesRequired = CancellationBytesRequired,

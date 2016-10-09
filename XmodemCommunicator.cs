@@ -83,23 +83,31 @@ namespace XModemProtocol
         /// <summary>
         /// Options used during transfer.
         /// </summary>
-        public IXModemProtocolOptions Options
-        {
+        public IXModemProtocolOptions Options {
             private get { return _options; }
-            set
-            {
+            set {
                 if (value == null) value = new Options.XModemProtocolOptions();
                 IXModemProtocolOptions oldOptions = _options;
                 _options = (IXModemProtocolOptions)value.Clone();
-                _context.Mode = _options.Mode;
-                bool modeCheck = false;
-                if (oldOptions == null || (modeCheck = oldOptions.Mode != _options.Mode))
-                {
+                if (oldOptions == null) {
                     _tools = _toolFactory.GetToolsFor(_context.Mode);
-                    if (modeCheck) BuildPackets();
                 }
             }
         }
+
+        /// <summary>
+        /// Mode to be used by XModemCommunicator.
+        /// If using receiver, CRC will be upgraded to 1k automatically.
+        /// </summary>
+        public XModemMode Mode {
+            get { return _context.Mode; }
+            set {
+                if (_context.Mode == value) return;
+                _context.Mode = value;
+                BuildPackets();
+            }
+        }
+
         #endregion
 
         #region Operations
@@ -141,7 +149,7 @@ namespace XModemProtocol
             try {
                 if (OperationPending != null) 
                     if (OperationPending() == false)
-                        throw new Exceptions.XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent));
+                        throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent));
                 _tokenSource = new CancellationTokenSource();
                 _context.Token = _tokenSource.Token;
                 _requirements = new Requirements {

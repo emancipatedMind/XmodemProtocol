@@ -29,7 +29,7 @@ namespace XModemProtocol.Builders {
             _position = 0;
             _packets = new List<List<byte>>();
             InitializePacketSize();
-            while(MorePacketsToBeBuilt()) {
+            while(MorePacketsToBeBuilt) {
                 BuildNextPacket();
                 PrepareForNextPacketBuild();
             }
@@ -54,7 +54,7 @@ namespace XModemProtocol.Builders {
         }
 
         private void AppendData() {
-            if (DataLeftWillFillPacket())  {
+            if (DataLeftWillFillPacket)  {
                 _packetInfo = _data.GetRange(_position, _packetSize);
             }
             else {
@@ -63,7 +63,7 @@ namespace XModemProtocol.Builders {
             _currentPacket.AddRange(_packetInfo);
         }
 
-        private bool DataLeftWillFillPacket() => _position + _packetSize <= _data.Count;
+        private bool DataLeftWillFillPacket => _position + _packetSize <= _data.Count;
 
         private List<byte> PadDataWithSUBByte() {
             int countOfRestOfBytes = _data.Count - _position;
@@ -83,7 +83,7 @@ namespace XModemProtocol.Builders {
             _position += _packetSize;
         }
 
-        private bool MorePacketsToBeBuilt() => _position < _data.Count;
+        private bool MorePacketsToBeBuilt => _position < _data.Count;
 
         private void AppendNewPacketToPackets() {
             _packets.Add(_currentPacket);

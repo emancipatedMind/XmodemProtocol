@@ -94,8 +94,8 @@ namespace XModemProtocolTester {
         }
 
         private void TestMode(XModemProtocol.XModemMode mode) {
-            _options.Mode = mode;
-            _tools = _toolFactory.GetToolsFor(_options.Mode);
+            _context.Mode = mode;
+            _tools = _toolFactory.GetToolsFor(_context.Mode);
             _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
             _sentData = new List<List<byte>>(_req.Context.Packets);
             _sentData.Add(new List<byte> { _options.EOT });
@@ -119,7 +119,7 @@ namespace XModemProtocolTester {
             var nakCollection = new List<byte> { _options.NAK };
             var ackCollection = new List<byte> { _options.ACK };
             var canCollection = Enumerable.Repeat((byte) _options.CAN, _options.CancellationBytesRequired); 
-            _tools = _toolFactory.GetToolsFor(_options.Mode);
+            _tools = _toolFactory.GetToolsFor(_context.Mode);
             _req.Detector = _tools.Detector;
             _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
             _com.CollectionToSend = new List<List<byte>> {

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.Communication;
-using XModemProtocol.Detectors;
-using XModemProtocol.Validators.Packet;
-
-namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Options {
+    using Communication;
+    using Detectors;
+    using Validators.Packet;
     public class SendReceiveRequirements : ISendReceiveRequirements {
         public ICommunicator Communicator { get; set; }
         public IContext Context { get; set; }

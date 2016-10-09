@@ -56,15 +56,13 @@ namespace XModemProtocolTester
 
             //_sender = new XModemCommunicator(Port1);
             //_receiver = new XModemCommunicator(Port2);
-            
-            _sender = new XModemCommunicator(_senderCom);
-            _receiver = new XModemCommunicator(_receiverCom);
 
-            _receiver.Options = new XModemProtocol.Options.XModemProtocolOptions {
-                Mode = XModemMode.Checksum,
+            _sender = new XModemCommunicator(_senderCom) {
             };
-            _sender.Options = new XModemProtocol.Options.XModemProtocolOptions {
+            _receiver = new XModemCommunicator(_receiverCom) {
+                Mode = XModemMode.Checksum
             };
+
             _data = _rdg.GetRandomData(1000000);
             //_data = File.ReadAllBytes(@"C:\Users\ptowensf\Desktop\Workbooks\Lab Upgrade\Dongle\Hex Files\42EF_DP_v1.009_12F91EEC_20150210.hex");
 

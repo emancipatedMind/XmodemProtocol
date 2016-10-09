@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using XModemProtocol.EventData;
+
 namespace XModemProtocol.Options {
+    using EventData;
     public interface IContext {
         XModemStates State { get; set; }
         XModemMode Mode { get; set; }

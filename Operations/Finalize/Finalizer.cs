@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using XModemProtocol.Options;
-
-namespace XModemProtocol.Operations.Finalize {
+﻿namespace XModemProtocol.Operations.Finalize {
+    using Options;
     public abstract class Finalizer : IFinalizer {
         protected IRequirements _requirements;
 

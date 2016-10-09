@@ -1,8 +1,11 @@
-﻿namespace XModemProtocol.Factories
-{
+﻿namespace XModemProtocol.Factories {
     using Tools;
     public class XModemToolFactory : IToolFactory {
-
+        /// <summary>
+        /// Get the tools needed for a mode.
+        /// </summary>
+        /// <param name="mode">The mode for which tools are requested.</param>
+        /// <returns>The tools.</returns>
         public IXModemTools GetToolsFor(XModemMode mode) {
             switch(mode) {
                 case XModemMode.Checksum:

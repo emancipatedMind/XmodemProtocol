@@ -1,11 +1,9 @@
-﻿using System;
-using XModemProtocol.EventData;
-using XModemProtocol.Options;
-
-namespace XModemProtocol.Operations {
+﻿namespace XModemProtocol.Operations {
+    using EventData;
+    using Options;
     public interface IOperation {
         void Go(IRequirements requirements);
-        event EventHandler<PacketToSendEventArgs> PacketToSend;
-        event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        event System.EventHandler<PacketToSendEventArgs> PacketToSend;
+        event System.EventHandler<PacketReceivedEventArgs> PacketReceived;
     }
 }

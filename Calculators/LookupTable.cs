@@ -8,8 +8,6 @@
 
         public int Polynomial { get; private set; }
 
-        public ICRCLookUpTable Table { get { return this; } }
-
         public LookUpTable(int polynomial) {
             Polynomial = polynomial;
             MakeTable();
