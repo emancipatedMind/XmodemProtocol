@@ -104,7 +104,7 @@ namespace XModemProtocol
 
         /// <summary>
         /// Mode to be used by XModemProtocol.XModemCommunicator.
-        /// If using Receive operation, CRC will upgraded to OneK automatically.
+        /// If using Receive operation, CRC will upgrade to OneK automatically.
         /// </summary>
         public XModemMode Mode {
             get { return _context.Mode; }

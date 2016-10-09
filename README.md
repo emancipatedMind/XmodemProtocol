@@ -32,7 +32,7 @@ This library can be used to send or receive bytes across a serial line.
 * _**Mode**_
  * Read/Write
  * _XModemProtocol.XModemMode_  
- Mode to be used by _XModemProtocol.XModemCommunicator_. If using _Receive_ operation, CRC will upgraded to OneK automatically.
+ Mode to be used by _XModemProtocol.XModemCommunicator_. If using _Receive_ operation, CRC will upgrade to OneK automatically.
 
 ### Methods
 * _**Send**_  
