@@ -7,53 +7,53 @@ This library can be used to send or receive bytes across a serial line.
 * _**Data**_
  * Read/Write
  * _System.Collections.Generic.IEnumerable&lt;byte&gt;_  
- Accepts, and returns a collection of type _IEnumerable&lt;byte&gt;_. This is the data that will be sent or the data that was received.
+ Accepts, and returns a collection of type _System.Collections.Generic.IEnumerable&lt;byte&gt;_. This is the data that will be sent or the data that was received.
 
 * _**Communicator**_
  * Write Only
  * _XModemProtocol.Communication.ICommunicator_  
- Accepts an instance of a class that implements the _ICommunicator_ interface. This object will be used to facilitate the transfer of bytes.
+ Accepts an instance of a class that implements the _XModemProtocol.Communication.ICommunicator_ interface. This object will be used to facilitate the transfer of bytes.
 
 * _**Port**_
  * Write Only
  * _System.IO.Ports.SerialPort_  
- Accepts an instance of the _SerialPort_ class. This will be passed to a generic object that implements the _ICommunicator_ interface.
+ Accepts an instance of the _SerialPort_ class. This will be passed to an instance of the _XModemProtocol.Communication.Communicator_ class..
 
 * _**Options**_
  * Write Only
  * _XModemProtocol.Options.IXModemProtocolOptions_  
- Accepts an instance of a class that implements the _IXModemProtocolOptions_ interface. This contains the bytes that _XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemCommunicator_ operates.
+ Accepts an instance of a class that implements the _XModemProtocol.Options.IXModemProtocolOptions_ interface. This contains the bytes that _XModemProtocol.XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemProtocol.XModemCommunicator_ operates.
 
 * _**State**_
  * Read Only
  * _XModemProtocol.XModemStates_  
- Returns the current state of _XModemCommunicator_.
+ Returns the current state of _XModemProtocol.XModemCommunicator_.
 
 ### Methods
 * _**Send**_  
- Puts _XModemCommuniator_ in the sender role awaiting initialization byte from receiver.
+ Puts _XModemProtocol.XModemCommuniator_ in the sender role awaiting initialization byte from receiver.
 
 * _**Receive**_  
- Puts _XModemCommuniator_ in the receiver role sending the initialization byte.
+ Puts _XModemProtocol.XModemCommuniator_ in the receiver role sending the initialization byte.
 
 * _**CancelOperation**_  
  Cancels the send or receive operation.
 
 ### Events supported
 * _**ModeUpdated**_  
- Fires when the mode of _XModemCommunicator_ is updated.
+ Fires when the mode of _XModemProtocol.XModemCommunicator_ is updated.
 
 * _**StateUpdated**_  
- Fires when the state of _XModemCommunicator_ is updated.
+ Fires when the state of _XModemProtocol.XModemCommunicator_ is updated.
 
 * _**PacketsBuilt**_  
- Fires when _XModemCommunicator_ builds packets.
+ Fires when _XModemProtocol.XModemCommunicator_ builds packets.
 
-* _**PacketToSend**_  
- Fires when _XModemCommunicator_ is ready to send a packet. A blocking method will prevent packet from being sent.
+* _**PacketToSend**_  XModemProtocol.
+ Fires when _XModemProtocol.XModemCommunicator_ is ready to send a packet. A blocking method will prevent packet from being sent.
 
 * _**PacketReceived**_  
- Fires when _XModemCommunicator_ receives a packet.
+ Fires when _XModemProtocol.XModemCommunicator_ receives a packet.
 
 * _**Aborted**_  
  Fires if the operation is aborted. Instance will not return to being idle until event completes.
