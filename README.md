@@ -28,6 +28,11 @@ This library can be used to send or receive bytes across a serial line.
  * Read Only
  * _XModemProtocol.XModemStates_  
  Returns the current state of _XModemProtocol.XModemCommunicator_.
+ 
+* _**Mode**_
+ * Read/Write
+ * _XModemProtocol.XModemMode_  
+ Gets/Sets the mode of _XModemProtocol.XModemCommunicator_.
 
 ### Methods
 * _**Send**_  
