@@ -81,6 +81,7 @@ namespace XModemProtocolTester {
             _invoker = new InvokeSend();
             _cts = new CancellationTokenSource();
             _context.Token = _cts.Token;
+            _tools = _toolFactory.GetToolsFor(_context.Mode);
 
             _req.Context = _context;
             _req.Communicator = _com;
@@ -127,6 +128,7 @@ namespace XModemProtocolTester {
                 nakCollection,
                 ackCollection,
                 nakCollection,
+                new List<byte> { _options.CAN },
                 canCollection.ToList()
             };
             _sentData = new List<List<byte>>();

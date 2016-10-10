@@ -39,6 +39,7 @@ namespace XModemProtocol
             _context.ModeUpdated += (s, e) => {
                 Task.Run(()=> ModeUpdated?.Invoke(this, e));
             };
+            _tools = _toolFactory.GetToolsFor(_context.Mode);
         } 
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
@@ -96,9 +97,6 @@ namespace XModemProtocol
                 if (value == null) value = new Options.XModemProtocolOptions();
                 IXModemProtocolOptions oldOptions = _options;
                 _options = (IXModemProtocolOptions)value.Clone();
-                if (oldOptions == null) {
-                    _tools = _toolFactory.GetToolsFor(_context.Mode);
-                }
             }
         }
 
@@ -111,6 +109,7 @@ namespace XModemProtocol
             set {
                 if (_context.Mode == value) return;
                 _context.Mode = value;
+                _tools = _toolFactory.GetToolsFor(_context.Mode);
                 BuildPackets();
             }
         }

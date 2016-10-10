@@ -12,38 +12,45 @@ namespace XModemProtocol.Operations.Invoke {
         }
 
         private void SendPackets() {
-            SendPacket();
+            SendNext();
             while(NotCancelled) {
                 if (_requirements.Communicator.ReadBufferContainsData) {
-                    _buffer.AddRange(_requirements.Communicator.ReadAllBytes());
+                    _buffer.Add(_requirements.Communicator.ReadSingleByte());
                 }
                 else if (_buffer.Count != 0) { }
                 else continue;
 
-                CheckForCancellation();
 
                 if (LastResponseWasACK) {
                     _indexToBeSent++;
-                    if (LastPacketAlreadySent) {
-                        SendEOT();
+                    if (EOTSent) {
                         return;
                     }
-                    SendPacket();
+                    SendNext();
                     Reset();
                 }
                 else if (LastResponseWasNAK) {
-                    SendPacket();
+                    SendNext();
                     Reset();
+                }
+                else {
+                    _buffer.AddRange(_requirements.Communicator.ReadAllBytes());
+                    CheckForCancellation();
                 }
 
             }
         }
 
-        private bool LastPacketAlreadySent => _requirements.Context.Packets.Count == _indexToBeSent;
+        private bool EOTSent => _requirements.Context.Packets.Count < _indexToBeSent;
+        private bool AllPacketsSent => _requirements.Context.Packets.Count == _indexToBeSent;
         private bool LastResponseWasACK => _buffer.Last() == _requirements.Options.ACK; 
         private bool LastResponseWasNAK => _buffer.Last() == _requirements.Options.NAK; 
 
-        private void SendPacket() {
+        private void SendNext() {
+            if (AllPacketsSent) {
+                SendEOT();
+                return;
+            }
             FirePacketToSendEvent(); 
             _requirements.Communicator.Write(_requirements.Context.Packets[_indexToBeSent]);
         }

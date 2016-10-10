@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using XModemProtocol.Communication;
 
 namespace XModemProtocolTester
@@ -13,6 +14,7 @@ namespace XModemProtocolTester
         public bool ReadBufferIsEmpty => !ReadBufferContainsData;
         public void Flush() { }
         public List<byte> ReadAllBytes() => BytesToSend;
+        public byte ReadSingleByte() => BytesToSend[0];
         public void Write(IEnumerable<byte> buffer) {
             if (BytesRead == null) BytesRead = new List<List<byte>>(); 
             BytesRead.Add(buffer.ToList());
@@ -28,5 +30,8 @@ namespace XModemProtocolTester
             Debug.WriteLine($"[ 0x{buffer:X2} ]");
         }
 
+        public void Write(string buffer) {
+            Write(Encoding.Default.GetBytes(buffer));
+        }
     }
 }

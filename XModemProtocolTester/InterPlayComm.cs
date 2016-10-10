@@ -44,5 +44,15 @@ namespace XModemProtocolTester {
             if (WriteDebug) 
                 System.Diagnostics.Debug.WriteLine($"{Name} => [ 0x{buffer:X2} ]");
         }
+
+        public void Write(string buffer) {
+            Write(Encoding.Default.GetBytes(buffer));
+        }
+
+        public byte ReadSingleByte() {
+            byte byteRead = Data[0];
+            Data.RemoveAt(0);
+            return byteRead;
+        }
     }
 }
