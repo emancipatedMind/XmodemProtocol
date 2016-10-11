@@ -12,7 +12,7 @@ namespace XModemProtocol.Operations.Invoke {
         }
 
         private void SendPackets() {
-            SendNext();
+            Send();
             while(NotCancelled) {
                 if (_requirements.Communicator.ReadBufferContainsData) {
                     _buffer.Add(_requirements.Communicator.ReadSingleByte());
@@ -26,11 +26,11 @@ namespace XModemProtocol.Operations.Invoke {
                     if (EOTSent) {
                         return;
                     }
-                    SendNext();
+                    Send();
                     Reset();
                 }
                 else if (LastResponseWasNAK) {
-                    SendNext();
+                    Send();
                     Reset();
                 }
                 else {
@@ -46,7 +46,7 @@ namespace XModemProtocol.Operations.Invoke {
         private bool LastResponseWasACK => _buffer.Last() == _requirements.Options.ACK; 
         private bool LastResponseWasNAK => _buffer.Last() == _requirements.Options.NAK; 
 
-        private void SendNext() {
+        private void Send() {
             if (AllPacketsSent) {
                 SendEOT();
                 return;
