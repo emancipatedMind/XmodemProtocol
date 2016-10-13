@@ -14,6 +14,7 @@ namespace XModemProtocol.Options {
         int ReceiverMaxNumberOfInitializationBytesInTotal { get; }
         int ReceiverTimeoutDuringPacketReception { get; }
         int SenderInitializationTimeout { get; }
+        OneKPacketSize SenderOneKPacketSize { get; }
         byte SOH { get; }
         byte STX { get; }
         byte SUB { get; }

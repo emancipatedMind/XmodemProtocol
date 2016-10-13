@@ -7,7 +7,7 @@
 
         protected override void AttachHeader() {
             byte header = _options.STX;
-            if (DataRemainingNotMoreThanNormalPacketSize) {
+            if (MixedModeSelected && DataRemainingNotMoreThanNormalPacketSize) {
                 _packetSize = 128;
                 header = _options.SOH;
             }
@@ -16,6 +16,9 @@
 
         protected override void InitializePacketSize() =>
             _packetSize = 1024;
+
+        private bool MixedModeSelected =>
+            _options.SenderOneKPacketSize == OneKPacketSize.Mixed;
 
         private bool DataRemainingNotMoreThanNormalPacketSize =>
             _data.Count - _position <= 128;

@@ -1,4 +1,6 @@
-﻿namespace XModemProtocol.Options {
+﻿using System;
+
+namespace XModemProtocol.Options {
     /// <summary>
     /// Class used to hold options used by both the Sender, and Receiver.
     /// </summary>
@@ -182,6 +184,14 @@
                     _receiverMaxNumberOfInitializationBytesForCRC = _receiverMaxNumberOfInitializationBytesInTotal;
             }
         }
+
+        /// <summary>
+        /// Denotes if XModemProtocol.XModemCommunicator will,
+        /// when building packets in OneK mode, build packets that are
+        /// only 1029 bytes long, or build packets that are both 1029
+        /// bytes long, and 133 bytes long.
+        /// </summary>
+        public OneKPacketSize SenderOneKPacketSize { get; set; } = OneKPacketSize.OneK_Only;
         #endregion
 
         /// <summary>
@@ -207,6 +217,7 @@
 
                 // Sender Options
                 SenderInitializationTimeout = SenderInitializationTimeout,
+                SenderOneK
 
                 // Receiver Options
                 ReceiverInitializationTimeout = ReceiverInitializationTimeout,
