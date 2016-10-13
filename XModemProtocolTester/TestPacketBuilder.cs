@@ -8,7 +8,9 @@ using NUnit.Framework;
 namespace XModemProtocolTester {
     [TestFixture]
     public class TestPacketBuilder {
-        IXModemProtocolOptions _options = new XModemProtocolOptions();
+        IXModemProtocolOptions _options = new XModemProtocolOptions {
+            SenderOneKPacketSize = XModemProtocol.OneKPacketSize.Mixed,
+        };
         ISummationChecksumCalculator _calculator = new NormalChecksumCalculator();
         ICRCChecksumCalculator _CRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
         IPacketBuilder _builder;

@@ -217,7 +217,7 @@ namespace XModemProtocol.Options {
 
                 // Sender Options
                 SenderInitializationTimeout = SenderInitializationTimeout,
-                SenderOneK
+                SenderOneKPacketSize = SenderOneKPacketSize,
 
                 // Receiver Options
                 ReceiverInitializationTimeout = ReceiverInitializationTimeout,
