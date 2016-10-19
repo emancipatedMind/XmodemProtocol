@@ -76,7 +76,8 @@ This library can be used to send or receive bytes across a serial line.
  
 ### Simple Send Example
 
-    using XModemProtocol;  
+    using XModemProtocol;
+    using System;
     using System.IO.Ports;  
     using System.IO;  
 
@@ -132,6 +133,7 @@ This library can be used to send or receive bytes across a serial line.
 ### Simple Receive Example
 
     using XModemProtocol;
+    using System;
     using System.IO.Ports;
     using System.IO;
     using System.Linq;
