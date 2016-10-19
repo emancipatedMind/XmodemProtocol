@@ -76,119 +76,119 @@ This library can be used to send or receive bytes across a serial line.
  
 ### Simple Send Example
 
-using XModemProtocol;
-using System.IO.Ports;
-using System.IO;
+    using XModemProtocol;  
+    using System.IO.Ports;  
+    using System.IO;  
 
-namespace XModemProtocolExample {
+    namespace XModemProtocolExample {
 
-  class Program {
+      class Program {
     
-    static void Main(string[] args) {
+        static void Main(string[] args) {
     
-      Console.WriteLine(">>> XModemProtocol Send Example <<<\n");
+          Console.WriteLine("XModemProtocol Send Example\n");
       
-      // Set up Port.
-      var port = new SerialPort{
-        BaudRate = 230400,
-        DataBits = 8,
-        Parity = Parity.Even,
-        StopBits = StopBits.One,
-        PortName = "COM5",
-      };
+          // Set up Port.
+          var port = new SerialPort{
+            BaudRate = 230400,
+            DataBits = 8,
+            Parity = Parity.Even,
+            StopBits = StopBits.One,
+            PortName = "COM5",
+          };
       
-      // Instantiate XModemCommunicator.
-      var xmodem = new XModemCommunicator();
+          // Instantiate XModemCommunicator.
+          var xmodem = new XModemCommunicator();
       
-      // Attach port.
-      xmodem.Port = port;
+          // Attach port.
+          xmodem.Port = port;
       
-      // Pass in Data.
-      xmodem.Data = File.GetAllBytes(@"C:\filetosend.hex");
+          // Pass in Data.
+          xmodem.Data = File.GetAllBytes(@"C:\filetosend.hex");
       
-      // Subscribe to events.
-      xmodem.Completed += (s,e) => {
-        Console.WriteLine($"Operation completed.\nPress enter to exit.");
-      };
-      xmodem.Aborted += (s,e) => {
-        Console.WriteLine("Operation Aborted.\nPress enter to exit.");
-      };
+          // Subscribe to events.
+          xmodem.Completed += (s,e) => {
+            Console.WriteLine($"Operation completed.\nPress enter to exit.");
+          };
+          xmodem.Aborted += (s,e) => {
+            Console.WriteLine("Operation Aborted.\nPress enter to exit.");
+          };
+
+          Console.WriteLine("Awaiting Sender. Press enter to cancel.");
+          // Send Data.
+          xmodem.Send();
       
-      Console.WriteLine("Awaiting Sender. Press enter to cancel.");
-      // Send Data.
-      xmodem.Send();
+          // Await user.
+          Console.ReadLine();
       
-      // Await user.
-      Console.ReadLine();
-      
-      if (xmodem.State != XModemStates.Idle) {
-        xmodem.CancelOperation();
-        Console.ReadLine();
+          if (xmodem.State != XModemStates.Idle) {
+            xmodem.CancelOperation();
+            Console.ReadLine();
+          }
+        }
       }
     }
-  }
-}
 
 ### Simple Receive Example
 
-using XModemProtocol;
-using System.IO.Ports;
-using System.IO;
-using System.Linq;
+    using XModemProtocol;
+    using System.IO.Ports;
+    using System.IO;
+    using System.Linq;
 
-namespace XModemProtocolExample {
+    namespace XModemProtocolExample {
 
-  class Program {
+      class Program {
     
-    static void Main(string[] args) {
+        static void Main(string[] args) {
       
-      Console.WriteLine(">>> XModemProtocol Receive Example <<<\n");
+          Console.WriteLine("XModemProtocol Receive Example\n");
       
-      // Set up Port.
-      var port = new SerialPort{
-        BaudRate = 230400,
-        DataBits = 8,
-        Parity = Parity.Even,
-        StopBits = StopBits.One,
-        PortName = "COM5",
-      };
+          // Set up Port.
+          var port = new SerialPort{
+            BaudRate = 230400,
+            DataBits = 8,
+            Parity = Parity.Even,
+            StopBits = StopBits.One,
+            PortName = "COM5",
+          };
       
-      // Instantiate XModemCommunicator.
-      var xmodem = new XModemCommunicator();
+          // Instantiate XModemCommunicator.
+          var xmodem = new XModemCommunicator();
       
-      // Attach port.
-      xmodem.Port = port;
+          // Attach port.
+          xmodem.Port = port;
       
-      // Subscribe to events.
-      xmodem.Completed += (s,e) => {
-        string message = "";
-        try {
-          File.WriteAllBytes(@"C:\fileReceived.hex", e.Data.ToArray());
-          message = "Operation completed. Bytes written to file.";
+          // Subscribe to events.
+          xmodem.Completed += (s,e) => {
+            string message = "";
+            try {
+              File.WriteAllBytes(@"C:\fileReceived.hex", e.Data.ToArray());
+              message = "Operation completed. Bytes written to file.";
+            }
+            catch {
+              message = "Problem writing to file.";
+            }
+            Console.WriteLine($"{message}\nPress enter to exit.");
+          };
+          xmodem.Aborted += (s,e) => {
+            Console.WriteLine("Operation Aborted.\nPress enter to exit.");
+          };
+      
+          // Receive Data.
+          Console.WriteLine("Receive Operation beginning. Press enter to cancel.");
+          xmodem.Receive();
+      
+          // Await user.
+          Console.ReadLine();
+      
+          if (xmodem.State != XModemStates.Idle) {
+            xmodem.CancelOperation();
+            Console.ReadLine();
+          }      
         }
-        catch {
-          message = "Problem writing to file.";
-        }
-        Console.WriteLine($"{message}\nPress enter to exit.");
-      };
-      xmodem.Aborted += (s,e) => {
-        Console.WriteLine("Operation Aborted.\nPress enter to exit.");
-      };
-      
-      // Receive Data.
-      Console.WriteLine("Receive Operation beginning. Press enter to cancel.");
-      xmodem.Receive();
-      
-      // Await user.
-      Console.ReadLine();
-      
-      if (xmodem.State != XModemStates.Idle) {
-        xmodem.CancelOperation();
-        Console.ReadLine();
-      }      
+      }
     }
-  }
-}
 
 ### Author
 Peter T. Owens-Finch  
