@@ -34,7 +34,7 @@ namespace XModemProtocol.Operations.Invoke {
 
         private void GetPackets() {
             while (NotCancelled) {
-                if (_requirements.Communicator.ReadBufferContainsData) {
+                if (ReadBufferContainsData) {
                     _buffer.AddRange(_requirements.Communicator.ReadAllBytes());
                 }
                 else if (_watchDogWaitHandle.WaitOne(0)) {
@@ -67,6 +67,8 @@ namespace XModemProtocol.Operations.Invoke {
                 Reset();
             }
         }
+
+        private bool ReadBufferContainsData => _requirements.Communicator.BytesInReadBuffer != 0;
 
         private bool BufferLengthIsTooShort {
             get {

@@ -33,7 +33,7 @@ namespace XModemProtocol.Operations.Initialize {
 
         private void AwaitInitializationFromReceiver() {
             while (NoTimeoutNorCancellation) {
-                if (_requirements.Communicator.ReadBufferIsEmpty) continue;
+                if (ReadBufferIsEmpty) continue;
                 GetLatestResponse();
                 if (CwasReceived) {
                     if (ChecksumIsForced) continue;
@@ -58,6 +58,8 @@ namespace XModemProtocol.Operations.Initialize {
                 return true;
             }
         }
+
+        private bool ReadBufferIsEmpty => _requirements.Communicator.BytesInReadBuffer == 0;
 
         private void GetLatestResponse() => _latestResponse = _requirements.Communicator.ReadAllBytes().Last();
 

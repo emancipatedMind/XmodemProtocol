@@ -14,12 +14,11 @@ namespace XModemProtocol.Operations.Invoke {
         private void SendPackets() {
             Send();
             while(NotCancelled) {
-                if (_requirements.Communicator.ReadBufferContainsData) {
+                if (ReadBufferContainsData) {
                     _buffer.Add(_requirements.Communicator.ReadSingleByte());
                 }
                 else if (_buffer.Count != 0) { }
                 else continue;
-
 
                 if (LastResponseWasACK) {
                     _indexToBeSent++;
@@ -37,7 +36,6 @@ namespace XModemProtocol.Operations.Invoke {
                     _buffer.AddRange(_requirements.Communicator.ReadAllBytes());
                     CheckForCancellation();
                 }
-
             }
         }
 
@@ -45,6 +43,7 @@ namespace XModemProtocol.Operations.Invoke {
         private bool AllPacketsSent => _requirements.Context.Packets.Count == _indexToBeSent;
         private bool LastResponseWasACK => _buffer.Last() == _requirements.Options.ACK; 
         private bool LastResponseWasNAK => _buffer.Last() == _requirements.Options.NAK; 
+        private bool ReadBufferContainsData => _requirements.Communicator.BytesInReadBuffer != 0;
 
         private void Send() {
             if (AllPacketsSent) {

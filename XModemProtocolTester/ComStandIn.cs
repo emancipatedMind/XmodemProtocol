@@ -10,8 +10,6 @@ namespace XModemProtocolTester
         public virtual List<byte> BytesToSend { get; set; }
         public List<List<byte>> BytesRead { get; set; } = new List<List<byte>>();
         public virtual int BytesInReadBuffer => BytesToSend?.Count ?? 0;
-        public virtual bool ReadBufferContainsData => BytesToSend?.Count != 0;
-        public bool ReadBufferIsEmpty => !ReadBufferContainsData;
         public void Flush() { }
         public List<byte> ReadAllBytes() => BytesToSend;
         public byte ReadSingleByte() => BytesToSend[0];
@@ -28,10 +26,6 @@ namespace XModemProtocolTester
             if (BytesRead == null) BytesRead = new List<List<byte>>(); 
             BytesRead.Add(new List<byte> {buffer});
             Debug.WriteLine($"[ 0x{buffer:X2} ]");
-        }
-
-        public void Write(string buffer) {
-            Write(Encoding.Default.GetBytes(buffer));
         }
     }
 }

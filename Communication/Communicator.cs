@@ -14,10 +14,6 @@ namespace XModemProtocol.Communication {
 
         public int BytesInReadBuffer => _port.BytesToRead;
 
-        public bool ReadBufferIsEmpty => _port.BytesToRead == 0;
-
-        public bool ReadBufferContainsData => _port.BytesToRead != 0;
-
         public void Flush() {
             _port.DiscardInBuffer();
             _port.DiscardOutBuffer();
@@ -34,10 +30,6 @@ namespace XModemProtocol.Communication {
                 System.Threading.Tasks.Task.Delay(10); 
             } while (_port.BytesToRead > 0);
             return byteList;
-        }
-
-        public void Write(string buffer) {
-            _port.Write(buffer);
         }
 
         public void Write(IEnumerable<byte> buffer) {

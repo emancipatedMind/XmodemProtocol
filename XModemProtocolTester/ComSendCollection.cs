@@ -27,17 +27,16 @@ namespace XModemProtocolTester {
 
         public List<List<byte>> CollectionToSend {
             set {
-                _collectionToSend = value;
+                if (value != null) 
+                    _collectionToSend = new List<List<byte>>(value);
                 _index = 0;
             }
         }
 
-        public override bool ReadBufferContainsData {
+        public override int BytesInReadBuffer {
             get {
-                if (_collectionToSend == null) return false;
-                if (_collectionToSend.Count == 1) return true;
-                if (_index >= _collectionToSend.Count) return false;
-                else return true;
+                if (_collectionToSend == null || _index >= _collectionToSend.Count) return 0;
+                return _collectionToSend[_index].Count;
             }
         }
     }
