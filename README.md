@@ -22,7 +22,7 @@ This library can be used to send or receive bytes across a serial line.
 * _**Options**_
  * Write Only
  * _XModemProtocol.Options.IXModemProtocolOptions_  
- Accepts an instance of a class that implements the _XModemProtocol.Options.IXModemProtocolOptions_ interface. This contains the bytes that _XModemProtocol.XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemProtocol.XModemCommunicator_ operates.
+ Accepts an instance of a class that implements the _XModemProtocol.Options.IXModemProtocolOptions_ interface. This contains the bytes that _XModemProtocol.XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemProtocol.XModemCommunicator_ operates. By default, is instance of _XModemProtocol.Options.XModemProtocolOptions_.
 
 * _**State**_
  * Read Only
@@ -32,7 +32,12 @@ This library can be used to send or receive bytes across a serial line.
 * _**Mode**_
  * Read/Write
  * _XModemProtocol.XModemMode_  
- Mode to be used by _XModemProtocol.XModemCommunicator_. If using _Receive_ operation, CRC will upgrade to OneK automatically.
+ Mode to be used by _XModemProtocol.XModemCommunicator_. If using _Receive_ operation, CRC will upgrade to OneK automatically.  
+ * Values
+  * _Checksum_ => Normal XModem mode packet size of 128 using simple checksum.
+  * _CRC_ => Normal XModem packet size of 128 using CRC.
+  * _OneK_ => Implementation of XModem-1k.
+ 
 
 ### Methods
 * _**Send**_  
@@ -68,6 +73,124 @@ This library can be used to send or receive bytes across a serial line.
 
 * _**OperationPending**_  
  Fires before the operation begins, and determines whether operation will run or not. _**Will not fire if Data contains no bytes, and performing _Send_ operation.**_
+ 
+### Simple Send Example
+
+    using XModemProtocol;
+    using System;
+    using System.IO.Ports;  
+    using System.IO;  
+
+    namespace XModemProtocolExample {
+
+      class Program {
+    
+        static void Main(string[] args) {
+    
+          Console.WriteLine("XModemProtocol Send Example\n");
+      
+          // Set up Port.
+          var port = new SerialPort{
+            BaudRate = 230400,
+            DataBits = 8,
+            Parity = Parity.Even,
+            StopBits = StopBits.One,
+            PortName = "COM5",
+          };
+      
+          // Instantiate XModemCommunicator.
+          var xmodem = new XModemCommunicator();
+      
+          // Attach port.
+          xmodem.Port = port;
+      
+          // Pass in Data.
+          xmodem.Data = File.GetAllBytes(@"C:\filetosend.hex");
+      
+          // Subscribe to events.
+          xmodem.Completed += (s,e) => {
+            Console.WriteLine($"Operation completed.\nPress enter to exit.");
+          };
+          xmodem.Aborted += (s,e) => {
+            Console.WriteLine("Operation Aborted.\nPress enter to exit.");
+          };
+
+          Console.WriteLine("Awaiting Receiver. Press enter to cancel.");
+          // Send Data.
+          xmodem.Send();
+      
+          // Await user.
+          Console.ReadLine();
+      
+          if (xmodem.State != XModemStates.Idle) {
+            xmodem.CancelOperation();
+            Console.ReadLine();
+          }
+        }
+      }
+    }
+
+### Simple Receive Example
+
+    using XModemProtocol;
+    using System;
+    using System.IO.Ports;
+    using System.IO;
+    using System.Linq;
+
+    namespace XModemProtocolExample {
+
+      class Program {
+    
+        static void Main(string[] args) {
+      
+          Console.WriteLine("XModemProtocol Receive Example\n");
+      
+          // Set up Port.
+          var port = new SerialPort{
+            BaudRate = 230400,
+            DataBits = 8,
+            Parity = Parity.Even,
+            StopBits = StopBits.One,
+            PortName = "COM5",
+          };
+      
+          // Instantiate XModemCommunicator.
+          var xmodem = new XModemCommunicator();
+      
+          // Attach port.
+          xmodem.Port = port;
+      
+          // Subscribe to events.
+          xmodem.Completed += (s,e) => {
+            string message = "";
+            try {
+              File.WriteAllBytes(@"C:\fileReceived.hex", e.Data.ToArray());
+              message = "Operation completed. Bytes written to file.";
+            }
+            catch {
+              message = "Problem writing to file.";
+            }
+            Console.WriteLine($"{message}\nPress enter to exit.");
+          };
+          xmodem.Aborted += (s,e) => {
+            Console.WriteLine("Operation Aborted.\nPress enter to exit.");
+          };
+      
+          // Receive Data.
+          Console.WriteLine("Receive Operation beginning. Press enter to cancel.");
+          xmodem.Receive();
+      
+          // Await user.
+          Console.ReadLine();
+      
+          if (xmodem.State != XModemStates.Idle) {
+            xmodem.CancelOperation();
+            Console.ReadLine();
+          }      
+        }
+      }
+    }
 
 ### Author
 Peter T. Owens-Finch  
