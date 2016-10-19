@@ -114,7 +114,7 @@ This library can be used to send or receive bytes across a serial line.
             Console.WriteLine("Operation Aborted.\nPress enter to exit.");
           };
 
-          Console.WriteLine("Awaiting Sender. Press enter to cancel.");
+          Console.WriteLine("Awaiting Receiver. Press enter to cancel.");
           // Send Data.
           xmodem.Send();
       
