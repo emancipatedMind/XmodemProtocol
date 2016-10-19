@@ -27,7 +27,7 @@ namespace XModemProtocol
         #endregion
 
         #region Constructors
-        public XModemCommunicator(ICommunicator communicator) {
+        public XModemCommunicator(ICommunicator communicator = null) {
             Communicator = communicator;
             Options = new XModemProtocolOptions();
             _context.PacketsBuilt += (s, e) => {
@@ -122,19 +122,7 @@ namespace XModemProtocol
         /// awaiting initialization byte from receiver.
         /// </summary>
         public void Send() {
-            if (_context.State != XModemStates.Idle) return;
-            _operation = new SendOperation();
-            _operation.PacketToSend += (s, e) =>
-            {
-                PacketToSend?.Invoke(this, e);
-            };
-            if (_context.Data == null || _context.Data.Count == 0)
-            {
-                Aborted?.Invoke(this, new AbortedEventArgs(XModemAbortReason.BufferEmpty));
-                _context.State = XModemStates.Idle;
-                return;
-            }
-            PerformOperation();
+            PerformOperation(SendSetup);
         }
 
         /// <summary>
@@ -142,15 +130,7 @@ namespace XModemProtocol
         /// sending the initialization byte.
         /// </summary>
         public void Receive() {
-            if (_context.State != XModemStates.Idle) return;
-            _operation = new ReceiveOperation();
-            _operation.PacketReceived += (s, e) =>
-            {
-                PacketReceived?.Invoke(this, e);
-            };
-            _context.Data = new List<byte>();
-            _context.Packets = new List<List<byte>>();
-            PerformOperation();
+            PerformOperation(ReceiveSetup);
         }
 
         /// <summary>
@@ -233,8 +213,27 @@ namespace XModemProtocol
             _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
         }
 
-        private void PerformOperation()  {
+        private void SendSetup() {
+            _operation = new SendOperation();
+            _operation.PacketToSend += (s, e) => PacketToSend?.Invoke(this, e);
+            if (_context.Data == null || _context.Data.Count == 0) 
+                throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.BufferEmpty));
+        }
+
+        private void ReceiveSetup() {
+            _operation = new ReceiveOperation();
+            _operation.PacketReceived += (s, e) => PacketReceived?.Invoke(this, e);
+            _context.Data = new List<byte>();
+            _context.Packets = new List<List<byte>>();
+        }
+
+        private void PerformOperation(Action setup)  {
             try {
+                if (_context.State != XModemStates.Idle) 
+                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.StateNotIdle));
+                if (Communicator == null) 
+                    throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CommunicatorIsNull));
+                setup();
                 if (OperationPending != null) 
                     if (OperationPending() == false)
                         throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent));

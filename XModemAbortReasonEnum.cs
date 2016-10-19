@@ -20,6 +20,10 @@
         /// </summary>
         CancelledByOperationPendingEvent,
         /// <summary>
+        /// Operation cannot run. Communication channel is null.
+        /// </summary>
+        CommunicatorIsNull,
+        /// <summary>
         /// The amount of consecutive NAKs sent has been exceeded.
         /// </summary>
         ConsecutiveNAKLimitExceeded,
@@ -32,6 +36,10 @@
         /// Send or receive operation has failed due to some error.
         /// </summary>
         OperationFailed,
+        /// <summary>
+        /// Operation could not begin because State was not idle.
+        /// </summary>
+        StateNotIdle,
         /// <summary>
         /// Timeout has occured during transfer.
         /// </summary>

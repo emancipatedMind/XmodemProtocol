@@ -160,8 +160,8 @@ namespace XModemProtocol.Options {
                     _receiverMaxNumberOfInitializationBytesForCRC = 10;
                 else _receiverMaxNumberOfInitializationBytesForCRC = value;
 
-                if (_receiverMaxNumberOfInitializationBytesInTotal < _receiverMaxNumberOfInitializationBytesForCRC)
-                    _receiverMaxNumberOfInitializationBytesInTotal = _receiverMaxNumberOfInitializationBytesForCRC;
+                if (ReceiverMaxNumberOfInitializationBytesInTotal < _receiverMaxNumberOfInitializationBytesForCRC)
+                    _receiverMaxNumberOfInitializationBytesForCRC = ReceiverMaxNumberOfInitializationBytesInTotal;
             }
         }
 
@@ -180,8 +180,8 @@ namespace XModemProtocol.Options {
                     _receiverMaxNumberOfInitializationBytesInTotal = 5;
                 else _receiverMaxNumberOfInitializationBytesInTotal = value;
 
-                if (_receiverMaxNumberOfInitializationBytesInTotal < _receiverMaxNumberOfInitializationBytesForCRC)
-                    _receiverMaxNumberOfInitializationBytesForCRC = _receiverMaxNumberOfInitializationBytesInTotal;
+                if (_receiverMaxNumberOfInitializationBytesInTotal < ReceiverMaxNumberOfInitializationBytesForCRC)
+                    ReceiverMaxNumberOfInitializationBytesForCRC = _receiverMaxNumberOfInitializationBytesInTotal;
             }
         }
 
