@@ -59,7 +59,7 @@
     <Compile Include="Factories\Tools\XModem128Tools.cs" />
     <Compile Include="Factories\Tools\XModemTool.cs" />
     <Compile Include="Factories\XModemToolFactory.cs" />
-    <Compile Include="OneKPacketSize.cs" />
+    <Compile Include="OneKPacketSizeEnum.cs" />
     <Compile Include="Operations\Finalize\Finalizer.cs" />
     <Compile Include="Operations\Finalize\FinalizeReceive.cs" />
     <Compile Include="Operations\Finalize\FinalizeSend.cs" />

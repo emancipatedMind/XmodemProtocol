@@ -12,8 +12,7 @@ using XModemProtocol.Factories.Tools;
 using XModemProtocol.Operations;
 using XModemProtocol.Options;
 
-namespace XModemProtocol
-{
+namespace XModemProtocol {
     public class XModemCommunicator {
 
         #region Fields
@@ -61,10 +60,8 @@ namespace XModemProtocol
         /// <summary>
         /// Data received from transfer or data to be sent.
         /// </summary>
-        public IEnumerable<byte> Data
-        {
-            set
-            {
+        public IEnumerable<byte> Data {
+            set {
                 if (value == null) return;
                 if (_context.Data == null || _context.Data.SequenceEqual(value) == false)
                 {
@@ -72,8 +69,7 @@ namespace XModemProtocol
                     BuildPackets();
                 }
             }
-            get
-            {
+            get {
                 if (_context.Data == null || _context.Data.Count < 1) return null;
                 return new List<byte>(_context.Data);
             }
@@ -95,7 +91,6 @@ namespace XModemProtocol
             private get { return _options; }
             set {
                 if (value == null) value = new Options.XModemProtocolOptions();
-                IXModemProtocolOptions oldOptions = _options;
                 _options = (IXModemProtocolOptions)value.Clone();
             }
         }
