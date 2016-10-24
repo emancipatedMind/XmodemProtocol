@@ -4,15 +4,15 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using XModemProtocol.Communication;
-using XModemProtocol.EventData;
-using XModemProtocol.Exceptions;
-using XModemProtocol.Factories;
-using XModemProtocol.Factories.Tools;
-using XModemProtocol.Operations;
-using XModemProtocol.Options;
 
 namespace XModemProtocol {
+    using Communication;
+    using EventData;
+    using Exceptions;
+    using Factories;
+    using Factories.Tools;
+    using Operations;
+    using Options;
     public class XModemCommunicator {
 
         #region Fields
@@ -50,6 +50,7 @@ namespace XModemProtocol {
         /// XModemProtocol.Communication.Communicator class.
         /// </summary>
         public SerialPort Port { set { Communicator = new Communicator(value); } }
+
         /// <summary>
         /// Accepts an instance of a class that implements
         /// the XModemProtocol.Communication.ICommunicator interface.
@@ -63,8 +64,7 @@ namespace XModemProtocol {
         public IEnumerable<byte> Data {
             set {
                 if (value == null) return;
-                if (_context.Data == null || _context.Data.SequenceEqual(value) == false)
-                {
+                if (_context.Data == null || _context.Data.SequenceEqual(value) == false) {
                     _context.Data = new List<byte>(value);
                     BuildPackets();
                 }
@@ -108,7 +108,6 @@ namespace XModemProtocol {
                 BuildPackets();
             }
         }
-
         #endregion
 
         #region Operations
@@ -116,28 +115,21 @@ namespace XModemProtocol {
         /// Puts XModemProtocol.XModemCommuniator in the sender role
         /// awaiting initialization byte from receiver.
         /// </summary>
-        public void Send() {
-            PerformOperation(SendSetup);
-        }
+        public void Send() => PerformOperation(SendSetup);
 
         /// <summary>
         /// Puts XModemProtocol.XModemCommuniator in the receiver role
         /// sending the initialization byte.
         /// </summary>
-        public void Receive() {
-            PerformOperation(ReceiveSetup);
-        }
+        public void Receive() => PerformOperation(ReceiveSetup);
 
         /// <summary>
         /// Cancels operation currently running. No effect if no operation running. 
         /// </summary>
-        public void CancelOperation() {
-            _tokenSource?.Cancel();
-        }
+        public void CancelOperation() => _tokenSource?.Cancel();
         #endregion
 
         #region Events
-
         #region Sender Only Events
         /// <summary>
         /// Fires asynchronously whenever XModemProtocol.XModemCommunicator finishes building packets.
@@ -195,7 +187,6 @@ namespace XModemProtocol {
         /// </summary>
         public event EventHandler<CompletedEventArgs> Completed;
         #endregion
-
         #endregion
 
         #region Support Methods

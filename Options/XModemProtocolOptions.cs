@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Options {
     /// <summary>
     /// Class used to hold options used by both the Sender, and Receiver.
     /// </summary>

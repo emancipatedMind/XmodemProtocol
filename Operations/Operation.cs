@@ -8,6 +8,7 @@
     using EventData;
     public abstract class Operation : IOperation {
 
+        #region Fields
         protected IInvoker _invoker;
         protected IInitializer _initializer;
         protected IFinalizer _finalizer;
@@ -15,10 +16,20 @@
         protected IToolFactory _toolFactory = new XModemToolFactory();
         protected IXModemTools _tools;
         protected XModemMode _mode;
+        #endregion
 
+        #region Events
         public event System.EventHandler<PacketToSendEventArgs> PacketToSend;
         public event System.EventHandler<PacketReceivedEventArgs> PacketReceived;
+        protected void FirePacketToSendEvent(object sender, PacketToSendEventArgs args) {
+            PacketToSend?.Invoke(sender, args);
+        }
+        protected void FirePacketReceivedEvent(object sender, PacketReceivedEventArgs args) {
+            PacketReceived?.Invoke(sender, args);
+        }
+        #endregion
 
+        #region Methods
         public void Go(IRequirements requirements) {
             _tools = _toolFactory.GetToolsFor(requirements.Context.Mode);
             _requirements = new SendReceiveRequirements {
@@ -37,16 +48,11 @@
             _invoker.Invoke(_requirements);
             _finalizer.Finalize(_requirements);
         }
+        #endregion
 
+        #region Support Methods
         protected abstract void TransitionToInvoke();
-
         private bool ModeChangedInInitialization => _requirements.Context.Mode != _mode;
-
-        protected void FirePacketToSendEvent(object sender, PacketToSendEventArgs args) {
-            PacketToSend?.Invoke(sender, args);
-        }
-        protected void FirePacketReceivedEvent(object sender, PacketReceivedEventArgs args) {
-            PacketReceived?.Invoke(sender, args);
-        }
+        #endregion
     }
 }

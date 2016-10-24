@@ -20,12 +20,8 @@ namespace XModemProtocol.Options {
 
         private List<List<byte>> _packets;
         public List<List<byte>> Packets {
-            get {
-                return _packets;
-            }
-
-            set
-            {
+            get { return _packets; }
+            set {
                 if (value == null) return;
                 else if (_packets == null || !_packets.SequenceEqual(value)) {
                     _packets = value;
