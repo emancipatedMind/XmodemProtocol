@@ -43,6 +43,7 @@ namespace XModemProtocolTester {
                 Context = _context,
                 Options = _options,
                 Communicator = _com,
+                ToolFactory = _toolFactory,
             };
             _operation = new SendOperation();
             _operation.Go(_req);

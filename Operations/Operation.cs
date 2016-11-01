@@ -1,5 +1,4 @@
 ﻿namespace XModemProtocol.Operations {
-    using Factories;
     using Factories.Tools;
     using Options;
     using Operations.Finalize;
@@ -12,8 +11,7 @@
         protected IInvoker _invoker;
         protected IInitializer _initializer;
         protected IFinalizer _finalizer;
-        protected ISendReceiveRequirements _requirements;
-        protected IToolFactory _toolFactory = new XModemToolFactory();
+        protected IRequirements _requirements;
         protected IXModemTools _tools;
         protected XModemMode _mode;
         #endregion
@@ -31,18 +29,12 @@
 
         #region Methods
         public void Go(IRequirements requirements) {
-            _tools = _toolFactory.GetToolsFor(requirements.Context.Mode);
-            _requirements = new SendReceiveRequirements {
-                Detector = _tools.Detector,
-                Communicator = requirements.Communicator,
-                Context = requirements.Context,
-                Options = requirements.Options,
-                Validator = _tools.Validator,
-            };
+            _requirements = requirements;
+            _tools = _requirements.ToolFactory.GetToolsFor(requirements.Context.Mode);
             _mode = _requirements.Context.Mode;
             _initializer.Initialize(_requirements);
             if (ModeChangedInInitialization) {
-                _tools = _toolFactory.GetToolsFor(requirements.Context.Mode);
+                _tools = _requirements.ToolFactory.GetToolsFor(requirements.Context.Mode);
                 TransitionToInvoke();
             }
             _invoker.Invoke(_requirements);
@@ -51,7 +43,7 @@
         #endregion
 
         #region Support Methods
-        protected abstract void TransitionToInvoke();
+        protected virtual void TransitionToInvoke() { }
         private bool ModeChangedInInitialization => _requirements.Context.Mode != _mode;
         #endregion
     }

@@ -5,9 +5,14 @@ namespace XModemProtocol.Detectors {
     using Options;
     public class CancellationDetector : ICancellationDetector {
 
+        static CancellationDetector _instance = new CancellationDetector();
+        public static CancellationDetector Instance => _instance;
+
         List<byte> _input;
         List<int> _indicesOfCAN;
         IXModemProtocolOptions _options;
+
+        private CancellationDetector() { }
 
         public bool CancellationDetected(IEnumerable<byte> input , IXModemProtocolOptions options) {
             _input = input.ToList();

@@ -5,6 +5,5 @@
     public interface IXModemTools {
         IPacketBuilder Builder { get; }
         IPacketValidator Validator { get; }
-        ICancellationDetector Detector { get; }
     }
 }

@@ -11,7 +11,7 @@ namespace XModemProtocolTester
 
         static XModemProtocolOptions _options = new XModemProtocolOptions();
         static List<byte> _message;
-        static ICancellationDetector _detector = new CancellationDetector();
+        static ICancellationDetector _detector = CancellationDetector.Instance;
 
         [Test]
         public void TestDetector() {
@@ -20,8 +20,6 @@ namespace XModemProtocolTester
 
             _message = new List<byte>();
             _message.Add(0x43);
-
-            _detector = new CancellationDetector();
 
             Assert.IsFalse(_detector.CancellationDetected(_message, _options));
 

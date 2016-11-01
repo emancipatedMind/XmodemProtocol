@@ -2,5 +2,6 @@
     using Tools;
     public interface IToolFactory {
         IXModemTools GetToolsFor(XModemMode mode); 
+        int Polynomial { get; set; }
     }
 }

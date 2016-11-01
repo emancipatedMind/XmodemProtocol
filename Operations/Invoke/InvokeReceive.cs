@@ -19,7 +19,7 @@ namespace XModemProtocol.Operations.Invoke {
             _requirements.Context.State = XModemStates.ReceiverReceivingPackets;
             _numbOfBytesToShave = _requirements.Context.Mode == XModemMode.Checksum ? 4 : 5;
             _checkShouldOccur = _requirements.Options.ReceiverConsecutiveNAKsRequiredForCancellation > 0;
-            _requirements.Validator.Reset();
+            _tools.Validator.Reset();
             ConfigureTimers();
             StartWatchDog();
             GetPackets();
@@ -102,7 +102,7 @@ namespace XModemProtocol.Operations.Invoke {
 
         private bool BufferContainsValidPacket  {
             get {
-                _result = _requirements.Validator.ValidatePacket(_buffer, _requirements.Options);
+                _result = _tools.Validator.ValidatePacket(_buffer, _requirements.Options);
                 return _result != ValidationResult.Invalid;
             }
         }

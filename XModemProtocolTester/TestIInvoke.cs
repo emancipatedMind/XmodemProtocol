@@ -14,7 +14,7 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestInvoke {
 
-        private SendReceiveRequirements _req = new SendReceiveRequirements();
+        private Requirements _req = new Requirements();
         private XModemProtocolOptions _options = new XModemProtocolOptions();
         private IXModemTools _tools;
         private Context _context = new Context();
@@ -66,8 +66,7 @@ namespace XModemProtocolTester {
             _req.Context = _context;
             _req.Communicator = _com;
             _req.Options = _options;
-            _req.Detector = _tools.Detector;
-            _req.Validator = _tools.Validator;
+            _req.ToolFactory = _toolFactory;
 
             _invoker.Invoke(_req);
             _finalizer.Finalize(_req);
@@ -86,7 +85,7 @@ namespace XModemProtocolTester {
             _req.Context = _context;
             _req.Communicator = _com;
             _req.Options = _options;
-            _req.Detector = _tools.Detector;
+            _req.ToolFactory = _toolFactory;
 
             _data = _randomDataGenerator.GetRandomData(10000);
             TestMode(XModemProtocol.XModemMode.Checksum);
@@ -115,13 +114,13 @@ namespace XModemProtocolTester {
             _req.Context = _context;
             _req.Communicator = _com;
             _req.Options = _options;
+            _req.ToolFactory = _toolFactory;
 
             _data = _randomDataGenerator.GetRandomData(10000);
             var nakCollection = new List<byte> { _options.NAK };
             var ackCollection = new List<byte> { _options.ACK };
             var canCollection = Enumerable.Repeat((byte) _options.CAN, _options.CancellationBytesRequired); 
             _tools = _toolFactory.GetToolsFor(_context.Mode);
-            _req.Detector = _tools.Detector;
             _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
             _com.CollectionToSend = new List<List<byte>> {
                 nakCollection,

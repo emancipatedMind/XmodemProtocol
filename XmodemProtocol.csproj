@@ -54,9 +54,6 @@
     <Compile Include="Calculators\ISummationChecksumCalculator.cs" />
     <Compile Include="Factories\IToolFactory.cs" />
     <Compile Include="Factories\Tools\IXModemTools.cs" />
-    <Compile Include="Factories\Tools\XModemOneKTools.cs" />
-    <Compile Include="Factories\Tools\XModemCRCTools.cs" />
-    <Compile Include="Factories\Tools\XModem128Tools.cs" />
     <Compile Include="Factories\Tools\XModemTool.cs" />
     <Compile Include="Factories\XModemToolFactory.cs" />
     <Compile Include="OneKPacketSizeEnum.cs" />
@@ -78,11 +75,9 @@
     <Compile Include="Options\Context.cs" />
     <Compile Include="Options\IContext.cs" />
     <Compile Include="Options\IRequirements.cs" />
-    <Compile Include="Options\ISendReceiveRequirements.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
     <Compile Include="Options\Requirements.cs" />
     <Compile Include="Operations\Initialize\InitializeSend.cs" />
-    <Compile Include="Options\SendReceiveRequirements.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />
     <Compile Include="Builders\PacketBuilder.cs" />
     <Compile Include="Validators\Checksum\CRCChecksumValidator.cs" />

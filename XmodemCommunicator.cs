@@ -20,7 +20,6 @@ namespace XModemProtocol {
         IContext _context = new Context();
         IRequirements _requirements;
         CancellationTokenSource _tokenSource;
-        IXModemTools _tools;
         IOperation _operation;
         IXModemProtocolOptions _options;
         #endregion
@@ -38,13 +37,20 @@ namespace XModemProtocol {
             _context.ModeUpdated += (s, e) => {
                 Task.Run(()=> ModeUpdated?.Invoke(this, e));
             };
-            _tools = _toolFactory.GetToolsFor(_context.Mode);
         } 
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
         #endregion
 
         #region Properties
+        public int Polynomial {
+            get { return _toolFactory.Polynomial; }
+            set {
+                if (_context.State == XModemStates.Idle)
+                    _toolFactory.Polynomial = value;
+            }
+        }
+
         /// <summary> 
         /// SerialPort to be used to create an instance of the
         /// XModemProtocol.Communication.Communicator class.
@@ -104,7 +110,6 @@ namespace XModemProtocol {
             set {
                 if (_context.Mode == value) return;
                 _context.Mode = value;
-                _tools = _toolFactory.GetToolsFor(_context.Mode);
                 BuildPackets();
             }
         }
@@ -196,7 +201,7 @@ namespace XModemProtocol {
 
         private void BuildPackets() {
             if (_context.Data == null || _context.Data.Count == 0) return;
-            _context.Packets = _tools.Builder.GetPackets(_context.Data, Options);
+            _context.Packets = _toolFactory.GetToolsFor(_context.Mode).Builder.GetPackets(_context.Data, Options);
         }
 
         private void SendSetup() {
@@ -229,6 +234,7 @@ namespace XModemProtocol {
                     Communicator = Communicator,
                     Context = _context,
                     Options = _options,
+                    ToolFactory = _toolFactory,
                 };
                 Communicator.Flush();
                 _operation.Go(_requirements);
