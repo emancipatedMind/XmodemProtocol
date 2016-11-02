@@ -1,5 +1,4 @@
 ﻿namespace XModemProtocol.Operations {
-    using Factories.Tools;
     using Options;
     using Operations.Finalize;
     using Operations.Initialize;
@@ -11,8 +10,7 @@
         protected IInvoker _invoker;
         protected IInitializer _initializer;
         protected IFinalizer _finalizer;
-        protected IRequirements _requirements;
-        protected IXModemTools _tools;
+        protected IContext _context;
         protected XModemMode _mode;
         #endregion
 
@@ -28,23 +26,12 @@
         #endregion
 
         #region Methods
-        public void Go(IRequirements requirements) {
-            _requirements = requirements;
-            _tools = _requirements.ToolFactory.GetToolsFor(requirements.Context.Mode);
-            _mode = _requirements.Context.Mode;
-            _initializer.Initialize(_requirements);
-            if (ModeChangedInInitialization) {
-                _tools = _requirements.ToolFactory.GetToolsFor(requirements.Context.Mode);
-                TransitionToInvoke();
-            }
-            _invoker.Invoke(_requirements);
-            _finalizer.Finalize(_requirements);
+        public void Go(IContext context) {
+            _context = context;
+            _initializer.Initialize(_context);
+            _invoker.Invoke(_context);
+            _finalizer.Finalize(_context);
         }
-        #endregion
-
-        #region Support Methods
-        protected virtual void TransitionToInvoke() { }
-        private bool ModeChangedInInitialization => _requirements.Context.Mode != _mode;
         #endregion
     }
 }

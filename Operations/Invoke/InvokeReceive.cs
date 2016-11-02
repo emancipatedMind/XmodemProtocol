@@ -16,17 +16,17 @@ namespace XModemProtocol.Operations.Invoke {
         ValidationResult _result;
 
         protected override void Invoke() {
-            _requirements.Context.State = XModemStates.ReceiverReceivingPackets;
-            _numbOfBytesToShave = _requirements.Context.Mode == XModemMode.Checksum ? 4 : 5;
-            _checkShouldOccur = _requirements.Options.ReceiverConsecutiveNAKsRequiredForCancellation > 0;
-            _tools.Validator.Reset();
+            _context.State = XModemStates.ReceiverReceivingPackets;
+            _numbOfBytesToShave = _context.Mode == XModemMode.Checksum ? 4 : 5;
+            _checkShouldOccur = _context.Options.ReceiverConsecutiveNAKsRequiredForCancellation > 0;
+            _context.Tools.Validator.Reset();
             ConfigureTimers();
             StartWatchDog();
             GetPackets();
         }
 
         private void ConfigureTimers() {
-            _watchDogTimer = new System.Timers.Timer(_requirements.Options.ReceiverTimeoutDuringPacketReception);
+            _watchDogTimer = new System.Timers.Timer(_context.Options.ReceiverTimeoutDuringPacketReception);
             _watchDogTimer.Elapsed += (s, e) => {
                 _watchDogWaitHandle.Set();
             };
@@ -35,7 +35,7 @@ namespace XModemProtocol.Operations.Invoke {
         private void GetPackets() {
             while (NotCancelled) {
                 if (ReadBufferContainsData) {
-                    _buffer.AddRange(_requirements.Communicator.ReadAllBytes());
+                    _buffer.AddRange(_context.Communicator.ReadAllBytes());
                 }
                 else if (_watchDogWaitHandle.WaitOne(0)) {
                     SendNAK();
@@ -68,15 +68,15 @@ namespace XModemProtocol.Operations.Invoke {
             }
         }
 
-        private bool ReadBufferContainsData => _requirements.Communicator.BytesInReadBuffer != 0;
+        private bool ReadBufferContainsData => _context.Communicator.BytesInReadBuffer != 0;
 
         private bool BufferLengthIsTooShort {
             get {
                 if (_buffer.Count < 2) return true;
-                else if (_buffer[0] == _requirements.Options.SOH) {
+                else if (_buffer[0] == _context.Options.SOH) {
                     return _buffer.Count < 132;
                 }
-                else if (_buffer[0] == _requirements.Options.STX) {
+                else if (_buffer[0] == _context.Options.STX) {
                     return _buffer.Count < 1029;
                 }
                 else return true;
@@ -85,8 +85,8 @@ namespace XModemProtocol.Operations.Invoke {
 
         private void ExtractDataFromBuffer() {
             _packet = _buffer.GetRange(3, _buffer.Count - _numbOfBytesToShave);
-            _requirements.Context.Data.AddRange(_packet);
-            _requirements.Context.Packets.Add(_buffer);
+            _context.Data.AddRange(_packet);
+            _context.Packets.Add(_buffer);
         }
 
         private void StartWatchDog() {
@@ -102,7 +102,7 @@ namespace XModemProtocol.Operations.Invoke {
 
         private bool BufferContainsValidPacket  {
             get {
-                _result = _tools.Validator.ValidatePacket(_buffer, _requirements.Options);
+                _result = _context.Tools.Validator.ValidatePacket(_buffer, _context.Options);
                 return _result != ValidationResult.Invalid;
             }
         }
@@ -111,19 +111,19 @@ namespace XModemProtocol.Operations.Invoke {
             _result != ValidationResult.Duplicate;
 
         private void SendACK() {
-            _requirements.Communicator.Write(_requirements.Options.ACK);
+            _context.Communicator.Write(_context.Options.ACK);
             _consecutiveNAKs = 0;
         }
 
-        private bool EOTwasReceived => _buffer[0] == _requirements.Options.EOT;
+        private bool EOTwasReceived => _buffer[0] == _context.Options.EOT;
         
         private void SendNAK() {
             if (_checkShouldOccur && ConsecutiveNAKsAboveLimit)
                 throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.ConsecutiveNAKLimitExceeded));
-            _requirements.Communicator.Write(_requirements.Options.NAK);
+            _context.Communicator.Write(_context.Options.NAK);
         }
 
-        private bool ConsecutiveNAKsAboveLimit => ++_consecutiveNAKs >= _requirements.Options.ReceiverConsecutiveNAKsRequiredForCancellation;
+        private bool ConsecutiveNAKsAboveLimit => ++_consecutiveNAKs >= _context.Options.ReceiverConsecutiveNAKsRequiredForCancellation;
 
         protected void FirePacketReceivedEvent() {
             base.FirePacketReceivedEvent(++_packetNumber, _packet);

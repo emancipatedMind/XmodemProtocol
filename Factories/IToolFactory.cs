@@ -1,7 +1,6 @@
 ﻿namespace XModemProtocol.Factories {
-    using Tools;
     public interface IToolFactory {
-        IXModemTools GetToolsFor(XModemMode mode); 
+        Tools.IXModemTools GetToolsFor(XModemMode mode); 
         int Polynomial { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System;
+﻿//#define External
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,30 @@ namespace XModemProtocolTester
         XModemCommunicator _sender;
         public void PlayCatch() {
 
+#if External
+            var Port1 = new SerialPort {
+                BaudRate = 230400,
+                ReadTimeout = 10000,
+                WriteTimeout = 10000,
+                DataBits = 8,
+                Parity = Parity.Even,
+                StopBits = StopBits.One,
+                PortName = "COM14" 
+            };
+            var Port2 = new SerialPort {
+                BaudRate = 230400,
+                ReadTimeout = 10000,
+                WriteTimeout = 10000,
+                DataBits = 8,
+                Parity = Parity.Even,
+                StopBits = StopBits.One,
+                PortName = "COM8" 
+            };
+            Port1.Open();
+            Port2.Open();
+            _sender = new XModemCommunicator(Port1);
+            _receiver = new XModemCommunicator(Port2);
+#else
             _senderCom = new InterPlayComm { Name = "Port 1" };
             _receiverCom = new InterPlayComm { Name = "Port 2" };
 
@@ -32,39 +57,15 @@ namespace XModemProtocolTester
             _senderCom.WriteDebug = false; 
             _receiverCom.WriteDebug = false; 
 
-            SerialPort Port1 = new SerialPort {
-                BaudRate = 230400,
-                ReadTimeout = 10000,
-                WriteTimeout = 10000,
-                DataBits = 8,
-                Parity = Parity.Even,
-                StopBits = StopBits.One,
-                PortName = "COM14" 
-            };
-            SerialPort Port2 = new SerialPort {
-                BaudRate = 230400,
-                ReadTimeout = 10000,
-                WriteTimeout = 10000,
-                DataBits = 8,
-                Parity = Parity.Even,
-                StopBits = StopBits.One,
-                PortName = "COM8" 
-            };
-
-            Port1.Open();
-            Port2.Open();
-
-            //_sender = new XModemCommunicator(Port1);
-            //_receiver = new XModemCommunicator(Port2);
-
             _sender = new XModemCommunicator(_senderCom) {
             };
             _receiver = new XModemCommunicator(_receiverCom) {
                 Mode = XModemMode.Checksum
             };
+#endif
 
             _data = _rdg.GetRandomData(1000000);
-            //_data = File.ReadAllBytes(@"C:\Users\ptowensf\Desktop\Workbooks\Lab Upgrade\Dongle\Hex Files\42EF_DP_v1.009_12F91EEC_20150210.hex");
+            //_data = System.IO.File.ReadAllBytes(@"C:\Users\ptowensf\Desktop\Workbooks\Lab Upgrade\Dongle\Hex Files\42EF_DP_v1.009_12F91EEC_20150210.hex");
 
             SetEvents(_sender, "Port 1");
             SetEvents(_receiver, "Port 2");

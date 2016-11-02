@@ -74,9 +74,7 @@
     <Compile Include="Operations\SendOperation.cs" />
     <Compile Include="Options\Context.cs" />
     <Compile Include="Options\IContext.cs" />
-    <Compile Include="Options\IRequirements.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
-    <Compile Include="Options\Requirements.cs" />
     <Compile Include="Operations\Initialize\InitializeSend.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />
     <Compile Include="Builders\PacketBuilder.cs" />

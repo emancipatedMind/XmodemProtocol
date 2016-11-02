@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace XModemProtocol.Exceptions {
+﻿namespace XModemProtocol.Exceptions {
     using EventData;
     /// <summary>
     /// The Exception used inside the XModemCommunicator class.
     /// </summary>
-    public class XModemProtocolException : ApplicationException {
+    public class XModemProtocolException : System.ApplicationException {
         /// <summary>
         /// Whether cancellation should be sent or not.
         /// </summary>

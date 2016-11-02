@@ -23,21 +23,17 @@ namespace XModemProtocol.Validators.Checksum {
             return WhetherCalculatedChecksumAndChecksumReceivedWereIdentical();
         }
 
-        private void GetPayLoadOfInput() {
+        private void GetPayLoadOfInput() =>
             _payload = _input.GetRange(0, _input.Count - 1);
-        }
 
-        private void ExtractChecksumOfInput() {
+        private void ExtractChecksumOfInput() =>
             _checksumReceived = _input.Last();
-        }
 
-        private void CalculateChecksum() {
+        private void CalculateChecksum() =>
             _calculatedChecksum = _calculator.CalculateChecksum(_payload).ElementAt(0);
-        }
 
 
-        private bool WhetherCalculatedChecksumAndChecksumReceivedWereIdentical() {
-            return _calculatedChecksum == _checksumReceived;
-        }
+        private bool WhetherCalculatedChecksumAndChecksumReceivedWereIdentical() =>
+            _calculatedChecksum == _checksumReceived;
     }
 }

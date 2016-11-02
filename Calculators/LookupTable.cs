@@ -13,9 +13,7 @@
             MakeTable();
         }
 
-        public int QueryTable(int index) {
-            return _lookupTable[index];
-        }
+        public int QueryTable(int index) => _lookupTable[index];
 
         private void MakeTable() {
             for (_currentIndex = 0; _currentIndex < _lookupTable.Length; ++_currentIndex) {

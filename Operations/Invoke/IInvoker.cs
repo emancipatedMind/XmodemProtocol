@@ -1,10 +1,9 @@
 ﻿using System;
 
 namespace XModemProtocol.Operations.Invoke {
-    using Options;
     using EventData;
     public interface IInvoker {
-        void Invoke(IRequirements requirements);
+        void Invoke(Options.IContext context);
         event EventHandler<PacketToSendEventArgs> PacketToSend;
         event EventHandler<PacketReceivedEventArgs> PacketReceived;
     }

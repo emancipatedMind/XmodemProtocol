@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace XModemProtocol.EventData {
+﻿namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.Aborted event.
     /// </summary>
-    public class AbortedEventArgs : EventArgs {
+    public class AbortedEventArgs : System.EventArgs {
         /// <summary>
         /// Reason for abort.
         /// </summary>

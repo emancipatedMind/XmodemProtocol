@@ -14,9 +14,6 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestInvoke {
 
-        private Requirements _req = new Requirements();
-        private XModemProtocolOptions _options = new XModemProtocolOptions();
-        private IXModemTools _tools;
         private Context _context = new Context();
         private ComSendCollection _com = new ComSendCollection();
         private CancellationTokenSource _cts;
@@ -25,7 +22,6 @@ namespace XModemProtocolTester {
         private List<List<byte>> _sentData;
         private List<List<byte>> _packets;
         private IEnumerable<byte> _data;
-        private XModemToolFactory _toolFactory = new XModemToolFactory();
         private RandomDataGenerator _randomDataGenerator = new RandomDataGenerator {
             Domain = 0x5E,
             Offset = 0x20,
@@ -55,21 +51,15 @@ namespace XModemProtocolTester {
             _invoker = new InvokeReceive();
             _finalizer = new FinalizeReceive();
             _context.Data = new List<byte>();
-            _context.Packets = new List<List<byte>>();
 
-            _tools = _toolFactory.GetToolsFor(_context.Mode);
-
-            _packets = _tools.Builder.GetPackets(_data, _options);
-            _packets.Add(new List<byte> { _options.EOT });
+            _packets = _context.Tools.Builder.GetPackets(_data, _context.Options);
+            _packets.Add(new List<byte> { _context.Options.EOT });
             _com.CollectionToSend = _packets;
 
-            _req.Context = _context;
-            _req.Communicator = _com;
-            _req.Options = _options;
-            _req.ToolFactory = _toolFactory;
+            _context.Communicator = _com;
 
-            _invoker.Invoke(_req);
-            _finalizer.Finalize(_req);
+            _invoker.Invoke(_context);
+            _finalizer.Finalize(_context);
             Assert.AreEqual(_data, _context.Data); 
             Assert.AreEqual(_packets.GetRange(0, _packets.Count - 1), _context.Packets); 
         }
@@ -80,12 +70,8 @@ namespace XModemProtocolTester {
             _invoker = new InvokeSend();
             _cts = new CancellationTokenSource();
             _context.Token = _cts.Token;
-            _tools = _toolFactory.GetToolsFor(_context.Mode);
 
-            _req.Context = _context;
-            _req.Communicator = _com;
-            _req.Options = _options;
-            _req.ToolFactory = _toolFactory;
+            _context.Communicator = _com;
 
             _data = _randomDataGenerator.GetRandomData(10000);
             TestMode(XModemProtocol.XModemMode.Checksum);
@@ -95,13 +81,11 @@ namespace XModemProtocolTester {
 
         private void TestMode(XModemProtocol.XModemMode mode) {
             _context.Mode = mode;
-            _tools = _toolFactory.GetToolsFor(_context.Mode);
-            _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
-            _sentData = new List<List<byte>>(_req.Context.Packets);
-            _sentData.Add(new List<byte> { _options.EOT });
-            _com.BytesToSend = new List<byte> { _options.ACK };
+            _sentData = new List<List<byte>>(_context.Packets);
+            _sentData.Add(new List<byte> { _context.Options.EOT });
+            _com.BytesToSend = new List<byte> { _context.Options.ACK };
             _com.BytesRead = new List<List<byte>>();
-            _invoker.Invoke(_req);
+            _invoker.Invoke(_context);
             Assert.AreEqual(_sentData, _com.BytesRead);
             _com.Flush();
         }
@@ -111,38 +95,33 @@ namespace XModemProtocolTester {
             _cts = new CancellationTokenSource();
             _context.Token = _cts.Token;
 
-            _req.Context = _context;
-            _req.Communicator = _com;
-            _req.Options = _options;
-            _req.ToolFactory = _toolFactory;
+            _context.Communicator = _com;
 
-            _data = _randomDataGenerator.GetRandomData(10000);
-            var nakCollection = new List<byte> { _options.NAK };
-            var ackCollection = new List<byte> { _options.ACK };
-            var canCollection = Enumerable.Repeat((byte) _options.CAN, _options.CancellationBytesRequired); 
-            _tools = _toolFactory.GetToolsFor(_context.Mode);
-            _req.Context.Packets = _tools.Builder.GetPackets(_data, _options);
+            _context.Data = _randomDataGenerator.GetRandomData(10000).ToList();
+            var nakCollection = new List<byte> { _context.Options.NAK };
+            var ackCollection = new List<byte> { _context.Options.ACK };
+            var canCollection = Enumerable.Repeat((byte) _context.Options.CAN, _context.Options.CancellationBytesRequired); 
             _com.CollectionToSend = new List<List<byte>> {
                 nakCollection,
                 nakCollection,
                 ackCollection,
                 nakCollection,
-                new List<byte> { _options.CAN },
+                new List<byte> { _context.Options.CAN },
                 canCollection.ToList()
             };
             _sentData = new List<List<byte>>();
 
             for (int i = 0; i < 3; i++)
-                _sentData.Add(_req.Context.Packets[0]);
+                _sentData.Add(_context.Packets[0]);
 
             for (int i = 0; i < 2; i++)
-                _sentData.Add(_req.Context.Packets[1]);
+                _sentData.Add(_context.Packets[1]);
 
             bool excThrown = false;
             try {
                 _com.BytesRead = new List<List<byte>>();
                 _invoker = new InvokeSend();
-                _invoker.Invoke(_req);
+                _invoker.Invoke(_context);
             }
             catch (XModemProtocolException ex) {
                 excThrown = ex.AbortArgs.Reason == XModemProtocol.XModemAbortReason.CancellationRequestReceived;

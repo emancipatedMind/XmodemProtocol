@@ -1,15 +1,13 @@
 ﻿using System.Linq;
 
 namespace XModemProtocol.Operations.Initialize {
-    using System;
-    using Communication;
     using Exceptions;
     public class InitializeSend : Initializer {
 
         private byte _latestResponse;
 
         protected override void InitializeTimeoutTimer() {
-            int timeoutTime = _requirements.Options.SenderInitializationTimeout;
+            int timeoutTime = _context.Options.SenderInitializationTimeout;
             if (timeoutTime < 1) return;
             _timer = new System.Timers.Timer(timeoutTime);
             _timer.Elapsed += (s, e) => {
@@ -20,7 +18,7 @@ namespace XModemProtocol.Operations.Initialize {
         }
 
         protected override void UpdateState() {
-            _requirements.Context.State = XModemStates.SenderAwaitingInitializationFromReceiver;
+            _context.State = XModemStates.SenderAwaitingInitializationFromReceiver;
         }
 
         protected override void Reset() {
@@ -40,7 +38,7 @@ namespace XModemProtocol.Operations.Initialize {
                 }
                 else if (NAKwasReceived) {
                     if (SenderIsCRC) {
-                        _requirements.Context.Mode = XModemMode.Checksum;
+                        _context.Mode = XModemMode.Checksum;
                     }
                 }
                 else continue;
@@ -53,23 +51,23 @@ namespace XModemProtocol.Operations.Initialize {
             get {
                 if (_waitHandle.WaitOne(0))
                     throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.InitializationFailed));
-                if ( _requirements.Context.Token.IsCancellationRequested)
+                if (_context.Token.IsCancellationRequested)
                     throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.Cancelled));
                 return true;
             }
         }
 
-        private bool ReadBufferIsEmpty => _requirements.Communicator.BytesInReadBuffer == 0;
+        private bool ReadBufferIsEmpty => _context.Communicator.BytesInReadBuffer == 0;
 
-        private void GetLatestResponse() => _latestResponse = _requirements.Communicator.ReadAllBytes().Last();
+        private void GetLatestResponse() => _latestResponse = _context.Communicator.ReadAllBytes().Last();
 
-        private bool CwasReceived => _latestResponse == _requirements.Options.C;
+        private bool CwasReceived => _latestResponse == _context.Options.C;
 
-        private bool ChecksumIsForced => _requirements.Context.Mode == XModemMode.Checksum;
+        private bool ChecksumIsForced => _context.Mode == XModemMode.Checksum;
 
-        private bool NAKwasReceived => _latestResponse == _requirements.Options.NAK;
+        private bool NAKwasReceived => _latestResponse == _context.Options.NAK;
 
-        private bool SenderIsCRC => _requirements.Context.Mode != XModemMode.Checksum;
+        private bool SenderIsCRC => _context.Mode != XModemMode.Checksum;
 
     }
 }

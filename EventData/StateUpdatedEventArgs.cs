@@ -4,7 +4,7 @@ namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.StateUpdated event.
     /// </summary>
-    public class StateUpdatedEventArgs : EventArgs {
+    public class StateUpdatedEventArgs : System.EventArgs {
         /// <summary>
         /// The new state of the XModemCommunicator instance.
         /// </summary>

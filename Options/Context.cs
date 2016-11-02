@@ -5,7 +5,37 @@ using System.Threading;
 
 namespace XModemProtocol.Options {
     using EventData;
+    using Factories;
+    using Factories.Tools;
+    using Communication;
     public class Context : IContext {
+
+        IXModemProtocolOptions _options = new XModemProtocolOptions();
+        IToolFactory _toolFactory = new XModemToolFactory();
+
+        public ICommunicator Communicator { get; set; }
+
+        public void SendCancel() => Communicator.Write(Enumerable.Repeat(Options.CAN, Options.CANSentDuringAbort));
+
+        public int Polynomial {
+            get { return _toolFactory.Polynomial; }
+            set {
+                if (State == XModemStates.Idle) 
+                    _toolFactory.Polynomial = value;
+            }
+        }
+
+        public IXModemProtocolOptions Options {
+            get { return _options; }
+            set {
+                if (value == null) value = new XModemProtocolOptions();
+                _options = (IXModemProtocolOptions)value.Clone();
+            }
+        }
+
+        public IXModemTools Tools {
+            get { return _toolFactory.GetToolsFor(_mode); }
+        }
 
         private XModemStates _state = XModemStates.Idle;
         public XModemStates State {
@@ -18,20 +48,17 @@ namespace XModemProtocol.Options {
             }
         }
 
-        private List<List<byte>> _packets;
-        public List<List<byte>> Packets {
-            get { return _packets; }
-            set {
-                if (value == null) return;
-                else if (_packets == null || !_packets.SequenceEqual(value)) {
-                    _packets = value;
-                    PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(_packets));
-                }
-            }
-        }
+        public List<List<byte>> Packets { get; private set; } = new List<List<byte>>();
 
-        public List<byte> Data { get; set; }
         public CancellationToken Token { get; set; }
+
+        public void BuildPackets() {
+            if (_data.Count > 1) {
+                Packets = Tools.Builder.GetPackets(_data, Options);
+                PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
+            }
+            else Packets = new List<List<byte>>();
+        }
 
         private XModemMode _mode = XModemMode.OneK;
         public XModemMode Mode {
@@ -41,6 +68,17 @@ namespace XModemProtocol.Options {
                 var _oldMode = _mode;
                 _mode = value;
                 ModeUpdated?.Invoke(this, new ModeUpdatedEventArgs(_mode, _oldMode));
+                BuildPackets();
+            }
+        }
+
+        private List<byte> _data = new List<byte>();
+        public List<byte> Data {
+            get { return _data; }
+            set {
+                if (value == null || _data.SequenceEqual(value)) return;
+                _data = new List<byte>(value);
+                BuildPackets();
             }
         }
 

@@ -54,12 +54,10 @@ namespace XModemProtocol.Builders {
         }
 
         private void AppendData() {
-            if (DataLeftWillFillPacket)  {
+            if (DataLeftWillFillPacket) 
                 _packetInfo = _data.GetRange(_position, _packetSize);
-            }
-            else {
+            else 
                 _packetInfo = PadDataWithSUBByte();
-            }
             _currentPacket.AddRange(_packetInfo);
         }
 

@@ -4,7 +4,7 @@ namespace XModemProtocol.Operations.Initialize {
     using Options;
     public abstract class Initializer : IInitializer {
 
-        protected IRequirements _requirements;
+        protected IContext _context;
         protected System.Timers.Timer _timer;
         protected ManualResetEvent _waitHandle;
 
@@ -13,8 +13,8 @@ namespace XModemProtocol.Operations.Initialize {
         protected abstract void UpdateState();
         protected abstract void Reset();
 
-        public void Initialize(IRequirements requirements) {
-            _requirements = requirements;
+        public void Initialize(IContext context) {
+            _context = context;
             Reset();
             InitializeTimeoutTimer();
             UpdateState();

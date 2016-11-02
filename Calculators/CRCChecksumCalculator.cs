@@ -28,9 +28,7 @@ namespace XModemProtocol.Calculators {
             return CheckSumAsArray();
         }
 
-        private byte[] CheckSumAsArray() {
-            return new byte[] { (byte)(_checkSum / 256), (byte)(_checkSum % 256) };
-        }
+        private byte[] CheckSumAsArray() => new byte[] { (byte)(_checkSum / 256), (byte)(_checkSum % 256) };
 
         private void ComputeChecksum() {
             InitializeRunningChecksum();
@@ -42,9 +40,9 @@ namespace XModemProtocol.Calculators {
             _checkSum = _runningChecksum;
         }
 
-        private void InitializeRunningChecksum() {
+        private void InitializeRunningChecksum() =>
             _runningChecksum = ((InitialCRCValue.ElementAtOrDefault(1) << 8) | InitialCRCValue.ElementAtOrDefault(0));
-        }
+        
 
         private void GetOperandFromLookupTable() {
             int indexOfValueNeededFromLookupTable = (_runningChecksum >> 8) ^ _currentByte;

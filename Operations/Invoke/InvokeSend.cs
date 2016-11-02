@@ -6,7 +6,7 @@ namespace XModemProtocol.Operations.Invoke {
         int _indexToBeSent;
 
         protected override void Invoke() {
-            _requirements.Context.State = XModemStates.SenderPacketsBeingSent;
+            _context.State = XModemStates.SenderPacketsBeingSent;
             _indexToBeSent = 0;
             SendPackets();
         }
@@ -15,7 +15,7 @@ namespace XModemProtocol.Operations.Invoke {
             Send();
             while(NotCancelled) {
                 if (ReadBufferContainsData) {
-                    _buffer.Add(_requirements.Communicator.ReadSingleByte());
+                    _buffer.Add(_context.Communicator.ReadSingleByte());
                 }
                 else if (_buffer.Count != 0) { }
                 else continue;
@@ -33,17 +33,17 @@ namespace XModemProtocol.Operations.Invoke {
                     Reset();
                 }
                 else {
-                    _buffer.AddRange(_requirements.Communicator.ReadAllBytes());
+                    _buffer.AddRange(_context.Communicator.ReadAllBytes());
                     CheckForCancellation();
                 }
             }
         }
 
-        private bool EOTSent => _requirements.Context.Packets.Count < _indexToBeSent;
-        private bool AllPacketsSent => _requirements.Context.Packets.Count == _indexToBeSent;
-        private bool LastResponseWasACK => _buffer.Last() == _requirements.Options.ACK; 
-        private bool LastResponseWasNAK => _buffer.Last() == _requirements.Options.NAK; 
-        private bool ReadBufferContainsData => _requirements.Communicator.BytesInReadBuffer != 0;
+        private bool EOTSent => _context.Packets.Count < _indexToBeSent;
+        private bool AllPacketsSent => _context.Packets.Count == _indexToBeSent;
+        private bool LastResponseWasACK => _buffer.Last() == _context.Options.ACK; 
+        private bool LastResponseWasNAK => _buffer.Last() == _context.Options.NAK; 
+        private bool ReadBufferContainsData => _context.Communicator.BytesInReadBuffer != 0;
 
         private void Send() {
             if (AllPacketsSent) {
@@ -51,15 +51,15 @@ namespace XModemProtocol.Operations.Invoke {
                 return;
             }
             FirePacketToSendEvent(); 
-            _requirements.Communicator.Write(_requirements.Context.Packets[_indexToBeSent]);
+            _context.Communicator.Write(_context.Packets[_indexToBeSent]);
         }
 
         private void SendEOT() {
-            _requirements.Communicator.Write(_requirements.Options.EOT);
+            _context.Communicator.Write(_context.Options.EOT);
         }
 
         protected void FirePacketToSendEvent() {
-            base.FirePacketToSendEvent(_indexToBeSent + 1, _requirements.Context.Packets[_indexToBeSent]);
+            base.FirePacketToSendEvent(_indexToBeSent + 1, _context.Packets[_indexToBeSent]);
         }
     }
 }

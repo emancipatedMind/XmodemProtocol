@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.PacketsBuilt event.
     /// </summary>
-    public class PacketsBuiltEventArgs : EventArgs {
+    public class PacketsBuiltEventArgs : System.EventArgs {
         /// <summary>
         /// The new count of packets.
         /// </summary>

@@ -9,19 +9,13 @@ namespace XModemProtocol {
     using Communication;
     using EventData;
     using Exceptions;
-    using Factories;
-    using Factories.Tools;
     using Operations;
     using Options;
     public class XModemCommunicator {
 
         #region Fields
-        IToolFactory _toolFactory = new XModemToolFactory();
         IContext _context = new Context();
-        IRequirements _requirements;
         CancellationTokenSource _tokenSource;
-        IOperation _operation;
-        IXModemProtocolOptions _options;
         #endregion
 
         #region Constructors
@@ -44,11 +38,8 @@ namespace XModemProtocol {
 
         #region Properties
         public int Polynomial {
-            get { return _toolFactory.Polynomial; }
-            set {
-                if (_context.State == XModemStates.Idle)
-                    _toolFactory.Polynomial = value;
-            }
+            get { return _context.Polynomial; }
+            set { _context.Polynomial = value; }
         }
 
         /// <summary> 
@@ -62,23 +53,14 @@ namespace XModemProtocol {
         /// the XModemProtocol.Communication.ICommunicator interface.
         /// Object will be used to facilitate the transfer of bytes.
         /// </summary>
-        public ICommunicator Communicator { private get; set; }
+        public ICommunicator Communicator { set { _context.Communicator = value; } }
 
         /// <summary>
         /// Data received from transfer or data to be sent.
         /// </summary>
         public IEnumerable<byte> Data {
-            set {
-                if (value == null) return;
-                if (_context.Data == null || _context.Data.SequenceEqual(value) == false) {
-                    _context.Data = new List<byte>(value);
-                    BuildPackets();
-                }
-            }
-            get {
-                if (_context.Data == null || _context.Data.Count < 1) return null;
-                return new List<byte>(_context.Data);
-            }
+            set { _context.Data = value?.ToList(); }
+            get { return new List<byte>(_context.Data); }
         }
 
         /// <summary>
@@ -94,11 +76,7 @@ namespace XModemProtocol {
         /// to customize how XModemProtocol.XModemCommunicator operates.
         /// </summary>
         public IXModemProtocolOptions Options {
-            private get { return _options; }
-            set {
-                if (value == null) value = new Options.XModemProtocolOptions();
-                _options = (IXModemProtocolOptions)value.Clone();
-            }
+            set { _context.Options = value; }
         }
 
         /// <summary>
@@ -107,11 +85,7 @@ namespace XModemProtocol {
         /// </summary>
         public XModemMode Mode {
             get { return _context.Mode; }
-            set {
-                if (_context.Mode == value) return;
-                _context.Mode = value;
-                BuildPackets();
-            }
+            set { _context.Mode = value; }
         }
         #endregion
 
@@ -195,49 +169,37 @@ namespace XModemProtocol {
         #endregion
 
         #region Support Methods
-        private void SendCancel() {
-            Communicator.Write(Enumerable.Repeat(_options.CAN, _options.CANSentDuringAbort));
-        }
+        private void SendCancel() => _context.SendCancel();
 
-        private void BuildPackets() {
-            if (_context.Data == null || _context.Data.Count == 0) return;
-            _context.Packets = _toolFactory.GetToolsFor(_context.Mode).Builder.GetPackets(_context.Data, Options);
-        }
-
-        private void SendSetup() {
-            _operation = new SendOperation();
-            _operation.PacketToSend += (s, e) => PacketToSend?.Invoke(this, e);
+        private IOperation SendSetup() {
+            IOperation operation = new SendOperation();
+            operation.PacketToSend += (s, e) => PacketToSend?.Invoke(this, e);
             if (_context.Data == null || _context.Data.Count == 0) 
                 throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.BufferEmpty));
+            return operation;
         }
 
-        private void ReceiveSetup() {
-            _operation = new ReceiveOperation();
-            _operation.PacketReceived += (s, e) => PacketReceived?.Invoke(this, e);
+        private IOperation ReceiveSetup() {
+            IOperation operation = new ReceiveOperation();
+            operation.PacketReceived += (s, e) => PacketReceived?.Invoke(this, e);
             _context.Data = new List<byte>();
-            _context.Packets = new List<List<byte>>();
+            return operation;
         }
 
-        private void PerformOperation(Action setup)  {
+        private void PerformOperation(Func<IOperation> setup)  {
             try {
                 if (_context.State != XModemStates.Idle) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.StateNotIdle));
-                if (Communicator == null) 
+                if (_context.Communicator == null) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CommunicatorIsNull));
-                setup();
+                IOperation operation = setup();
                 if (OperationPending != null) 
                     if (OperationPending() == false)
                         throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent));
                 _tokenSource = new CancellationTokenSource();
                 _context.Token = _tokenSource.Token;
-                _requirements = new Requirements {
-                    Communicator = Communicator,
-                    Context = _context,
-                    Options = _options,
-                    ToolFactory = _toolFactory,
-                };
-                Communicator.Flush();
-                _operation.Go(_requirements);
+                _context.Communicator.Flush();
+                operation.Go(_context);
                 Completed?.Invoke(this, new CompletedEventArgs(_context.Data));
             }
             catch (XModemProtocolException ex) {

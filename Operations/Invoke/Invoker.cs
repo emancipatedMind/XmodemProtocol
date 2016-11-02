@@ -6,20 +6,17 @@ namespace XModemProtocol.Operations.Invoke {
     using Exceptions;
     using Options;
     using Detectors;
-    using Factories.Tools;
     public abstract class Invoker : IInvoker {
-        protected IXModemTools _tools;
-        protected IRequirements _requirements;
+        protected IContext _context;
         protected ICancellationDetector _detector;
         protected List<byte> _buffer = new List<byte>();
 
         public event EventHandler<PacketToSendEventArgs> PacketToSend;
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
 
-        public void Invoke(IRequirements requirements) {
-            _requirements = requirements;
+        public void Invoke(IContext context) {
+            _context = context;
             _detector = CancellationDetector.Instance;
-            _tools = _requirements.ToolFactory.GetToolsFor(_requirements.Context.Mode); 
             Invoke();
         }
 
@@ -34,15 +31,15 @@ namespace XModemProtocol.Operations.Invoke {
         }
 
         protected virtual void CheckForCancellation() {
-            if(_detector.CancellationDetected(_buffer, _requirements.Options)) {
-                _requirements.Context.State = XModemStates.Cancelled;
+            if(_detector.CancellationDetected(_buffer, _context.Options)) {
+                _context.State = XModemStates.Cancelled;
                 throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.CancellationRequestReceived));
             }
         }
 
         protected virtual bool NotCancelled {
             get {
-                if ( _requirements.Context.Token.IsCancellationRequested)
+                if ( _context.Token.IsCancellationRequested)
                     throw new XModemProtocolException(new EventData.AbortedEventArgs(XModemAbortReason.Cancelled));
                 return true;
             }

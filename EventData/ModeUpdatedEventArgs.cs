@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace XModemProtocol.EventData {
+﻿namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.ModeUpdated event.
     /// </summary>
-    public class ModeUpdatedEventArgs : EventArgs {
+    public class ModeUpdatedEventArgs : System.EventArgs {
         /// <summary>
         /// The new mode of the XModemCommunicator instance.
         /// </summary>

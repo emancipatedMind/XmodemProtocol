@@ -2,7 +2,6 @@
     using Tools;
     using Builders;
     using Calculators;
-    using Detectors;
     using Validators.Packet;
     using Validators.Checksum;
     public class XModemToolFactory : IToolFactory {
@@ -33,22 +32,7 @@
             set {
                 if (_table.Polynomial == value) return;
                 _table = new LookUpTable(value);
-                _cRCCalculator = new CRCChecksumCalculator(_table);
-                _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
-                _CRCvalidator = new PacketValidator(_crcChecksumValidator); 
-
-                _CRCPacketBuilder = new CRCPacketBuilder(_cRCCalculator);
-                _oneKPacketBuilder = new OneKPacketBuilder(_cRCCalculator);
-
-                _oneKTool = new XModemTool {
-                    Builder = _oneKPacketBuilder,
-                    Validator = _CRCvalidator
-                };
-
-                _checksumTool = new XModemTool {
-                    Builder = _normalPacketBuilder,
-                    Validator = _validator
-                };
+                TableChanged();
             }
         }
 
@@ -71,17 +55,20 @@
             _validator = new PacketValidator(_normalChecksumValidator);
             _normalPacketBuilder = new NormalPacketBuilder(_calculator);
 
-            _cRCCalculator = new CRCChecksumCalculator(_table);
-            _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
-
-            _CRCvalidator = new PacketValidator(_crcChecksumValidator);
-            _CRCPacketBuilder = new CRCPacketBuilder(_cRCCalculator);
-            _oneKPacketBuilder = new OneKPacketBuilder(_cRCCalculator);
-
             _CRCTool = new XModemTool {
                 Builder = _CRCPacketBuilder,
                 Validator = _CRCvalidator
             };
+            TableChanged();
+        }
+
+        void TableChanged() {
+            _cRCCalculator = new CRCChecksumCalculator(_table);
+            _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
+            _CRCvalidator = new PacketValidator(_crcChecksumValidator); 
+
+            _CRCPacketBuilder = new CRCPacketBuilder(_cRCCalculator);
+            _oneKPacketBuilder = new OneKPacketBuilder(_cRCCalculator);
 
             _oneKTool = new XModemTool {
                 Builder = _oneKPacketBuilder,
@@ -93,5 +80,6 @@
                 Validator = _validator
             };
         }
+
     }
 }

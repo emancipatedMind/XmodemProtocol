@@ -5,7 +5,7 @@ namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.PacketToSend event.
     /// </summary>
-    public class PacketToSendEventArgs : EventArgs {
+    public class PacketToSendEventArgs : System.EventArgs {
         /// <summary>
         /// The packet number that was sent.
         /// </summary>

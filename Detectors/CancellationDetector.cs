@@ -15,13 +15,15 @@ namespace XModemProtocol.Detectors {
         private CancellationDetector() { }
 
         public bool CancellationDetected(IEnumerable<byte> input , IXModemProtocolOptions options) {
-            _input = input.ToList();
-            _options = options;
-            if (DetectionIsUnnecessary) return false;
-            GetIndicesOfCANBytes();
-            if (CountOfCANBytesAreInsufficient) return false;
-            if (CancellationConditionFound) return true;
-            return false;
+            lock(this) {
+                _input = input.ToList();
+                _options = options;
+                if (DetectionIsUnnecessary) return false;
+                GetIndicesOfCANBytes();
+                if (CountOfCANBytesAreInsufficient) return false;
+                if (CancellationConditionFound) return true;
+                return false;
+            }
         }
 
         private bool DetectionIsUnnecessary => _options.CancellationBytesRequired < 1;

@@ -16,16 +16,14 @@ namespace XModemProtocol.Validators.Packet {
             _validator = validator;
         } 
 
-        public void Reset() {
+        public void Reset() =>
             _packetNumberExpected = 1;
-        }
 
         public ValidationResult ValidatePacket(IEnumerable<byte> input, IXModemProtocolOptions options) {
             _data = input.ToList();
             _options = options;
-            if (PacketExpectedIsIncorrect) {
+            if (PacketExpectedIsIncorrect) 
                 return PacketIsDuplicate ? ValidationResult.Duplicate : ValidationResult.Invalid;
-            }
             if (OnesComplementIsIncorrect) return ValidationResult.Invalid;
             if (ChecksumIsIncorrect) return ValidationResult.Invalid;
             _packetNumberExpected++;

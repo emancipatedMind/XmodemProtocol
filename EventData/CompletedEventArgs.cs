@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.Completed event.
     /// </summary>
-    public class CompletedEventArgs : EventArgs {
+    public class CompletedEventArgs : System.EventArgs {
         /// <summary>
         /// Data that was sent or received by XModemCommunicator.
         /// </summary>

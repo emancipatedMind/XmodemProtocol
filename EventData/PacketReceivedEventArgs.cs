@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace XModemProtocol.EventData {
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.PacketReceived event.
     /// </summary>
-    public class PacketReceivedEventArgs : EventArgs {
+    public class PacketReceivedEventArgs : System.EventArgs {
         /// <summary>
         /// The packet number that was received.
         /// </summary>
