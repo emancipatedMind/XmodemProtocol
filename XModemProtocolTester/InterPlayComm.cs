@@ -13,8 +13,8 @@ namespace XModemProtocolTester {
         public int BytesInReadBuffer => Data?.Count ?? 0;
         public bool ReadBufferContainsData => Data?.Count > 0;
         public bool ReadBufferIsEmpty => !ReadBufferContainsData;
-
         public void Flush() => Data = new List<byte>();
+        public void Write(string buffer) => Write(Encoding.Default.GetBytes(buffer));
 
         public List<byte> ReadAllBytes() {
             var data = Data;
@@ -37,10 +37,6 @@ namespace XModemProtocolTester {
             Partner.Data.Add(buffer);
             if (WriteDebug) 
                 System.Diagnostics.Debug.WriteLine($"{Name} => [ 0x{buffer:X2} ]");
-        }
-
-        public void Write(string buffer) {
-            Write(Encoding.Default.GetBytes(buffer));
         }
 
         public byte ReadSingleByte() {

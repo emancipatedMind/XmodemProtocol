@@ -13,9 +13,8 @@ namespace XModemProtocolTester {
                 return _collectionToSend[_index++];
             }
             set {
-                if (value == null) {
+                if (value == null)
                     CollectionToSend = null;
-                }
                 else
                     CollectionToSend = new List<List<byte>> { value };
             }
