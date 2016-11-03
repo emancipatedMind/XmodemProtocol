@@ -4,14 +4,13 @@ using System.Linq;
 using XModemProtocol.Detectors;
 using XModemProtocol.Options;
 
-namespace XModemProtocolTester
-{
+namespace XModemProtocolTester {
     [TestFixture] 
     public class TestCancellationDetector {
 
-        static XModemProtocolOptions _options = new XModemProtocolOptions();
-        static List<byte> _message;
-        static ICancellationDetector _detector = CancellationDetector.Instance;
+        XModemProtocolOptions _options = new XModemProtocolOptions();
+        List<byte> _message;
+        ICancellationDetector _detector = CancellationDetector.Instance;
 
         [Test]
         public void TestDetector() {

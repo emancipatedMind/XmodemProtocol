@@ -55,10 +55,11 @@
             _validator = new PacketValidator(_normalChecksumValidator);
             _normalPacketBuilder = new NormalPacketBuilder(_calculator);
 
-            _CRCTool = new XModemTool {
-                Builder = _CRCPacketBuilder,
-                Validator = _CRCvalidator
+            _checksumTool = new XModemTool {
+                Builder = _normalPacketBuilder,
+                Validator = _validator
             };
+
             TableChanged();
         }
 
@@ -75,11 +76,10 @@
                 Validator = _CRCvalidator
             };
 
-            _checksumTool = new XModemTool {
-                Builder = _normalPacketBuilder,
-                Validator = _validator
+            _CRCTool = new XModemTool {
+                Builder = _CRCPacketBuilder,
+                Validator = _CRCvalidator
             };
         }
-
     }
 }

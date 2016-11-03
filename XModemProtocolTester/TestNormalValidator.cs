@@ -10,7 +10,7 @@ namespace XModemProtocolTester {
         byte[] _collection = new byte[] { 0x00, 0x19, 0x88, 0x33, 0x72, };
 
         [Test] 
-        public void TestIChecksumValidator() {
+        public void TestNormalChecksumValidator() {
             byte validLSB = 0x46;
             byte invalidLSB = 0x95;
             List<byte> validatedMessage = new List<byte>();

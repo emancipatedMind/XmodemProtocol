@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using XModemProtocol.Calculators;
 
-namespace XModemProtocolTester
-{
+namespace XModemProtocolTester {
     [TestFixture] 
     public class TestICRCLookupTable {
         List<int[]> _indicesToCheck = new List<int[]> {
@@ -12,7 +11,7 @@ namespace XModemProtocolTester
         };
 
         [Test] 
-        public void TestSetOfValuesOnCRCLookUpTable() {
+        public void TestLookupTable() {
             ICRCLookUpTable table = new LookUpTable(0x1021);
 
             for(int i = 0; i < _indicesToCheck[0].Length; i++) {
@@ -20,5 +19,4 @@ namespace XModemProtocolTester
             }
         }
     }
-
 }

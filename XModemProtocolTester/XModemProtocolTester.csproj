@@ -61,11 +61,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomDataGenerator.cs" />
     <Compile Include="TestCancellationDetector.cs" />
-    <Compile Include="TestIChecksumCalculator.cs" />
-    <Compile Include="TestICRCChecksumCalculator.cs" />
+    <Compile Include="TestChecksumCalculator.cs" />
     <Compile Include="TestICRCChecksumValidator.cs" />
     <Compile Include="TestICRCLookupTable.cs" />
-    <Compile Include="TestIInvoke.cs" />
+    <Compile Include="TestInvoker.cs" />
     <Compile Include="TestInitializer.cs" />
     <Compile Include="TestNormalValidator.cs" />
     <Compile Include="TestOperation.cs" />

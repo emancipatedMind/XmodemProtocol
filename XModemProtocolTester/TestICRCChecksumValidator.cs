@@ -2,8 +2,7 @@
 using XModemProtocol.Calculators;
 using XModemProtocol.Validators.Checksum;
 
-namespace XModemProtocolTester
-{
+namespace XModemProtocolTester {
     [TestFixture] 
     public class TestICRCChecksumValidator {
 
@@ -17,7 +16,5 @@ namespace XModemProtocolTester
             Assert.IsTrue(validator.ValidateChecksum(new byte[] { 0xE5, 0xAD, 0x8B })); 
             Assert.IsFalse(validator.ValidateChecksum(new byte[] { 0xE5, 0xAA, 0x8B })); 
         }
-
     }
-
 }

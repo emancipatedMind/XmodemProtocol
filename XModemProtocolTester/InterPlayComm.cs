@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using XModemProtocol.Communication;
 
 namespace XModemProtocolTester {
@@ -26,9 +23,6 @@ namespace XModemProtocolTester {
         }
 
         public void Write(IEnumerable<byte> buffer) {
-            //foreach (var b in buffer) {
-            //    Partner.Data.Add(b);
-            //}
             Partner.Data.AddRange(buffer);
             if (WriteDebug) {
                 string desc = $"{Name} => [ ";
