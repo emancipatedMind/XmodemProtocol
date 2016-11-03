@@ -8,49 +8,44 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestCancellationDetector {
 
-        XModemProtocolOptions _options = new XModemProtocolOptions();
-        List<byte> _message;
-        ICancellationDetector _detector = CancellationDetector.Instance;
-
         [Test]
         public void TestDetector() {
+            var rand = new RandomDataGenerator();
+            ICancellationDetector detector = CancellationDetector.Instance;
+            var message = new List<byte>();
+            XModemProtocolOptions options = new XModemProtocolOptions {
+                CancellationBytesRequired = 10
+            };
 
-            _options.CancellationBytesRequired = 10;
+            message.Add(0x43);
+            // Test to see if detector returns false under the condition that the message is too short.
+            Assert.IsFalse(detector.CancellationDetected(message, options));
 
-            _message = new List<byte>();
-            _message.Add(0x43);
+            message.AddRange(rand.GetRandomData(50));
+            // Test to see if detector returns false under the condition that the message does not contain a cancel bytes.
+            Assert.IsFalse(detector.CancellationDetected(message, options));
 
-            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
+            message.AddRange(Enumerable.Repeat(options.CAN, 9));
+            // Test to see if detector returns false under the condition that the message does not contain enough cancel bytes.
+            Assert.IsFalse(detector.CancellationDetected(message, options));
 
-            _message.AddRange(Enumerable.Repeat((byte) 0x43, 50));
+            for (int i = 0; i < 3; i++) {
+                message.Add(0x43);
+                message.AddRange(Enumerable.Repeat(options.CAN, 9));
+            }
+            // Test to see if detector returns false under the condition that the message does not contain enough cancel bytes
+            // contiguously even though it contains enough overall.
+            Assert.IsFalse(detector.CancellationDetected(message, options));
 
-            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
+            options.CancellationBytesRequired = 5;
+            // Test to see if detector returns true under the condition that the message contains enough cancel bytes contiguously.
+            Assert.IsTrue(detector.CancellationDetected(message, options));
 
-            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
-
-            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
-
-            _message.Add(0x43);
-            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
-            _message.Add(0x43);
-            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
-            _message.Add(0x43);
-            _message.AddRange(Enumerable.Repeat(_options.CAN, 9));
-
-            Assert.IsFalse(_detector.CancellationDetected(_message, _options));
-
-            _options.CancellationBytesRequired = 5;
-
-            Assert.IsTrue(_detector.CancellationDetected(_message, _options));
-
-            _options.CancellationBytesRequired = 10;
-
-            _message.Add(0x43);
-            _message.AddRange(Enumerable.Repeat(_options.CAN, 10));
-
-            Assert.IsTrue(_detector.CancellationDetected(_message, _options));
+            options.CancellationBytesRequired = 10;
+            message.Add(0x43);
+            message.AddRange(Enumerable.Repeat(options.CAN, 10));
+            // Test to see if detector returns true under the condition that the message contains enough cancel bytes contiguously.
+            Assert.IsTrue(detector.CancellationDetected(message, options));
         }
-
     }
-
 }
