@@ -62,8 +62,8 @@
     <Compile Include="RandomDataGenerator.cs" />
     <Compile Include="TestCancellationDetector.cs" />
     <Compile Include="TestChecksumCalculator.cs" />
-    <Compile Include="TestICRCChecksumValidator.cs" />
-    <Compile Include="TestICRCLookupTable.cs" />
+    <Compile Include="TestCRCChecksumValidator.cs" />
+    <Compile Include="TestCRCLookupTable.cs" />
     <Compile Include="TestInvoker.cs" />
     <Compile Include="TestInitializer.cs" />
     <Compile Include="TestNormalValidator.cs" />
