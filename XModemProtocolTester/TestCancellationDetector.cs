@@ -9,7 +9,7 @@ namespace XModemProtocolTester {
     public class TestCancellationDetector {
 
         [Test]
-        public void TestDetector() {
+        public void DetectorTest() {
             var rand = new RandomDataGenerator();
             ICancellationDetector detector = CancellationDetector.Instance;
             var message = new List<byte>();

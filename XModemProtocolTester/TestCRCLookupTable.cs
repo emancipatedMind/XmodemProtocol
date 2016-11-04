@@ -6,7 +6,7 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestCRCLookupTable {
         [Test] 
-        public void TestLookupTable() {
+        public void LookupTableTest() {
             List<int[]> indicesToCheck = new List<int[]> {
                 new int[] { 0, 1, 187, 254, 255, },
                 new int[] { 0, 4129, 5808, 3793, 7920, },

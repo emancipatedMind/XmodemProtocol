@@ -12,7 +12,7 @@ namespace XModemProtocolTester {
     public class TestInitializer {
 
         [Test]
-        public void TestInitializeReceive() {
+        public void InitializeReceiveTest() {
             IContext context = new Context();
             var communicator = new ComSendCollection();
             var cts = new CancellationTokenSource();
@@ -91,7 +91,7 @@ namespace XModemProtocolTester {
         }
 
         [Test] 
-        public void TestInitializeSend() {
+        public void InitializeSendTest() {
             IContext context = new Context();
             var communicator = new ComSendCollection();
             var cts = new CancellationTokenSource();
