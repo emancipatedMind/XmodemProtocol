@@ -6,8 +6,7 @@ using XModemProtocol.Options;
 using XModemProtocol.Validators.Checksum;
 using XModemProtocol.Validators.Packet;
 
-namespace XModemProtocolTester
-{
+namespace XModemProtocolTester {
     [TestFixture]
     public class TestPacketValidator {
         static IXModemProtocolOptions _options = new XModemProtocolOptions();
@@ -34,7 +33,7 @@ namespace XModemProtocolTester
         List<byte> _longPacket;
 
         [Test]
-        public void TestOneKPacketValidator() {
+        public void OneKPacketValidatorTest() {
             _longPacket = new List<byte>(_longPacketHeader);
             _longPacket.AddRange(_longPacketMessage);
             _longPacket.AddRange(_longPacketCRCChecksum);
@@ -49,7 +48,7 @@ namespace XModemProtocolTester
         }
 
         [Test]
-        public void TestNormalPacketValidator() {
+        public void NormalPacketValidatorTest() {
             _shortPacket = new List<byte>(_shortPacketHeader);
             _shortPacket.AddRange(_shortPacketMessage);
             _shortPacket.Add(_shortPacketChecksum);
@@ -64,7 +63,7 @@ namespace XModemProtocolTester
         }
 
         [Test]
-        public void TestCRCPacketValidator() {
+        public void CRCPacketValidatorTest() {
             _shortPacket = new List<byte>(_shortPacketHeader);
             _shortPacket.AddRange(_shortPacketMessage);
             _shortPacket.AddRange(_shortPacketCRCChecksum);
@@ -77,7 +76,5 @@ namespace XModemProtocolTester
             // Test incorrect checksum.
             Assert.AreEqual(ValidationResult.Invalid, _crcValidator.ValidatePacket(_shortPacket, _options));
         }
-
     }
-
 }
