@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using XModemProtocol.Builders;
 using XModemProtocol.Calculators;
 using XModemProtocol.Options;
@@ -8,54 +7,71 @@ using NUnit.Framework;
 namespace XModemProtocolTester {
     [TestFixture]
     public class TestPacketBuilder {
-        IXModemProtocolOptions _options = new XModemProtocolOptions {
-            SenderOneKPacketSize = XModemProtocol.OneKPacketSize.Mixed,
-        };
-        ISummationChecksumCalculator _calculator = new NormalChecksumCalculator();
-        ICRCChecksumCalculator _CRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
-        IPacketBuilder _builder;
-        IEnumerable<byte> shortMessage = Enumerable.Repeat((byte)0x34,127);
-        IEnumerable<byte> longMessage = Enumerable.Repeat((byte)0x34,129);
+
+        static RandomDataGenerator _rdg = new RandomDataGenerator();
 
         [Test]
-        public void TestNormalPacketBuilder() {
-            _builder = new NormalPacketBuilder(_calculator);
-
-            var packets = _builder.GetPackets(shortMessage, _options);
-            Assert.AreEqual(packets[0].Count, 132);
-            Assert.AreEqual(packets.Count, 1);
-
-            packets = _builder.GetPackets(longMessage, _options);
-            Assert.AreEqual(packets[0].Count, 132);
-            Assert.AreEqual(packets.Count, 2);
+        public void NormalPacketBuilderTest() {
+            IPacketBuilder _builder = new NormalPacketBuilder(new NormalChecksumCalculator());
+            IXModemProtocolOptions _options = new XModemProtocolOptions();
+            RunTest(Tuple.Create(_builder, _options, 127)); 
+            RunTest(Tuple.Create(_builder, _options, 129)); 
         }
 
         [Test] 
-        public void TestCRCPacketBuilder() {
-            _builder = new CRCPacketBuilder(_CRCCalculator);
-
-            var packets = _builder.GetPackets(shortMessage, _options);
-            Assert.AreEqual(packets[0].Count, 133);
-            Assert.AreEqual(packets.Count, 1);
-
-            packets = _builder.GetPackets(longMessage, _options);
-            Assert.AreEqual(packets[0].Count, 133);
-            Assert.AreEqual(packets.Count, 2);
+        public void CRCPacketBuilderTest() {
+            var table = new LookUpTable(0x1021);
+            var calculator = new CRCChecksumCalculator(table);
+            IPacketBuilder _builder = new CRCPacketBuilder(calculator);
+            IXModemProtocolOptions _options = new XModemProtocolOptions();
+            RunTest(Tuple.Create(_builder, _options, 127)); 
+            RunTest(Tuple.Create(_builder, _options, 129)); 
         }
 
         [Test] 
-        public void TestOneKPacketBuilder() {
-            _builder = new OneKPacketBuilder(_CRCCalculator);
+        public void OneKPacketBuilderTest() {
+            var table = new LookUpTable(0x1021);
+            var calculator = new CRCChecksumCalculator(table);
+            IPacketBuilder _builder = new OneKPacketBuilder(calculator);
+            IXModemProtocolOptions _options = new XModemProtocolOptions();
+            RunTest(Tuple.Create(_builder, _options, 127)); 
+            RunTest(Tuple.Create(_builder, _options, 129)); 
+            _options = new XModemProtocolOptions {
+                SenderOneKPacketSize = XModemProtocol.OneKPacketSize.Mixed
+            };
+            RunTest(Tuple.Create(_builder, _options, 127)); 
+            RunTest(Tuple.Create(_builder, _options, 129)); 
+        }
 
-            var packets = _builder.GetPackets(shortMessage, _options);
-            Assert.AreEqual(packets[0].Count, 133);
-            Assert.AreEqual(packets.Count, 1);
-            Assert.AreEqual(packets[0][0] , 0x01);
-
-            packets = _builder.GetPackets(longMessage, _options);
-            Assert.AreEqual(packets[0].Count, 1029);
-            Assert.AreEqual(packets.Count, 1);
-            Assert.AreEqual(packets[0][0] , 0x02);
+        void RunTest(Tuple<IPacketBuilder,IXModemProtocolOptions, int> options) {
+            var builder = options.Item1;
+            var testOptions = options.Item2;
+            int dataLength = options.Item3;
+            int packetSize;
+            int payloadSize = 128;
+            byte header = testOptions.SOH;
+            if (builder is NormalPacketBuilder) {
+                packetSize = 132;
+            }
+            else if (builder is CRCPacketBuilder) {
+                packetSize = 133;
+            }
+            else {
+                if (testOptions.SenderOneKPacketSize == XModemProtocol.OneKPacketSize.Mixed
+                    && dataLength < 129) {
+                        packetSize = 133;
+                }
+                else {
+                    packetSize = 1029;
+                    payloadSize = 1024;
+                    header = testOptions.STX;
+                }
+            }
+            var packets = builder.GetPackets(_rdg.GetRandomData(dataLength), testOptions);
+            int packetCount = (int) Math.Ceiling((double) dataLength/payloadSize);
+            Assert.AreEqual(packetCount, packets.Count);
+            Assert.AreEqual(packetSize, packets[0].Count);
+            Assert.AreEqual(header, packets[0][0]);
         }
     }
 }
