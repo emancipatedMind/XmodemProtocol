@@ -12,10 +12,7 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestInvoker {
 
-        static RandomDataGenerator _randomDataGenerator = new RandomDataGenerator {
-            Domain = 0x5E,
-            Offset = 0x20,
-        };
+        static RandomDataGenerator _randomDataGenerator = new RandomDataGenerator();
 
         [Test]
         public void InvokeReceiveTest() {
