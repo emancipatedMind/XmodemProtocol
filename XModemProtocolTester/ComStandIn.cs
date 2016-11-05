@@ -7,7 +7,7 @@ namespace XModemProtocolTester {
     public class ComStandIn : ICommunicator {
 
         public virtual int BytesInReadBuffer => BytesToSend?.Count ?? 0;
-        public virtual List<byte> BytesToSend { get; set; }
+        public virtual List<byte> BytesToSend { get; set; } = new List<byte>();
 
         public List<List<byte>> BytesRead { get; set; } = new List<List<byte>>();
         public void Flush() { }
