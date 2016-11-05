@@ -6,19 +6,19 @@ using XModemProtocol.Validators.Checksum;
 namespace XModemProtocolTester {
     [TestFixture] 
     public class TestNormalValidator {
-        
-        byte[] _collection = new byte[] { 0x00, 0x19, 0x88, 0x33, 0x72, };
 
         [Test] 
-        public void TestNormalChecksumValidator() {
+        public void NormalChecksumValidatorTest() {
             byte validLSB = 0x46;
             byte invalidLSB = 0x95;
-            List<byte> validatedMessage = new List<byte>();
-            validatedMessage.AddRange(_collection);
+            var data = new byte[] { 0x00, 0x19, 0x88, 0x33, 0x72, };
+
+            var validatedMessage = new List<byte>();
+            validatedMessage.AddRange(data);
             validatedMessage.Add(validLSB);
 
-            List<byte> invalidatedMessage = new List<byte>();
-            invalidatedMessage.AddRange(_collection);
+            var invalidatedMessage = new List<byte>();
+            invalidatedMessage.AddRange(data);
             invalidatedMessage.Add(invalidLSB);
 
             IChecksumValidator validator = new NormalChecksumValidator(new NormalChecksumCalculator());
