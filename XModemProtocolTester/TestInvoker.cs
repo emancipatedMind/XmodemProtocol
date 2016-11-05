@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using XModemProtocol;
 using XModemProtocol.Exceptions;
 using XModemProtocol.Operations.Finalize;
 using XModemProtocol.Operations.Invoke;
@@ -11,120 +12,116 @@ namespace XModemProtocolTester {
     [TestFixture] 
     public class TestInvoker {
 
-        private Context _context = new Context();
-        private ComSendCollection _com = new ComSendCollection();
-        private CancellationTokenSource _cts;
-        private IInvoker _invoker;
-        private IFinalizer _finalizer;
-        private List<List<byte>> _sentData;
-        private List<List<byte>> _packets;
-        private IEnumerable<byte> _data;
-        private RandomDataGenerator _randomDataGenerator = new RandomDataGenerator {
+        static RandomDataGenerator _randomDataGenerator = new RandomDataGenerator {
             Domain = 0x5E,
             Offset = 0x20,
         };
 
         [Test]
-        public void TestInvokeReceive() {
-            TestModeForInvokeReceive();
-            _context.Mode = XModemProtocol.XModemMode.CRC;
-            TestModeForInvokeReceive();
-            _context.Mode = XModemProtocol.XModemMode.Checksum;
-            TestModeForInvokeReceive();
+        public void InvokeReceiveTest() {
+            TestModeForInvokeReceive(XModemMode.OneK);
+            TestModeForInvokeReceive(XModemMode.CRC);
+            TestModeForInvokeReceive(XModemMode.Checksum);
         }
 
-        private void TestModeForInvokeReceive() {
-            _data = _randomDataGenerator.GetRandomData(128);
-            RunTestForInvokeReceive();
-            _data = _randomDataGenerator.GetRandomData(130);
-            RunTestForInvokeReceive();
-            _data = _randomDataGenerator.GetRandomData(10000);
-            RunTestForInvokeReceive();
-            _data = _randomDataGenerator.GetRandomData(10240);
-            RunTestForInvokeReceive();
+        private void TestModeForInvokeReceive(XModemMode mode) {
+            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(128), mode);
+            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(130), mode);
+            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(10000), mode);
+            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(10240), mode);
         }
 
-        private void RunTestForInvokeReceive() {
-            _invoker = new InvokeReceive();
-            _finalizer = new FinalizeReceive();
-            _context.Data = new List<byte>();
+        private void RunTestForInvokeReceive(IEnumerable<byte> data, XModemMode mode) {
+            var communicator = new ComSendCollection();
+            IInvoker invoker = new InvokeReceive();
+            IFinalizer finalizer = new FinalizeReceive();
+            IContext context = new Context {
+                Mode = mode,
+                Communicator = communicator,
+            };
 
-            _packets = _context.Tools.Builder.GetPackets(_data, _context.Options);
-            _packets.Add(new List<byte> { _context.Options.EOT });
-            _com.CollectionToSend = _packets;
+            var packets = context.Tools.Builder.GetPackets(data, context.Options);
+            packets.Add(new List<byte> { context.Options.EOT });
+            communicator.CollectionToSend = packets;
 
-            _context.Communicator = _com;
-
-            _invoker.Invoke(_context);
-            _finalizer.Finalize(_context);
-            Assert.AreEqual(_data, _context.Data); 
-            Assert.AreEqual(_packets.GetRange(0, _packets.Count - 1), _context.Packets); 
+            invoker.Invoke(context);
+            finalizer.Finalize(context);
+            Assert.AreEqual(data, context.Data); 
+            Assert.AreEqual(packets.GetRange(0, packets.Count - 1), context.Packets); 
         }
 
-
-        [Test] 
-        public void TestInvokeSend() {
-            _invoker = new InvokeSend();
-            _cts = new CancellationTokenSource();
-            _context.Token = _cts.Token;
-
-            _context.Communicator = _com;
-
-            _data = _randomDataGenerator.GetRandomData(10000);
-            TestMode(XModemProtocol.XModemMode.Checksum);
-            TestMode(XModemProtocol.XModemMode.CRC);
-            TestMode(XModemProtocol.XModemMode.OneK);
+        [Test]
+        public void InvokeSendTest() {
+            TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), XModemMode.Checksum);
+            TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), XModemMode.CRC);
+            TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), XModemMode.OneK);
         }
 
-        private void TestMode(XModemProtocol.XModemMode mode) {
-            _context.Mode = mode;
-            _sentData = new List<List<byte>>(_context.Packets);
-            _sentData.Add(new List<byte> { _context.Options.EOT });
-            _com.BytesToSend = new List<byte> { _context.Options.ACK };
-            _com.BytesRead = new List<List<byte>>();
-            _invoker.Invoke(_context);
-            Assert.AreEqual(_sentData, _com.BytesRead);
-            _com.Flush();
+        private void TestModeForInvokeSend(IEnumerable<byte> _data ,XModemProtocol.XModemMode mode) {
+            IInvoker invoker = new InvokeSend();
+            var cts = new CancellationTokenSource();
+            var communicator = new ComSendCollection();
+            IContext context = new Context {
+                Token = cts.Token,
+                Communicator = communicator,
+                Mode = mode,
+            };
+            var expectedData = new List<List<byte>>(context.Packets);
+            expectedData.Add(new List<byte> { context.Options.EOT });
+            communicator.BytesToSend = new List<byte> { context.Options.ACK };
+            communicator.BytesRead = new List<List<byte>>();
+            invoker.Invoke(context);
+            Assert.AreEqual(expectedData, communicator.BytesRead);
         }
 
         [Test] 
-        public void TestNAKResend() {
-            _cts = new CancellationTokenSource();
-            _context.Token = _cts.Token;
+        public void NAKResendTest() {
+            var cts = new CancellationTokenSource();
+            var communicator = new ComSendCollection();
+            IInvoker invoker = new InvokeSend();
+            IContext context = new Context {
+                Communicator = communicator,
+                Token = cts.Token,
+            };
 
-            _context.Communicator = _com;
+            context.Data = _randomDataGenerator.GetRandomData(10000).ToList();
 
-            _context.Data = _randomDataGenerator.GetRandomData(10000).ToList();
-            var nakCollection = new List<byte> { _context.Options.NAK };
-            var ackCollection = new List<byte> { _context.Options.ACK };
-            var canCollection = Enumerable.Repeat((byte) _context.Options.CAN, _context.Options.CancellationBytesRequired); 
-            _com.CollectionToSend = new List<List<byte>> {
+            // Construct responses.
+            // 1). Refuse first packet twice before accepting.
+            // 2). Refuse second packet.
+            // 3). Send non-sensical byte.
+            // 4). Send cancellation request.
+            var nakCollection = new List<byte> { context.Options.NAK };
+            var ackCollection = new List<byte> { context.Options.ACK };
+            var canCollection = Enumerable.Repeat(context.Options.CAN, context.Options.CancellationBytesRequired); 
+            communicator.CollectionToSend = new List<List<byte>> {
                 nakCollection,
                 nakCollection,
                 ackCollection,
                 nakCollection,
-                new List<byte> { _context.Options.CAN },
+                new List<byte> { context.Options.SUB },
                 canCollection.ToList()
             };
-            _sentData = new List<List<byte>>();
 
+            // Construct expected data to be received.
+            // 1). First packet should be sent thrice.
+            // 2). Second packet should be sent twice.
+            var expectedData = new List<List<byte>>();
             for (int i = 0; i < 3; i++)
-                _sentData.Add(_context.Packets[0]);
-
+                expectedData.Add(context.Packets[0]);
             for (int i = 0; i < 2; i++)
-                _sentData.Add(_context.Packets[1]);
+                expectedData.Add(context.Packets[1]);
 
             bool excThrown = false;
             try {
-                _com.BytesRead = new List<List<byte>>();
-                _invoker = new InvokeSend();
-                _invoker.Invoke(_context);
+                communicator.BytesRead = new List<List<byte>>();
+                invoker.Invoke(context);
             }
             catch (XModemProtocolException ex) {
                 excThrown = ex.AbortArgs.Reason == XModemProtocol.XModemAbortReason.CancellationRequestReceived;
             }
             Assert.IsTrue(excThrown);
-            Assert.AreEqual(_sentData, _com.BytesRead);
+            Assert.AreEqual(expectedData, communicator.BytesRead);
         }
     }
 }
