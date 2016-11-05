@@ -28,7 +28,6 @@
 
         protected override void Initialize() {
             while (Running) {
-                if (ReadBufferContainsAtLeastOnePacketOfData) return;
                 if (_waitHandle.WaitOne(0)) {
                     _waitHandle.Reset();
                     if (ModeIsNotChecksum) {
@@ -43,6 +42,7 @@
                     SendInitializationByte();
                     _timer.Start();
                 }
+                else if (ReadBufferContainsAtLeastOnePacketOfData) return;
             }
         }
 
