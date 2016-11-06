@@ -216,5 +216,12 @@ namespace XModemProtocol {
             }
         }
         #endregion
+
+        #region Finalizer 
+        ~XModemCommunicator() {
+            CancelOperation();
+        }
+        #endregion
+
     }
 }
