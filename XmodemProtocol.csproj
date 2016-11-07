@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\ICommunicator.cs" />
+    <Compile Include="Communication\NullCommunicator.cs" />
     <Compile Include="Detectors\CancellationDetector.cs" />
     <Compile Include="Detectors\ICancellationDetector.cs" />
     <Compile Include="EventData\AbortedEventArgs.cs" />
