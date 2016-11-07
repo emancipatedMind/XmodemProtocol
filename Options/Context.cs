@@ -76,7 +76,8 @@ namespace XModemProtocol.Options {
         public List<byte> Data {
             get { return _data; }
             set {
-                if (value == null || _data.SequenceEqual(value)) return;
+                if (value == null) value = new List<byte>();
+                if (_data.SequenceEqual(value)) return;
                 _data = new List<byte>(value);
                 BuildPackets();
             }
