@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.IO.Ports;
-using System;
 
 namespace XModemProtocol.Communication {
     public class Communicator : ICommunicator {
@@ -12,14 +11,14 @@ namespace XModemProtocol.Communication {
             _port = port;
         }
 
-        public int BytesInReadBuffer => _port.BytesToRead;
+        public virtual int BytesInReadBuffer => _port.BytesToRead;
 
-        public void Flush() {
+        public virtual void Flush() {
             _port.DiscardInBuffer();
             _port.DiscardOutBuffer();
         }
 
-        public List<byte> ReadAllBytes() {
+        public virtual List<byte> ReadAllBytes() {
             List<byte> byteList = new List<byte>();
             byte[] byteArray;
             do {
@@ -32,16 +31,16 @@ namespace XModemProtocol.Communication {
             return byteList;
         }
 
-        public void Write(IEnumerable<byte> buffer) {
+        public virtual void Write(IEnumerable<byte> buffer) {
             byte[] bufferArray = buffer.ToArray();
             _port.Write(bufferArray, 0, bufferArray.Length);
         }
 
-        public void Write(byte buffer) {
+        public virtual void Write(byte buffer) {
             _port.Write(new byte[] { buffer }, 0, 1);
         }
 
-        public byte ReadSingleByte() {
+        public virtual byte ReadSingleByte() {
             return (byte) _port.ReadByte();
         }
     }

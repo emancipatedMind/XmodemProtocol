@@ -9,13 +9,13 @@
         /// Shared option.
         /// Number of CANs sent during an abort.
         /// </summary>
-        public int CANSentDuringAbort { get; set; } = 5;
+        public virtual int CANSentDuringAbort { get; set; } = 5;
 
         /// <summary>
         /// Shared option.
         /// Number of consecutive CANs that will prompt an abort.
         /// </summary>
-        public int CancellationBytesRequired { get; set; } = 5;
+        public virtual int CancellationBytesRequired { get; set; } = 5;
         #endregion
 
         #region XModem Bytes
@@ -25,7 +25,7 @@
         /// Sender begins each 128-byte packet with this header.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte SOH { get; set; } = 0x01;
+        public virtual byte SOH { get; set; } = 0x01;
 
         /// <summary>
         /// Default: 0x02.
@@ -33,7 +33,7 @@
         /// Sender begins each 1024-byte packet with this header.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte STX { get; set; } = 0x02;
+        public virtual byte STX { get; set; } = 0x02;
 
         /// <summary>
         /// Default: 0x06.
@@ -41,7 +41,7 @@
         /// Receiver sends this to indicate packet was received successfully with no errors.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte ACK { get; set; } = 0x06;
+        public virtual byte ACK { get; set; } = 0x06;
 
         /// <summary>
         /// Default: 0x15.
@@ -49,7 +49,7 @@
         /// Receiver sends this to initiate XModem-Checksum file transfer -- OR -- indicate packet errors.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte NAK { get; set; } = 0x15;
+        public virtual byte NAK { get; set; } = 0x15;
 
         /// <summary>
         /// Default: 0x43.
@@ -57,7 +57,7 @@
         /// Receiver sends this to initiate XModem-CRC or XModem-1K file transfer.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte C { get; set; } = 0x43;
+        public virtual byte C { get; set; } = 0x43;
 
         /// <summary>
         /// Default: 0x04.
@@ -65,7 +65,7 @@
         /// Sender sends this to mark the end of file. Receiver must acknowledge receipt of this byte with <ACK>, otherwise Sender resends <EOT> .
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte EOT { get; set; } = 0x04;
+        public virtual byte EOT { get; set; } = 0x04;
 
         /// <summary>
         /// Default: 0x1A.
@@ -73,7 +73,7 @@
         /// This is used as a padding byte in the original specification.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte SUB { get; set; } = 0x1A;
+        public virtual byte SUB { get; set; } = 0x1A;
 
         /// <summary>
         /// Default: 0x18.
@@ -81,7 +81,7 @@
         /// [Commonly used but unofficial] Sender or Receiver sends this byte to abort file transfer.
         /// Exposed in case user needs to customize with non-standard value.
         /// </summary>
-        public byte CAN { get; set; } = 0x18;
+        public virtual byte CAN { get; set; } = 0x18;
         #endregion
 
         #region Sender Options
@@ -90,7 +90,7 @@
         /// Used exclusively by Sender.
         /// Timeout while waiting for initialization byte. Zero and all negative integers means no timeout should occur.
         /// </summary>
-        public int SenderInitializationTimeout { get; set; } = 10000;
+        public virtual int SenderInitializationTimeout { get; set; } = 10000;
         #endregion
 
         #region ReceiverOptions
@@ -99,7 +99,7 @@
         /// Used exclusively by Receiver.
         /// Number of consecutive NAKs that will prompt an abort. 0 signals no abort should occur due to consecutive NAKs.
         /// </summary>
-        public int ReceiverConsecutiveNAKsRequiredForCancellation { get; set; } = 5;
+        public virtual int ReceiverConsecutiveNAKsRequiredForCancellation { get; set; } = 5;
 
         int _receiverInitializationTimeout = 3000;
         /// <summary>
@@ -108,7 +108,7 @@
         /// The time between the initialization bytes sent to initialize transfer.
         /// This must be between 1000ms and 10000ms.
         /// </summary>
-        public int ReceiverInitializationTimeout {
+        public virtual int ReceiverInitializationTimeout {
             get {
                 return _receiverInitializationTimeout;
             }
@@ -129,7 +129,7 @@
         /// After sending a packet, this is the amount of time receiver will wait for a packet before NAKing sender in case response was lost.
         /// Must be between 1000 and 20000ms.
         /// </summary>
-        public int ReceiverTimeoutDuringPacketReception {
+        public virtual int ReceiverTimeoutDuringPacketReception {
             get {
                 return _receiverTimeoutDuringPacketReception;
             }
@@ -149,7 +149,7 @@
         /// Maximum number of initialization bytes to send if using CRC
         /// before falling back to normal XModem. Must be between 1, and 10.
         /// </summary>
-        public int ReceiverMaxNumberOfInitializationBytesForCRC {
+        public virtual int ReceiverMaxNumberOfInitializationBytesForCRC {
             get { return _receiverMaxNumberOfInitializationBytesForCRC; }
             set {
                 if (value < 1)
@@ -171,7 +171,7 @@
         /// If using 1k, this includes the total used
         /// by ReceiverMaxNumberOfInitializationBytesForCRC. 5 minimum.
         /// </summary>
-        public int ReceiverMaxNumberOfInitializationBytesInTotal {
+        public virtual int ReceiverMaxNumberOfInitializationBytesInTotal {
             get { return _receiverMaxNumberOfInitializationBytesInTotal; }
             set {
                 if (value < 5)
@@ -189,7 +189,7 @@
         /// only 1029 bytes long, or build packets that are both 1029
         /// bytes long, and 133 bytes long.
         /// </summary>
-        public OneKPacketSize SenderOneKPacketSize { get; set; } = OneKPacketSize.OneK_Only;
+        public virtual OneKPacketSize SenderOneKPacketSize { get; set; } = OneKPacketSize.OneK_Only;
         #endregion
 
         /// <summary>
