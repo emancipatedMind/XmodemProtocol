@@ -4,9 +4,14 @@ Supports XModem, XModem-1k & XModem-CRC.
 This library can be used to send or receive bytes across a serial line.
 
 ### Properties
+* _**Polynomial**_
+ * Read/Write
+ * _int_  
+ Polynomial used by CRC lookup table. Defaulted to the polynomial X<sup>16</sup> + X<sup>12</sup> + X<sup>5</sup> + 1 (0x1021).
+ 
 * _**Data**_
  * Read/Write
- * _System.Collections.Generic.IEnumerable&lt;byte&gt;_
+ * _System.Collections.Generic.IEnumerable&lt;byte&gt;_  
  Data received from transfer or data to be sent.  
  
 * _**Communicator**_
@@ -32,21 +37,19 @@ This library can be used to send or receive bytes across a serial line.
 * _**Mode**_
  * Read/Write
  * _XModemProtocol.XModemMode_  
- Mode to be used by _XModemProtocol.XModemCommunicator_. If using _Receive_ operation, CRC will upgrade to OneK automatically.  
- * Values
-  * _Checksum_ => Normal XModem mode packet size of 128 using simple checksum.
-  * _CRC_ => Normal XModem packet size of 128 using CRC.
-  * _OneK_ => Implementation of XModem-1k.
- 
+ Mode to be used by _XModemProtocol.XModemCommunicator_. If using _Receive_ operation, CRC will upgrade to OneK automatically.
 
 ### Methods
-* _**Send**_  
+* _**Send**_
+ * _public void Send()_  
  Puts _XModemProtocol.XModemCommuniator_ in the sender role awaiting initialization byte from receiver.
 
-* _**Receive**_  
+* _**Receive**_
+ * _public void Receive()_  
  Puts _XModemProtocol.XModemCommuniator_ in the receiver role sending the initialization byte.
 
-* _**CancelOperation**_  
+* _**CancelOperation**_
+ * _public void CancelOperation()_  
  Cancels operation currently running. No effect if no operation running.
 
 ### Events supported
