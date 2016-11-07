@@ -13,7 +13,16 @@ namespace XModemProtocol.Options {
         IXModemProtocolOptions _options = new XModemProtocolOptions();
         IToolFactory _toolFactory = new XModemToolFactory();
 
-        public ICommunicator Communicator { get; set; }
+        private ICommunicator _communicator = new NullCommunicator();
+        public ICommunicator Communicator {
+            get { return _communicator; }
+            set {
+                if (value == null)
+                    _communicator = new NullCommunicator();
+                else
+                    _communicator = value;
+            }
+        }
 
         public void SendCancel() => Communicator.Write(Enumerable.Repeat(Options.CAN, Options.CANSentDuringAbort));
 

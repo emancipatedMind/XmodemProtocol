@@ -19,7 +19,7 @@ namespace XModemProtocol {
         #endregion
 
         #region Constructors
-        public XModemCommunicator(ICommunicator communicator = null) {
+        public XModemCommunicator(ICommunicator communicator) {
             Communicator = communicator;
             Options = new XModemProtocolOptions();
             _context.PacketsBuilt += (s, e) => {
@@ -34,6 +34,7 @@ namespace XModemProtocol {
         } 
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
+        public XModemCommunicator() : this(new NullCommunicator()) { }
         #endregion
 
         #region Properties
@@ -46,7 +47,14 @@ namespace XModemProtocol {
         /// SerialPort to be used to create an instance of the
         /// XModemProtocol.Communication.Communicator class.
         /// </summary>
-        public SerialPort Port { set { Communicator = new Communicator(value); } }
+        public SerialPort Port {
+            set {
+                if (value == null)
+                    _context.Communicator = null;
+                else
+                    _context.Communicator = new Communicator(value);
+            }
+        }
 
         /// <summary>
         /// Accepts an instance of a class that implements
@@ -190,7 +198,7 @@ namespace XModemProtocol {
             try {
                 if (_context.State != XModemStates.Idle) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.StateNotIdle));
-                if (_context.Communicator == null) 
+                if (_context.Communicator is NullCommunicator) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CommunicatorIsNull));
                 IOperation operation = setup();
                 if (OperationPending != null) 
