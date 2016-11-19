@@ -21,7 +21,6 @@ namespace XModemProtocol {
         #region Constructors
         public XModemCommunicator(ICommunicator communicator) {
             Communicator = communicator;
-            Options = new XModemProtocolOptions();
             _context.PacketsBuilt += (s, e) => {
                 Task.Run(()=> PacketsBuilt?.Invoke(this, e));
             };
