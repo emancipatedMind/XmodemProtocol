@@ -37,6 +37,10 @@ namespace XModemProtocol {
         #endregion
 
         #region Properties
+        /// <summary> 
+        /// Polynomial used CRC lookup table. Defaulted to the polynomial
+        /// X^16 + X^12 + X^5 + 1 (0x1021).
+        /// </summary>
         public int Polynomial {
             get { return _context.Polynomial; }
             set { _context.Polynomial = value; }
@@ -81,6 +85,8 @@ namespace XModemProtocol {
         /// This contains the bytes that XModemProtocol.XModemCommunicator
         /// will use to facilitate transfer along with some other options
         /// to customize how XModemProtocol.XModemCommunicator operates.
+        /// By default, is instance of
+        /// XModemProtocol.Options.XModemProtocolOptions.
         /// </summary>
         public IXModemProtocolOptions Options { set { _context.Options = value; } }
 
@@ -140,7 +146,6 @@ namespace XModemProtocol {
 
         #region Shared Events
         /// <summary>
-        /// Must complete before operation begins.
         /// Fires before the operation begins, and determines whether
         /// operation will run or not. Will not fire if Data contains
         /// no bytes, and performing Send operation.
