@@ -83,9 +83,7 @@ namespace XModemProtocol {
         /// will use to facilitate transfer along with some other options
         /// to customize how XModemProtocol.XModemCommunicator operates.
         /// </summary>
-        public IXModemProtocolOptions Options {
-            set { _context.Options = value; }
-        }
+        public IXModemProtocolOptions Options { set { _context.Options = value; } }
 
         /// <summary>
         /// Mode to be used by XModemProtocol.XModemCommunicator.
@@ -201,8 +199,7 @@ namespace XModemProtocol {
                 if (_context.Communicator is NullCommunicator) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CommunicatorIsNull));
                 IOperation operation = setup();
-                if (OperationPending != null) 
-                    if (OperationPending() == false)
+                if (OperationPending != null && OperationPending() == false)
                         throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CancelledByOperationPendingEvent));
                 _tokenSource = new CancellationTokenSource();
                 _context.Token = _tokenSource.Token;
