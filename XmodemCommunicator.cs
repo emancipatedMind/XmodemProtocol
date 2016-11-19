@@ -19,8 +19,7 @@ namespace XModemProtocol {
         #endregion
 
         #region Constructors
-        public XModemCommunicator(ICommunicator communicator) {
-            Communicator = communicator;
+        public XModemCommunicator() {
             _context.PacketsBuilt += (s, e) => {
                 Task.Run(()=> PacketsBuilt?.Invoke(this, e));
             };
@@ -30,10 +29,12 @@ namespace XModemProtocol {
             _context.ModeUpdated += (s, e) => {
                 Task.Run(()=> ModeUpdated?.Invoke(this, e));
             };
-        } 
+        }
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
-        public XModemCommunicator() : this(new NullCommunicator()) { }
+        public XModemCommunicator(ICommunicator communicator) : this() {
+            Communicator = communicator;
+        } 
         #endregion
 
         #region Properties
