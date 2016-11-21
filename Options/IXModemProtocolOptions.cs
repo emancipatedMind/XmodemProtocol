@@ -1,6 +1,6 @@
 ﻿using System;
 namespace XModemProtocol.Options {
-    public interface IXModemProtocolOptions : ICloneable {
+    public interface IXModemProtocolOptions {
         byte ACK { get; }
         byte C { get; }
         byte CAN { get; }
@@ -18,5 +18,6 @@ namespace XModemProtocol.Options {
         byte SOH { get; }
         byte STX { get; }
         byte SUB { get; }
+        IXModemProtocolOptions Clone();
     }
 }
