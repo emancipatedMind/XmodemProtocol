@@ -196,7 +196,7 @@
         /// A method to perform deep copy of instance.
         /// </summary>
         /// <returns>A deep copy of XModemProtocolReceiverOptions.</returns>
-        public object Clone() {
+        public IXModemProtocolOptions Clone() {
             return new XModemProtocolOptions {
                 // Shared Options
                 ReceiverConsecutiveNAKsRequiredForCancellation = ReceiverConsecutiveNAKsRequiredForCancellation,
