@@ -19,7 +19,9 @@
                 case XModemMode.OneK:
                     return _oneKTool;
                 default:
-                    return null;
+                    string message = "A mode has been added without a"
+                        + " corresponding toolset being created.";
+                    throw new System.ArgumentOutOfRangeException(message);
             }
         }
 
