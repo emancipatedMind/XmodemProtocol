@@ -15,6 +15,7 @@
         #region Fields
         IContext _context = new Context();
         CancellationTokenSource _tokenSource;
+        IXModemProtocolOptions _copy;
         #endregion
 
         #region Constructors
@@ -28,6 +29,7 @@
             _context.ModeUpdated += (s, e) => {
                 Task.Run(()=> ModeUpdated?.Invoke(this, e));
             };
+            _copy = _context.Options.Clone();
         }
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
@@ -88,7 +90,13 @@
         /// By default, is instance of
         /// XModemProtocol.Options.XModemProtocolOptions.
         /// </summary>
-        public IXModemProtocolOptions Options { set { _context.Options = value; } }
+        public IXModemProtocolOptions Options {
+            set {
+                _copy = value;
+                _context.Options = value;
+            }
+            get { return _copy; }
+        }
 
         /// <summary>
         /// Mode to be used by XModemProtocol.XModemCommunicator.
