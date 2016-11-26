@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace XModemProtocol.Detectors {
+﻿namespace XModemProtocol.Detectors {
     using Options;
+    using System.Collections.Generic;
+    using System.Linq;
     public class CancellationDetector : ICancellationDetector {
 
         static CancellationDetector _instance = new CancellationDetector();

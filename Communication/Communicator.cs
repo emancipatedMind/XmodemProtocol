@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.IO.Ports;
-
-namespace XModemProtocol.Communication {
+﻿namespace XModemProtocol.Communication {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.IO.Ports;
     public class Communicator : ICommunicator {
 
         SerialPort _port;

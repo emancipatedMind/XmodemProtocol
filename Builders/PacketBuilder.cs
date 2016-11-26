@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace XModemProtocol.Builders {
-    using Options;
+﻿namespace XModemProtocol.Builders {
     using Calculators;
+    using Options;
+    using System.Collections.Generic;
+    using System.Linq;
     public abstract class PacketBuilder : IPacketBuilder {
         protected int _position;
         protected int _packetSize;

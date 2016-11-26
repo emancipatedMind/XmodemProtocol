@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace XModemProtocol.Validators.Checksum {
+﻿namespace XModemProtocol.Validators.Checksum {
     using Calculators;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class CRCChecksumValidator : ICRCChecksumValidator {
 
         /// <summary>

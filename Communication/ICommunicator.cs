@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace XModemProtocol.Communication {
+﻿namespace XModemProtocol.Communication {
+    using System.Collections.Generic;
     public interface ICommunicator {
         void Write(byte buffer);
         void Write(IEnumerable<byte> buffer);

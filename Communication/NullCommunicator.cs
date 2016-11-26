@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace XModemProtocol.Communication {
+﻿namespace XModemProtocol.Communication {
+    using System.Collections.Generic;
     public class NullCommunicator : ICommunicator {
         public int BytesInReadBuffer => 0;
         public void Flush() { }

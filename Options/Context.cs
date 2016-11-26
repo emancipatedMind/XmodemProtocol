@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-
-namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Options {
+    using Communication;
     using EventData;
     using Factories;
     using Factories.Tools;
-    using Communication;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     public class Context : IContext {
 
         IXModemProtocolOptions _options = new XModemProtocolOptions();

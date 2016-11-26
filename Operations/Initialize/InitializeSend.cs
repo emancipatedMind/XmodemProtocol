@@ -1,7 +1,6 @@
-﻿using System.Linq;
-
-namespace XModemProtocol.Operations.Initialize {
+﻿namespace XModemProtocol.Operations.Initialize {
     using Exceptions;
+    using System.Linq;
     public class InitializeSend : Initializer {
 
         private byte _latestResponse;

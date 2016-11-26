@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace XModemProtocol.EventData {
+﻿namespace XModemProtocol.EventData {
+    using System;
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.StateUpdated event.
     /// </summary>

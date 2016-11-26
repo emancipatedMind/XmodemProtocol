@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Ports;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace XModemProtocol {
+﻿namespace XModemProtocol {
     using Communication;
     using EventData;
     using Exceptions;
     using Operations;
     using Options;
+    using System;
+    using System.Collections.Generic;
+    using System.IO.Ports;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     public class XModemCommunicator {
 
         #region Fields

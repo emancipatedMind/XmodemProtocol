@@ -1,7 +1,6 @@
-﻿using System.Threading;
-
-namespace XModemProtocol.Operations.Initialize {
+﻿namespace XModemProtocol.Operations.Initialize {
     using Options;
+    using System.Threading;
     public abstract class Initializer : IInitializer {
 
         protected IContext _context;

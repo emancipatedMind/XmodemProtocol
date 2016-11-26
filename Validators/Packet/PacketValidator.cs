@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
+﻿
 namespace XModemProtocol.Validators.Packet {
     using Checksum;
     using Options;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class PacketValidator : IPacketValidator {
 
         private IValidateChecksum _validator;

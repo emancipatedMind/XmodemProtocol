@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-
-namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Options {
     using EventData;
     using Factories.Tools;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
     public interface IContext {
         void SendCancel();
         XModemStates State { get; set; }

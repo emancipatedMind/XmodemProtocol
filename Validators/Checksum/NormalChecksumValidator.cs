@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace XModemProtocol.Validators.Checksum {
+﻿namespace XModemProtocol.Validators.Checksum {
     using Calculators;
-    public class NormalChecksumValidator : IChecksumValidator {
+    using System.Collections.Generic;
+    using System.Linq;
 
+    public class NormalChecksumValidator : IChecksumValidator {
         IChecksumCalculator _calculator;
         byte _calculatedChecksum;
         byte _checksumReceived;

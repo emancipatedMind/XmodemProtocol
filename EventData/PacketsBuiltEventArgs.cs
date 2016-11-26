@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace XModemProtocol.EventData {
+﻿namespace XModemProtocol.EventData {
+    using System.Collections.Generic;
     /// <summary>
     /// Provides data for the XModemProtocol.XModemCommunicator.PacketsBuilt event.
     /// </summary>

@@ -1,5 +1,4 @@
-﻿using System;
-namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Options {
     public interface IXModemProtocolOptions {
         byte ACK { get; }
         byte C { get; }

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace XModemProtocol.Calculators {
+﻿namespace XModemProtocol.Calculators {
+    using System.Collections.Generic;
     public interface IChecksumCalculator {
         IEnumerable<byte> CalculateChecksum(IEnumerable<byte> input);
     }
