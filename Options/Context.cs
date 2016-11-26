@@ -1,5 +1,6 @@
 ﻿namespace XModemProtocol.Options {
     using Communication;
+    using Configuration;
     using EventData;
     using Factories;
     using Factories.Tools;
@@ -68,7 +69,7 @@
             else Packets = new List<List<byte>>();
         }
 
-        private XModemMode _mode = XModemMode.OneK;
+        private XModemMode _mode = XModemProtocolConfigurationSection.Settings.Mode.Value;
         public XModemMode Mode {
             get { return _mode; }
             set {

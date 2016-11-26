@@ -1,7 +1,8 @@
 ﻿namespace XModemProtocol.Factories {
-    using Tools;
     using Builders;
     using Calculators;
+    using Configuration;
+    using Tools;
     using Validators.Packet;
     using Validators.Checksum;
     public class XModemToolFactory : IToolFactory {
@@ -38,7 +39,7 @@
             }
         }
 
-        LookUpTable _table = new LookUpTable(0x1021);
+        LookUpTable _table;
         NormalChecksumCalculator _calculator = new NormalChecksumCalculator();
 
         NormalChecksumValidator _normalChecksumValidator;
@@ -53,6 +54,8 @@
         OneKPacketBuilder _oneKPacketBuilder;
 
         public XModemToolFactory() {
+            int polynomial = XModemProtocolConfigurationSection.Settings.Polynomial.Value;
+            _table = new LookUpTable(polynomial);
             _normalChecksumValidator = new NormalChecksumValidator(_calculator);
             _validator = new PacketValidator(_normalChecksumValidator);
             _normalPacketBuilder = new NormalPacketBuilder(_calculator);

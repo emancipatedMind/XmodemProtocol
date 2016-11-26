@@ -1,5 +1,6 @@
 ﻿namespace XModemProtocol.Builders {
     using Calculators;
+    using Options;
     public class OneKPacketBuilder : PacketBuilder {
 
         public OneKPacketBuilder(ICRCChecksumCalculator calculator) :

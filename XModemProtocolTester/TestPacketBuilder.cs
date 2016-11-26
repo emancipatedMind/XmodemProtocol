@@ -37,7 +37,7 @@ namespace XModemProtocolTester {
             RunTest(Tuple.Create(_builder, _options, 127)); 
             RunTest(Tuple.Create(_builder, _options, 129)); 
             _options = new XModemProtocolOptions {
-                SenderOneKPacketSize = XModemProtocol.OneKPacketSize.Mixed
+                SenderOneKPacketSize = OneKPacketSize.Mixed
             };
             RunTest(Tuple.Create(_builder, _options, 127)); 
             RunTest(Tuple.Create(_builder, _options, 129)); 
@@ -57,7 +57,7 @@ namespace XModemProtocolTester {
                 packetSize = 133;
             }
             else {
-                if (testOptions.SenderOneKPacketSize == XModemProtocol.OneKPacketSize.Mixed
+                if (testOptions.SenderOneKPacketSize == OneKPacketSize.Mixed
                     && dataLength < 129) {
                         packetSize = 133;
                 }

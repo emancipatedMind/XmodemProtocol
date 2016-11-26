@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,6 +44,26 @@
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\ICommunicator.cs" />
     <Compile Include="Communication\NullCommunicator.cs" />
+    <Compile Include="Configuration\Elements\CANElement.cs" />
+    <Compile Include="Configuration\Elements\ReceiverConsecutiveNAKsRequiredForCancellationElement.cs" />
+    <Compile Include="Configuration\Elements\ReceiverMaxNumberOfInitializationBytesInTotal.cs" />
+    <Compile Include="Configuration\Elements\ReceiverTimeoutDuringPacketReceptionElement.cs" />
+    <Compile Include="Configuration\Elements\ReceiverInitializationTimeoutElement.cs" />
+    <Compile Include="Configuration\Elements\SUBElement.cs" />
+    <Compile Include="Configuration\Elements\EOTElement.cs" />
+    <Compile Include="Configuration\Elements\CElement.cs" />
+    <Compile Include="Configuration\Elements\NAKElement.cs" />
+    <Compile Include="Configuration\Elements\ACKElement.cs" />
+    <Compile Include="Configuration\Elements\STXElement.cs" />
+    <Compile Include="Configuration\Elements\SOHElement.cs" />
+    <Compile Include="Configuration\Elements\CancellationBytesRequiredElement.cs" />
+    <Compile Include="Configuration\Elements\CANSentDuringAbortElement.cs" />
+    <Compile Include="Configuration\Elements\SenderInitializationTimeoutElement.cs" />
+    <Compile Include="Configuration\Elements\SenderOneKPacketSizeElement.cs" />
+    <Compile Include="Configuration\Elements\ModeElement.cs" />
+    <Compile Include="Configuration\Elements\PolynomialElement.cs" />
+    <Compile Include="Configuration\Elements\ReceiverMaxNumberOfInitializationBytesForCRC.cs" />
+    <Compile Include="Configuration\XModemProtocolConfigurationSection.cs" />
     <Compile Include="Detectors\CancellationDetector.cs" />
     <Compile Include="Detectors\ICancellationDetector.cs" />
     <Compile Include="EventData\AbortedEventArgs.cs" />
@@ -57,7 +78,7 @@
     <Compile Include="Factories\Tools\IXModemTools.cs" />
     <Compile Include="Factories\Tools\XModemTool.cs" />
     <Compile Include="Factories\XModemToolFactory.cs" />
-    <Compile Include="OneKPacketSizeEnum.cs" />
+    <Compile Include="Options\OneKPacketSizeEnum.cs" />
     <Compile Include="Operations\Finalize\Finalizer.cs" />
     <Compile Include="Operations\Finalize\FinalizeReceive.cs" />
     <Compile Include="Operations\Finalize\FinalizeSend.cs" />
