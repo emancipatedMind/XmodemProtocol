@@ -9,7 +9,6 @@
     using System.IO.Ports;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
     public class XModemCommunicator {
 
         #region Fields
@@ -21,13 +20,13 @@
         #region Constructors
         public XModemCommunicator() {
             _context.PacketsBuilt += (s, e) => {
-                Task.Run(()=> PacketsBuilt?.Invoke(this, e));
+                PacketsBuilt?.Invoke(this, e);
             };
             _context.StateUpdated += (s, e) => {
-                Task.Run(()=> StateUpdated?.Invoke(this, e));
+                StateUpdated?.Invoke(this, e);
             };
             _context.ModeUpdated += (s, e) => {
-                Task.Run(()=> ModeUpdated?.Invoke(this, e));
+                ModeUpdated?.Invoke(this, e);
             };
             _copy = _context.Options.Clone();
         }
