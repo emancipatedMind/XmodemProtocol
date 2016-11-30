@@ -207,6 +207,7 @@
             try {
                 if (_context.State != XModemStates.Idle) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.StateNotIdle));
+                _context.State = XModemStates.Initializing;
                 if (_context.Communicator is NullCommunicator) 
                     throw new XModemProtocolException(new AbortedEventArgs(XModemAbortReason.CommunicatorIsNull));
                 IOperation operation = setup();
