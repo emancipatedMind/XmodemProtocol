@@ -14,7 +14,6 @@
         #region Fields
         IContext _context = new Context();
         CancellationTokenSource _tokenSource;
-        IXModemProtocolOptions _copy;
         #endregion
 
         #region Constructors
@@ -28,7 +27,6 @@
             _context.ModeUpdated += (s, e) => {
                 ModeUpdated?.Invoke(this, e);
             };
-            _copy = _context.Options.Clone();
         }
 
         public XModemCommunicator(SerialPort port) : this(new Communicator(port)) { }
@@ -90,11 +88,8 @@
         /// XModemProtocol.Options.XModemProtocolOptions.
         /// </summary>
         public IXModemProtocolOptions Options {
-            set {
-                _copy = value;
-                _context.Options = value;
-            }
-            get { return _copy; }
+            set { _context.Options = value; }
+            get { return _context.Options; }
         }
 
         /// <summary>

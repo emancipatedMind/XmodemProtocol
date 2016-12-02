@@ -38,7 +38,7 @@
             get { return _options; }
             set {
                 if (value == null) value = new XModemProtocolOptions();
-                _options = value.Clone();
+                _options = value;
             }
         }
 
