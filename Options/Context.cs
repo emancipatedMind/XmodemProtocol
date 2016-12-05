@@ -57,16 +57,16 @@
             }
         }
 
-        public List<List<byte>> Packets { get; private set; } = new List<List<byte>>();
+        public List<List<byte>> Packets { get; } = new List<List<byte>>();
 
         public CancellationToken Token { get; set; }
 
         public void BuildPackets() {
+            Packets.Clear();
             if (_data.Count > 1) {
-                Packets = Tools.Builder.GetPackets(_data, Options);
+                Packets.AddRange(Tools.Builder.GetPackets(_data, Options));
                 PacketsBuilt?.Invoke(this, new PacketsBuiltEventArgs(Packets));
             }
-            else Packets = new List<List<byte>>();
         }
 
         private XModemMode _mode = XModemProtocolConfigurationSection.Settings.Mode.Value;
