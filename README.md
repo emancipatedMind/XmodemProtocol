@@ -25,7 +25,7 @@ This library can be used to send or receive bytes across a serial line.
  _SerialPort_ to be used to create an instance of the _XModemProtocol.Communication.Communicator_ class.
 
 * _**Options**_
- * Write Only
+ * Read/Write
  * _XModemProtocol.Options.IXModemProtocolOptions_  
  Accepts an instance of a class that implements the _XModemProtocol.Options.IXModemProtocolOptions_ interface. This contains the bytes that _XModemProtocol.XModemCommunicator_ will use to facilitate transfer along with some other options to customize how _XModemProtocol.XModemCommunicator_ operates. By default, is instance of _XModemProtocol.Options.XModemProtocolOptions_.
 
@@ -46,7 +46,7 @@ This library can be used to send or receive bytes across a serial line.
 
 * _**Receive**_
  * _public void Receive()_  
- Puts _XModemProtocol.XModemCommuniator_ in the receiver role sending the initialization byte.
+ Puts _XModemProtocol.XModemCommunicator_ in the receiver role sending the initialization byte.
 
 * _**CancelOperation**_
  * _public void CancelOperation()_  
