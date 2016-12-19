@@ -77,6 +77,39 @@ This library can be used to send or receive bytes across a serial line.
 * _**OperationPending**_  
  Fires before the operation begins, and determines whether operation will run or not. _**Will not fire if Data contains no bytes, and performing _Send_ operation.**_
  
+### Configuration
+
+XModemProtocol.XModemCommunicator.Mode, XModemProtocol.XModemCommunicator.Polynomial, and all members of XModemProtocol.Options.IXModemProtocolOptions may now be set in the configuration file.
+
+    <?xml version="1.0" encoding="utf-8" ?>
+    <configuration>
+      <configSections>
+        <section name="XModemProtocolConfiguration" type="XModemProtocol.Configuration.XModemProtocolConfigurationSection, XModemProtocol" />
+      </configSections>
+      <XModemProtocolConfiguration>
+        <Polynomial value="4129"/>
+        <Mode value="OneK"/>
+        <CANSentDuringAbort value="5"/>
+        <CancellationBytesRequired value="5"/>
+        <SenderOneKPacketSize value="OneKOnly"/>
+        <SenderInitializationTimeout value="10000"/>
+        <SOH value="1"/>
+        <STX value="2"/>
+        <ACK value="6"/>
+        <NAK value="21"/>
+        <C value="67"/>
+        <EOT value="4"/>
+        <SUB value="26"/>
+        <CAN value="24"/>
+        <ReceiverConsecutiveNAKsRequiredForCancellation value="5"/>
+        <ReceiverInitializationTimeout value="3000"/>
+        <ReceiverTimeoutDuringPacketReception value="10000"/>
+        <ReceiverMaxNumberOfInitializationBytesForCRC value="3"/>
+        <ReceiverMaxNumberOfInitializationBytesInTotal value="10"/>
+      </XModemProtocolConfiguration>
+    </configuration>
+
+ 
 ### Simple Send Example
 
     using XModemProtocol;
