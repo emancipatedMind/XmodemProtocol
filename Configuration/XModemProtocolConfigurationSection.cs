@@ -3,11 +3,13 @@
     using Elements;
     public class XModemProtocolConfigurationSection : ConfigurationSection {
 
+        private static XModemProtocolConfigurationSection _instance;
+
         private XModemProtocolConfigurationSection() { }
 
         public static XModemProtocolConfigurationSection Settings { get; } =
-            ConfigurationManager.GetSection("XModemProtocolConfiguration")
-            as XModemProtocolConfigurationSection ?? new XModemProtocolConfigurationSection(); 
+            ConfigurationManager.GetSection("XModemProtocolConfiguration") as XModemProtocolConfigurationSection
+            ?? (_instance ?? (_instance = new XModemProtocolConfigurationSection())); 
 
         [ConfigurationProperty("Polynomial")]
         public PolynomialElement Polynomial {
