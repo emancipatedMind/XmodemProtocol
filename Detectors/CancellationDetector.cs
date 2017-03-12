@@ -7,7 +7,7 @@
         static CancellationDetector _instance = new CancellationDetector();
         public static CancellationDetector Instance => _instance;
 
-        List<byte> _input;
+        byte[] _input;
         List<int> _indicesOfCAN;
         IXModemProtocolOptions _options;
 
@@ -15,7 +15,7 @@
 
         public bool CancellationDetected(IEnumerable<byte> input , IXModemProtocolOptions options) {
             lock(this) {
-                _input = input.ToList();
+                _input = input.ToArray();
                 _options = options;
                 if (DetectionIsUnnecessary) return false;
                 GetIndicesOfCANBytes();
@@ -29,7 +29,7 @@
 
         private void GetIndicesOfCANBytes() {
             _indicesOfCAN = new List<int>();
-            for (int index = 0; index < _input.Count; index++)
+            for (int index = 0; index < _input.Length; index++)
                 if (_input[index] == _options.CAN)
                     _indicesOfCAN.Add(index);
         }
