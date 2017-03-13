@@ -16,7 +16,7 @@ namespace XModemProtocol.Operations.Invoke {
 
         public void Invoke(IContext context) {
             _context = context;
-            _detector = CancellationDetector.Instance;
+            _detector = new CancellationDetector();
             Invoke();
         }
 

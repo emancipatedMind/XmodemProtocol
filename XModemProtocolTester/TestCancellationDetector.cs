@@ -11,7 +11,7 @@ namespace XModemProtocolTester {
         [Test]
         public void DetectorTest() {
             var rand = new RandomDataGenerator();
-            ICancellationDetector detector = CancellationDetector.Instance;
+            ICancellationDetector detector = new CancellationDetector();
             var message = new List<byte>();
             XModemProtocolOptions options = new XModemProtocolOptions {
                 CancellationBytesRequired = 10

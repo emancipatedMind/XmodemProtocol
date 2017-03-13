@@ -4,25 +4,18 @@
     using System.Linq;
     public class CancellationDetector : ICancellationDetector {
 
-        static CancellationDetector _instance = new CancellationDetector();
-        public static CancellationDetector Instance => _instance;
-
         byte[] _input;
         List<int> _indicesOfCAN;
         IXModemProtocolOptions _options;
 
-        private CancellationDetector() { }
-
         public bool CancellationDetected(IEnumerable<byte> input , IXModemProtocolOptions options) {
-            lock(this) {
-                _input = input.ToArray();
-                _options = options;
-                if (DetectionIsUnnecessary) return false;
-                GetIndicesOfCANBytes();
-                if (CountOfCANBytesAreInsufficient) return false;
-                if (CancellationConditionFound) return true;
-                return false;
-            }
+            _input = input.ToArray();
+            _options = options;
+            if (DetectionIsUnnecessary) return false;
+            GetIndicesOfCANBytes();
+            if (CountOfCANBytesAreInsufficient) return false;
+            if (CancellationConditionFound) return true;
+            return false;
         }
 
         private bool DetectionIsUnnecessary => _options.CancellationBytesRequired < 1;
