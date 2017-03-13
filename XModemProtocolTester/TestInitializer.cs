@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using XModemProtocol.Environment;
 using XModemProtocol.Exceptions;
 using XModemProtocol.Operations.Initialize;
 using XModemProtocol.Options;

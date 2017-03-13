@@ -1,5 +1,5 @@
 ﻿namespace XModemProtocol.Operations.Finalize {
-    using Options;
+    using Environment;
     public abstract class Finalizer : IFinalizer {
 
         protected IContext _context;

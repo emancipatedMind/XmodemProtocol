@@ -1,5 +1,5 @@
 ﻿namespace XModemProtocol.Operations {
-    using Options;
+    using Environment;
     using Operations.Finalize;
     using Operations.Initialize;
     using Operations.Invoke;

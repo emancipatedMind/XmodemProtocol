@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace XModemProtocol.Operations.Invoke {
+    using Environment;
     using EventData;
     using Exceptions;
-    using Options;
     using Detectors;
     public abstract class Invoker : IInvoker {
         protected IContext _context;

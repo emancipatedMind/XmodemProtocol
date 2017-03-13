@@ -1,5 +1,6 @@
 ﻿namespace XModemProtocol {
     using Communication;
+    using Environment;
     using EventData;
     using Exceptions;
     using Operations;

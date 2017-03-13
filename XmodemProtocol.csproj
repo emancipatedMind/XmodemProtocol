@@ -94,8 +94,8 @@
     <Compile Include="Operations\Operation.cs" />
     <Compile Include="Operations\ReceiveOperation.cs" />
     <Compile Include="Operations\SendOperation.cs" />
-    <Compile Include="Options\Context.cs" />
-    <Compile Include="Options\IContext.cs" />
+    <Compile Include="Environment\Context.cs" />
+    <Compile Include="Environment\IContext.cs" />
     <Compile Include="Options\IXModemProtocolOptions.cs" />
     <Compile Include="Operations\Initialize\InitializeSend.cs" />
     <Compile Include="Options\XModemProtocolOptions.cs" />

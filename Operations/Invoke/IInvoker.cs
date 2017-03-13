@@ -3,7 +3,7 @@
 namespace XModemProtocol.Operations.Invoke {
     using EventData;
     public interface IInvoker {
-        void Invoke(Options.IContext context);
+        void Invoke(Environment.IContext context);
         event EventHandler<PacketToSendEventArgs> PacketToSend;
         event EventHandler<PacketReceivedEventArgs> PacketReceived;
     }

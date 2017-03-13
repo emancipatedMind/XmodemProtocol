@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using XModemProtocol.Communication;
-using XModemProtocol.Factories.Tools;
+using XModemProtocol.Environment;
 using XModemProtocol.Operations;
-using XModemProtocol.Options;
 
 namespace XModemProtocolTester {
     [TestFixture] 

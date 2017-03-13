@@ -1,5 +1,5 @@
 ﻿namespace XModemProtocol.Operations.Initialize {
-    using Options;
+    using Environment;
     using System.Threading;
     public abstract class Initializer : IInitializer {
 

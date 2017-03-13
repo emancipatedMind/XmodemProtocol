@@ -1,6 +1,7 @@
-﻿namespace XModemProtocol.Options {
+﻿namespace XModemProtocol.Environment {
     using EventData;
     using Factories.Tools;
+    using Options;
     using System;
     using System.Collections.Generic;
     using System.Threading;

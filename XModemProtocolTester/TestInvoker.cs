@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using XModemProtocol;
+using XModemProtocol.Environment;
 using XModemProtocol.Exceptions;
 using XModemProtocol.Operations.Finalize;
 using XModemProtocol.Operations.Invoke;
-using XModemProtocol.Options;
 
 namespace XModemProtocolTester {
     [TestFixture] 

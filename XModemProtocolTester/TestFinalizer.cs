@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using XModemProtocol.Options;
+using XModemProtocol.Environment;
 using XModemProtocol.Operations.Finalize;
 
 namespace XModemProtocolTester {
