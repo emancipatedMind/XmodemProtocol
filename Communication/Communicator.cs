@@ -26,7 +26,7 @@
                 byteArray = new byte[bytesToRead];
                 Port.Read(byteArray, 0, bytesToRead);
                 byteList.AddRange(byteArray);
-                System.Threading.Tasks.Task.Delay(10); 
+                System.Threading.Tasks.Task.Delay(10).Wait();
             } while (Port.BytesToRead > 0);
             return byteList;
         }
