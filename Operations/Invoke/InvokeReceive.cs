@@ -41,6 +41,7 @@ namespace XModemProtocol.Operations.Invoke {
                     SendNAK();
                     Reset();
                     ResetWatchDog();
+                    StartWatchDog();
                     continue;
                 }
                 else continue;
@@ -65,6 +66,7 @@ namespace XModemProtocol.Operations.Invoke {
                 else SendNAK();
 
                 Reset();
+                StartWatchDog();
             }
         }
 
@@ -123,10 +125,7 @@ namespace XModemProtocol.Operations.Invoke {
             _context.Communicator.Write(_context.Options.NAK);
         }
 
-        private bool ConsecutiveNAKsAboveLimit => ++_consecutiveNAKs >= _context.Options.ReceiverConsecutiveNAKsRequiredForCancellation;
-
-        protected void FirePacketReceivedEvent() {
-            base.FirePacketReceivedEvent(++_packetNumber, _packet);
-        }
+        private bool ConsecutiveNAKsAboveLimit => _consecutiveNAKs++ >= _context.Options.ReceiverConsecutiveNAKsRequiredForCancellation;
+        protected void FirePacketReceivedEvent() => base.FirePacketReceivedEvent(++_packetNumber, _packet);
     }
 }

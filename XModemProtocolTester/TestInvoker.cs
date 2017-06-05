@@ -9,30 +9,29 @@ using XModemProtocol.Operations.Finalize;
 using XModemProtocol.Operations.Invoke;
 
 namespace XModemProtocolTester {
-    [TestFixture] 
+    [TestFixture]
     public class TestInvoker {
 
         static RandomDataGenerator _randomDataGenerator = new RandomDataGenerator();
+        XModemMode[] _modes = (XModemMode[])System.Enum.GetValues(typeof(XModemMode));
 
         [Test]
         public void InvokeReceiveTest() {
-            TestModeForInvokeReceive(XModemMode.OneK);
-            TestModeForInvokeReceive(XModemMode.CRC);
-            TestModeForInvokeReceive(XModemMode.Checksum);
+            foreach(var m in _modes)
+                TestModeForInvokeReceive(m);
         }
 
         private void TestModeForInvokeReceive(XModemMode mode) {
-            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(128), mode);
-            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(130), mode);
-            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(10000), mode);
-            RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(10240), mode);
+            int[] values = new int[] { 128, 130, 10000, 10240 };
+            foreach(var v in values)
+                RunTestForInvokeReceive(_randomDataGenerator.GetRandomData(v), mode);
         }
 
         private void RunTestForInvokeReceive(IEnumerable<byte> data, XModemMode mode) {
             var communicator = new ComSendCollection();
-            IInvoker invoker = new InvokeReceive();
-            IFinalizer finalizer = new FinalizeReceive();
-            IContext context = new Context {
+            var invoker = new InvokeReceive();
+            var finalizer = new FinalizeReceive();
+            var context = new Context {
                 Mode = mode,
                 Communicator = communicator,
             };
@@ -43,22 +42,21 @@ namespace XModemProtocolTester {
 
             invoker.Invoke(context);
             finalizer.Finalize(context);
-            Assert.AreEqual(data, context.Data); 
-            Assert.AreEqual(packets.GetRange(0, packets.Count - 1), context.Packets); 
+            Assert.AreEqual(data, context.Data);
+            Assert.AreEqual(packets.GetRange(0, packets.Count - 1), context.Packets);
         }
 
         [Test]
         public void InvokeSendTest() {
-            TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), XModemMode.Checksum);
-            TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), XModemMode.CRC);
-            TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), XModemMode.OneK);
+            foreach(var m in _modes)
+                TestModeForInvokeSend(_randomDataGenerator.GetRandomData(10000), m);
         }
 
-        private void TestModeForInvokeSend(IEnumerable<byte> _data ,XModemProtocol.XModemMode mode) {
-            IInvoker invoker = new InvokeSend();
+        private void TestModeForInvokeSend(IEnumerable<byte> _data, XModemMode mode) {
+            var invoker = new InvokeSend();
             var cts = new CancellationTokenSource();
             var communicator = new ComSendCollection();
-            IContext context = new Context {
+            var context = new Context {
                 Token = cts.Token,
                 Communicator = communicator,
                 Mode = mode,
@@ -71,12 +69,12 @@ namespace XModemProtocolTester {
             Assert.AreEqual(expectedData, communicator.BytesRead);
         }
 
-        [Test] 
+        [Test]
         public void NAKResendTest() {
             var cts = new CancellationTokenSource();
             var communicator = new ComSendCollection();
-            IInvoker invoker = new InvokeSend();
-            IContext context = new Context {
+            var invoker = new InvokeSend();
+            var context = new Context {
                 Communicator = communicator,
                 Token = cts.Token,
             };
@@ -90,7 +88,7 @@ namespace XModemProtocolTester {
             // 4). Send cancellation request.
             var nakCollection = new List<byte> { context.Options.NAK };
             var ackCollection = new List<byte> { context.Options.ACK };
-            var canCollection = Enumerable.Repeat(context.Options.CAN, context.Options.CancellationBytesRequired); 
+            var canCollection = Enumerable.Repeat(context.Options.CAN, context.Options.CancellationBytesRequired);
             communicator.CollectionToSend = new List<List<byte>> {
                 nakCollection,
                 nakCollection,
@@ -115,10 +113,67 @@ namespace XModemProtocolTester {
                 invoker.Invoke(context);
             }
             catch (XModemProtocolException ex) {
-                excThrown = ex.AbortArgs.Reason == XModemProtocol.XModemAbortReason.CancellationRequestReceived;
+                excThrown = ex.AbortArgs.Reason == XModemAbortReason.CancellationRequestReceived;
             }
             Assert.IsTrue(excThrown);
             Assert.AreEqual(expectedData, communicator.BytesRead);
+        }
+
+        [Test]
+        public void InvokeReceive_Invoke_SenderNeverResponds_XModemProtocolExceptionThrownAfterConsecutiveNAKsSent() {
+            var cts = new CancellationTokenSource();
+            var communicator = new ComSendCollection();
+            var invoker = new InvokeReceive();
+            var options = new XModemProtocol.Options.XModemProtocolOptions() {
+                ReceiverTimeoutDuringPacketReception = 500,
+                ReceiverConsecutiveNAKsRequiredForCancellation = 3,
+            };
+            var context = new Context {
+                Communicator = communicator,
+                Token = cts.Token,
+                Options = options,
+            };
+
+            var expectedData = new List<List<byte>>();
+            for (int i = 0; i < options.ReceiverConsecutiveNAKsRequiredForCancellation; i++) {
+                expectedData.Add(new List<byte> { options.NAK });
+            }
+
+            Assert.Throws<XModemProtocolException>(() => invoker.Invoke(context));
+            for (int i = 0; i < expectedData.Count; i++) {
+                Assert.IsTrue(communicator.BytesRead[i].SequenceEqual(expectedData[i]));
+            }
+        }
+
+        [Test]
+        public void InvokeReceive_Invoke_SenderRespondsOnlyTwice_XModemProtocolExceptionThrownAfterConsecutiveNAKsSent() {
+            var cts = new CancellationTokenSource();
+            var communicator = new ComSendCollection();
+            var invoker = new InvokeReceive();
+            var options = new XModemProtocol.Options.XModemProtocolOptions() {
+                ReceiverTimeoutDuringPacketReception = 500,
+                ReceiverConsecutiveNAKsRequiredForCancellation = 3,
+            };
+            var context = new Context {
+                Communicator = communicator,
+                Token = cts.Token,
+                Options = options,
+            };
+            List<byte> data = _randomDataGenerator.GetRandomData(2000).ToList();
+            var packets = context.Tools.Builder.GetPackets(data, context.Options);
+            communicator.CollectionToSend = packets;
+
+            var expectedData = new List<List<byte>>();
+            expectedData.Add(new List<byte> { options.ACK });
+            expectedData.Add(new List<byte> { options.ACK });
+            for (int i = 0; i < options.ReceiverConsecutiveNAKsRequiredForCancellation; i++) {
+                expectedData.Add(new List<byte> { options.NAK });
+            }
+
+            Assert.Throws<XModemProtocolException>(() => invoker.Invoke(context));
+            for (int i = 0; i < expectedData.Count; i++) {
+                Assert.IsTrue(communicator.BytesRead[i].SequenceEqual(expectedData[i]));
+            }
         }
     }
 }
