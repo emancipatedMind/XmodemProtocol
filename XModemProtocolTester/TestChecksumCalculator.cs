@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System.Linq;
-using XModemProtocol.Calculators;
-
-namespace XModemProtocolTester {
+﻿namespace XModemProtocolTester {
+    using NUnit.Framework;
+    using System.Linq;
+    using System.Collections.Generic;
+    using XModemProtocol.Calculators;
     [TestFixture] 
     public class TestChecksumCalculator {
 
@@ -18,12 +18,30 @@ namespace XModemProtocolTester {
 
         [Test]
         public void CRCChecksumCalculatorTest() {
-            ICRCChecksumCalculator _calculator = new CRCChecksumCalculator(new FunctionalLookUpTable(0x1021));
-            // Test to see if calculator properly calculates checksum.
-            Assert.True(Enumerable.SequenceEqual(_calculator.CalculateChecksum(new byte[] { 0xD9 }), new byte[] { 0x5A, 0x54 }));
-            Assert.True(Enumerable.SequenceEqual(_calculator.CalculateChecksum(new byte[] { 0xA5 }), new byte[] { 0xE5, 0x4F }));
-            Assert.True(Enumerable.SequenceEqual(_calculator.CalculateChecksum(new byte[] { 0xE5, 0xAD, 0x8B }), new byte[] { 0x00, 0x00 }));
+            new byte[][] {
+                new byte[] { 0xD9 },
+                new byte[] { 0xA5 },
+                new byte[] { 0xE5, 0xAD, 0x8B },
+            }
+            .Zip(new byte[][] {
+                    new byte[] { 0x5A, 0x54 },
+                    new byte[] { 0xE5, 0x4F },
+                    new byte[] { 0x00, 0x00 },
+                },
+                CombineCollectionWithCheckSum
+            )
+            .ToList()
+            .ForEach(test =>
+                new List<ICRCChecksumCalculator> {
+                    new CRCChecksumCalculator(new FunctionalLookUpTable(0x1021)),
+                }
+                .ForEach(c =>
+                    Assert.AreEqual(test.CheckSum, c.CalculateChecksum(test.Collection))
+                ));
         }
+
+        private (byte[] Collection, byte[] CheckSum) CombineCollectionWithCheckSum(byte[] coll, byte[] checksum) =>
+            (coll, checksum);
 
     }
 
