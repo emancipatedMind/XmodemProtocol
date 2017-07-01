@@ -18,7 +18,7 @@ namespace XModemProtocolTester {
 
         [Test]
         public void CRCChecksumCalculatorTest() {
-            ICRCChecksumCalculator _calculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+            ICRCChecksumCalculator _calculator = new CRCChecksumCalculator(new FunctionalLookUpTable(0x1021));
             // Test to see if calculator properly calculates checksum.
             Assert.True(Enumerable.SequenceEqual(_calculator.CalculateChecksum(new byte[] { 0xD9 }), new byte[] { 0x5A, 0x54 }));
             Assert.True(Enumerable.SequenceEqual(_calculator.CalculateChecksum(new byte[] { 0xA5 }), new byte[] { 0xE5, 0x4F }));

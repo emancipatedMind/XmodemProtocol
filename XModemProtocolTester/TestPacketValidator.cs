@@ -15,7 +15,7 @@ namespace XModemProtocolTester {
         static IChecksumValidator _normalChecksumValidator = new NormalChecksumValidator(_calculator);
         IPacketValidator _validator = new PacketValidator(_normalChecksumValidator);
 
-        static ICRCChecksumCalculator _cRCCalculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+        static ICRCChecksumCalculator _cRCCalculator = new CRCChecksumCalculator(new FunctionalLookUpTable(0x1021));
         static ICRCChecksumValidator _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
         IPacketValidator _crcValidator = new PacketValidator(_crcChecksumValidator);
 

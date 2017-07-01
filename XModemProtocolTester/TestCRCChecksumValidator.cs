@@ -9,7 +9,7 @@ namespace XModemProtocolTester {
         [Test] 
         public void CRCChecksumValidatorTest() {
 
-            ICRCChecksumCalculator calculator = new CRCChecksumCalculator(new LookUpTable(0x1021));
+            ICRCChecksumCalculator calculator = new CRCChecksumCalculator(new FunctionalLookUpTable(0x1021));
             ICRCChecksumValidator validator = new CRCChecksumValidator(calculator);
             validator.ChecksumReference = new byte[2];
 

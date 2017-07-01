@@ -34,12 +34,12 @@
             get { return _table.Polynomial; }
             set {
                 if (_table.Polynomial == value) return;
-                _table = new LookUpTable(value);
+                _table = new FunctionalLookUpTable(value);
                 TableChanged();
             }
         }
 
-        LookUpTable _table;
+        FunctionalLookUpTable _table;
         NormalChecksumCalculator _calculator = new NormalChecksumCalculator();
 
         NormalChecksumValidator _normalChecksumValidator;
@@ -55,7 +55,7 @@
 
         public XModemToolFactory() {
             int polynomial = XModemProtocolConfigurationSection.Settings.Polynomial.Value;
-            _table = new LookUpTable(polynomial);
+            _table = new FunctionalLookUpTable(polynomial);
             _normalChecksumValidator = new NormalChecksumValidator(_calculator);
             _validator = new PacketValidator(_normalChecksumValidator);
             _normalPacketBuilder = new NormalPacketBuilder(_calculator);
