@@ -1,6 +1,7 @@
 ﻿namespace XModemProtocol.Calculators {
     using System.Collections.Generic;
     using System.Linq;
+    [System.Obsolete("Use XModemProtocol.Calculators.FunctionalCRCChecksumCalculator)")]
     public class CRCChecksumCalculator : BaseFunctions, ICRCChecksumCalculator {
 
         public IEnumerable<byte> InitialCRCValue { get; set; } = new byte[2];

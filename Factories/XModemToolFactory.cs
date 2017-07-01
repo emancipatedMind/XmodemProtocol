@@ -47,7 +47,7 @@
         NormalPacketBuilder _normalPacketBuilder;
 
         PacketValidator _CRCvalidator;
-        CRCChecksumCalculator _cRCCalculator;
+        FunctionalCRCChecksumCalculator _cRCCalculator;
         CRCChecksumValidator _crcChecksumValidator;
 
         CRCPacketBuilder _CRCPacketBuilder;
@@ -69,7 +69,7 @@
         }
 
         void TableChanged() {
-            _cRCCalculator = new CRCChecksumCalculator(_table);
+            _cRCCalculator = new FunctionalCRCChecksumCalculator(_table);
             _crcChecksumValidator = new CRCChecksumValidator(_cRCCalculator);
             _CRCvalidator = new PacketValidator(_crcChecksumValidator); 
 

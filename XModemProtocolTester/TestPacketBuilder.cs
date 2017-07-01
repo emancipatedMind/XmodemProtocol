@@ -21,7 +21,7 @@ namespace XModemProtocolTester {
         [Test] 
         public void CRCPacketBuilderTest() {
             var table = new FunctionalLookUpTable(0x1021);
-            var calculator = new CRCChecksumCalculator(table);
+            var calculator = new FunctionalCRCChecksumCalculator(table);
             IPacketBuilder _builder = new CRCPacketBuilder(calculator);
             IXModemProtocolOptions _options = new XModemProtocolOptions();
             RunTest(Tuple.Create(_builder, _options, 127)); 
@@ -31,7 +31,7 @@ namespace XModemProtocolTester {
         [Test] 
         public void OneKPacketBuilderTest() {
             var table = new FunctionalLookUpTable(0x1021);
-            var calculator = new CRCChecksumCalculator(table);
+            var calculator = new FunctionalCRCChecksumCalculator(table);
             IPacketBuilder _builder = new OneKPacketBuilder(calculator);
             IXModemProtocolOptions _options = new XModemProtocolOptions();
             RunTest(Tuple.Create(_builder, _options, 127)); 
