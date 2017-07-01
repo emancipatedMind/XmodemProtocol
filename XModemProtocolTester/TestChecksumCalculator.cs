@@ -34,6 +34,7 @@
             .ForEach(test =>
                 new List<ICRCChecksumCalculator> {
                     new CRCChecksumCalculator(new FunctionalLookUpTable(0x1021)),
+                    new FunctionalCRCChecksumCalculator(new FunctionalLookUpTable(0x1021)),
                 }
                 .ForEach(c =>
                     Assert.AreEqual(test.CheckSum, c.CalculateChecksum(test.Collection))
