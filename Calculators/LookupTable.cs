@@ -1,4 +1,5 @@
 ﻿namespace XModemProtocol.Calculators {
+    [System.Obsolete("Use XModemProtocol.Calculators.FunctionalLookupTable.")]
     public class LookUpTable : BaseFunctions, ICRCLookUpTable {
 
         private int[] _lookupTable = new int[256];

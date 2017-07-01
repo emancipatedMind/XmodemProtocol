@@ -17,6 +17,7 @@ namespace XModemProtocolTester {
 
             ICRCLookUpTable[] tables = new ICRCLookUpTable[] {
                 new LookUpTable(polynomial),
+                new FunctionalLookUpTable(polynomial)
             };
 
             foreach (var t in tables) 

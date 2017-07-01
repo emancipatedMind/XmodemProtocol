@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calculators\FunctionalLookUpTable.cs" />
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\ICommunicator.cs" />
     <Compile Include="Communication\NullCommunicator.cs" />
