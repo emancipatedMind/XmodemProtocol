@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Calculators\FunctionalCRCChecksumCalculator.cs" />
     <Compile Include="Calculators\FunctionalLookUpTable.cs" />
+    <Compile Include="Calculators\FunctionalNormalChecksumCalculator.cs" />
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\ICommunicator.cs" />
     <Compile Include="Communication\NullCommunicator.cs" />
