@@ -40,7 +40,7 @@
         }
 
         FunctionalLookUpTable _table;
-        NormalChecksumCalculator _calculator = new NormalChecksumCalculator();
+        FunctionalNormalChecksumCalculator _calculator = new FunctionalNormalChecksumCalculator();
 
         NormalChecksumValidator _normalChecksumValidator;
         PacketValidator _validator;

@@ -21,7 +21,7 @@ namespace XModemProtocolTester {
             invalidatedMessage.AddRange(data);
             invalidatedMessage.Add(invalidLSB);
 
-            IChecksumValidator validator = new NormalChecksumValidator(new NormalChecksumCalculator());
+            IChecksumValidator validator = new NormalChecksumValidator(new FunctionalNormalChecksumCalculator());
 
             Assert.IsTrue(validator.ValidateChecksum(validatedMessage)); 
             Assert.IsFalse(validator.ValidateChecksum(invalidatedMessage)); 

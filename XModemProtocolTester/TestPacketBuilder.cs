@@ -12,7 +12,7 @@ namespace XModemProtocolTester {
 
         [Test]
         public void NormalPacketBuilderTest() {
-            IPacketBuilder _builder = new NormalPacketBuilder(new NormalChecksumCalculator());
+            IPacketBuilder _builder = new NormalPacketBuilder(new FunctionalNormalChecksumCalculator());
             IXModemProtocolOptions _options = new XModemProtocolOptions();
             RunTest(Tuple.Create(_builder, _options, 127)); 
             RunTest(Tuple.Create(_builder, _options, 129)); 

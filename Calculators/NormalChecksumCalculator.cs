@@ -1,6 +1,7 @@
 ﻿namespace XModemProtocol.Calculators {
     using System.Collections.Generic;
     using System.Linq;
+    [System.Obsolete("Use XModemProtocol.Calculators.FunctionalNormalChecksumCalculator)")]
     public class NormalChecksumCalculator : ISummationChecksumCalculator {
 
         List<byte> _input;

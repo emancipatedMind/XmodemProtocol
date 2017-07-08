@@ -11,7 +11,7 @@ namespace XModemProtocolTester {
     public class TestPacketValidator {
         static IXModemProtocolOptions _options = new XModemProtocolOptions();
 
-        static ISummationChecksumCalculator _calculator = new NormalChecksumCalculator();
+        static ISummationChecksumCalculator _calculator = new FunctionalNormalChecksumCalculator();
         static IChecksumValidator _normalChecksumValidator = new NormalChecksumValidator(_calculator);
         IPacketValidator _validator = new PacketValidator(_normalChecksumValidator);
 
