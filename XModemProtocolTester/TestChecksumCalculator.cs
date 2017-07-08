@@ -17,6 +17,7 @@
                 },
                 new List<ISummationChecksumCalculator> {
                     new NormalChecksumCalculator(),
+                    new FunctionalNormalChecksumCalculator(),
             });
         }
 
