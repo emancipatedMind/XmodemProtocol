@@ -1,51 +1,114 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using XModemProtocol.Detectors;
-using XModemProtocol.Options;
+﻿namespace XModemProtocolTester {
+    using NUnit.Framework;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using XModemProtocol.Detectors;
+    using XModemProtocol.Options;
+    [TestFixture]
+    public class Cancellation_detector_returns_false {
 
-namespace XModemProtocolTester {
-    [TestFixture] 
-    public class TestCancellationDetector {
+        XModemProtocolOptions _options = new XModemProtocolOptions {
+            CancellationBytesRequired = 10
+        };
+
+        List<ICancellationDetector> detectors = new List<ICancellationDetector> {
+            new CancellationDetector(),
+        };
+        RandomDataGenerator _rdg = new RandomDataGenerator();
 
         [Test]
-        public void DetectorTest() {
-            var rand = new RandomDataGenerator();
-            ICancellationDetector detector = new CancellationDetector();
-            var message = new List<byte>();
-            XModemProtocolOptions options = new XModemProtocolOptions {
-                CancellationBytesRequired = 10
-            };
+        public void when_message_is_too_short() {
+            Enumerable.Range(0, 10)
+                .ToList()
+                .ForEach(n =>
+                    detectors.ForEach(d =>
+                        Assert.IsFalse(d.CancellationDetected(Enumerable.Repeat(_options.C, n), _options))
+                    )
+                );
+        }
 
-            message.Add(0x43);
-            // Test to see if detector returns false under the condition that the message is too short.
-            Assert.IsFalse(detector.CancellationDetected(message, options));
+        [Test]
+        public void when_message_is_long_enough_but_contains_no_cancellation_bytes() {
+            Enumerable.Range(0, 10)
+                .ToList()
+                .ForEach(n =>
+                    detectors.ForEach(d =>
+                        Assert.IsFalse(d.CancellationDetected(_rdg.GetRandomData(50 * n) , _options))
+                    )
+                );
+        }
 
-            message.AddRange(rand.GetRandomData(50));
-            // Test to see if detector returns false under the condition that the message does not contain a cancel bytes.
-            Assert.IsFalse(detector.CancellationDetected(message, options));
+        [Test]
+        public void when_message_does_not_contain_enough_cancellation_bytes() {
 
-            message.AddRange(Enumerable.Repeat(options.CAN, 9));
-            // Test to see if detector returns false under the condition that the message does not contain enough cancel bytes.
-            Assert.IsFalse(detector.CancellationDetected(message, options));
+            Func<int, IEnumerable<byte>> RandomDataWithCancellationBytesEmbedded = n =>
+                _rdg.GetRandomData(50)
+                .Concat(Enumerable.Repeat(_options.CAN, n))
+                .Concat(_rdg.GetRandomData(50));
 
-            for (int i = 0; i < 3; i++) {
-                message.Add(0x43);
-                message.AddRange(Enumerable.Repeat(options.CAN, 9));
-            }
-            // Test to see if detector returns false under the condition that the message does not contain enough cancel bytes
-            // contiguously even though it contains enough overall.
-            Assert.IsFalse(detector.CancellationDetected(message, options));
+            Enumerable.Range(0, 10)
+                .ToList()
+                .ForEach(n =>
+                    detectors.ForEach(d =>
+                        Assert.IsFalse(d.CancellationDetected(RandomDataWithCancellationBytesEmbedded(n), _options))
+                    )
+                );
 
-            options.CancellationBytesRequired = 5;
-            // Test to see if detector returns true under the condition that the message contains enough cancel bytes contiguously.
-            Assert.IsTrue(detector.CancellationDetected(message, options));
+        }
 
-            options.CancellationBytesRequired = 10;
-            message.Add(0x43);
-            message.AddRange(Enumerable.Repeat(options.CAN, 10));
-            // Test to see if detector returns true under the condition that the message contains enough cancel bytes contiguously.
-            Assert.IsTrue(detector.CancellationDetected(message, options));
+        [Test]
+        public void when_message_does_not_contain_enough_cancellation_bytes_contiguously_but_does_overall() {
+
+            Func<int, IEnumerable<byte>> RandomDataWithCancellationBytesEmbedded = n =>
+                Enumerable.Range(0, 5)
+                .SelectMany(x =>
+                    _rdg.GetRandomData(50)
+                    .Concat(Enumerable.Repeat(_options.CAN, n))
+                    );
+
+            Enumerable.Range(0, 10)
+                .ToList()
+                .ForEach(n =>
+                    detectors.ForEach(d =>
+                        Assert.IsFalse(d.CancellationDetected(RandomDataWithCancellationBytesEmbedded(n), _options))
+                    )
+                );
+
+        }
+
+    }
+    [TestFixture]
+    public class Cancellation_detector_returns_true {
+
+        XModemProtocolOptions _options = new XModemProtocolOptions {
+            CancellationBytesRequired = 10
+        };
+
+        List<ICancellationDetector> detectors = new List<ICancellationDetector> {
+            new CancellationDetector(),
+        };
+        RandomDataGenerator _rdg = new RandomDataGenerator();
+
+        [Test]
+        public void when_message_contains_only_enough_cancellation_bytes_contiguously() {
+            detectors.ForEach(d =>
+                Assert.IsTrue(d.CancellationDetected(Enumerable.Repeat(_options.CAN, _options.CancellationBytesRequired), _options))
+            );
+        }
+
+        [Test]
+        public void when_message_contains_enough_cancellation_bytes_contiguously_embedded_in_data() {
+            detectors.ForEach(d =>
+                Assert.IsTrue(
+                    d.CancellationDetected(
+                        _rdg.GetRandomData(50)
+                        .Concat(Enumerable.Repeat(_options.CAN, _options.CancellationBytesRequired)
+                        .Concat(_rdg.GetRandomData(50))
+                    ),
+                    _options)
+                )
+            );
         }
     }
 }
