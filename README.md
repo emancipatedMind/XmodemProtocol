@@ -141,7 +141,7 @@ XModemProtocol.XModemCommunicator.Mode, XModemProtocol.XModemCommunicator.Polyno
           xmodem.Port = port;
       
           // Pass in Data.
-          xmodem.Data = File.GetAllBytes(@"C:\filetosend.hex");
+          xmodem.Data = File.ReadAllBytes(@"C:\filetosend.hex");
       
           // Subscribe to events.
           xmodem.Completed += (s,e) => {
