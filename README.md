@@ -150,6 +150,9 @@ XModemProtocol.XModemCommunicator.Mode, XModemProtocol.XModemCommunicator.Polyno
           xmodem.Aborted += (s,e) => {
             Console.WriteLine("Operation Aborted.\nPress enter to exit.");
           };
+          
+          // Open port for use.
+          port.Open();
 
           Console.WriteLine("Awaiting Receiver. Press enter to cancel.");
           // Send Data.
@@ -162,6 +165,9 @@ XModemProtocol.XModemCommunicator.Mode, XModemProtocol.XModemCommunicator.Polyno
             xmodem.CancelOperation();
             Console.ReadLine();
           }
+          
+          // Dispose of port.
+          port.Close();
         }
       }
     }
@@ -212,6 +218,9 @@ XModemProtocol.XModemCommunicator.Mode, XModemProtocol.XModemCommunicator.Polyno
           xmodem.Aborted += (s,e) => {
             Console.WriteLine("Operation Aborted.\nPress enter to exit.");
           };
+          
+          // Open port for use.
+          port.Open();
       
           // Receive Data.
           Console.WriteLine("Receive Operation beginning. Press enter to cancel.");
@@ -223,7 +232,10 @@ XModemProtocol.XModemCommunicator.Mode, XModemProtocol.XModemCommunicator.Polyno
           if (xmodem.State != XModemStates.Idle) {
             xmodem.CancelOperation();
             Console.ReadLine();
-          }      
+          }
+          
+          // Dispose of port.
+          port.Close();
         }
       }
     }
